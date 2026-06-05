@@ -1,0 +1,89 @@
+# All the config is dynamically updated, it is not necessary to reload the config to apply changes.
+# Some config values may have a command for easy access.
+whitelist: 
+  # If the whitelist is enabled. (this changes with the command)
+   enabled: false
+  # This will prioritize uuid's over names, disabling some name checks and name updates, this may be ignored if skip-uuid-save is enabled.
+   skip-name-change: false
+  # Posible values for checking:
+  # DISABLED - ignored when checking, all disabled will allow any player to join unless they have a disabled entry.
+  # OPTIONAL - treats all optional checking as a single check, if another optional is successfully all will be too.
+  # REQUIRED - if the checking is not met the player will not be able to join.
+  # The permission checking looks for op pĺayer, or a permission string (default is "noblewhitelist.bypass")
+  # If name and uuid are required, when adding a player you must add both to allow a player to join.
+   checking: 
+      name: REQUIRED
+      uuid: DISABLED
+      perm: DISABLED
+  # Only op player counts for a permission check, skips the permission string.
+   only-op-as-permission: false
+  # Allows to use a custom permission, if enabled the permissions by levels is disabled.
+   use-custom-permission: false
+  # The custom permission to check for the player.
+   custom-permission: example.permission
+  # Defines a permission level where players with the same or greater permission level can be counted for the permission check.
+  # This only apply to users with "noblewhitelist.bypass.<level>", players with noblewhitelist.bypass will bypass the level.
+  # Set to -1 to disable the permission levels.
+   permission-minimum-number: -1
+  # Any player who joins will be added to the whitelist.
+  # In most scenarios this will only work if the whitelist is disabled. (useful to only save player who have joined)
+   auto-register: false
+  # THIS DOES NOTHING, IT WAS A WORKAROUND FOR AN UNWANTED ISSUE.
+  # BETTER USE SKIP UUID SAVE FOR NAME ONLY WHITELIST OR SKIP NAME CHANGE TO PRIORITIZE UUID'S.
+   enforce-uuid-if-different-name: false
+skip: 
+  # The whitelist will not auto save the uuid of the players. (saving is useful to track premium players, you may enable it for name only whitelist)
+   skip-uuid-save: true
+storage: 
+  # The storage type for the whitelist, migration of data is made manually (for now).
+  # You may want to restart the server to apply changes if the reload command does not work.
+  # MYSQL - Remote database, it can be used in multiple server, but it may have some latency.
+  # SQLITE - Local database, very fast and easy management when expecting a lot of players.
+  # YAML - Easy to read and edit.
+  # JSON - Fast storage, it may be a little confusing to read.
+  # TOML - Similar as json but more readable.
+   storage-type: sqlite
+  # Remote database details.
+   host: ""
+   port: 3306
+   database: ""
+   user: ""
+   password: ""
+  # <!> Advanced options for database, only use if you know what are you doing, these settings may cause unstability.
+  #connection-timeout: 30
+  #max-lifetime: 30
+  #use-ssl: false
+  #allow-public-key-retrieval: false
+  #server-rsa-public-key-file: ""
+  #ssl-mode: required
+  # Executes the defined actions if the server cannot properly load the storage when loaded. (in most cases remote database connections)
+  # You can use "/nwl reload" to retry loading the database.
+  # Actions:
+  # NONE - does nothing
+  # CLOSE - closes the server
+  # BLOCK - blocks all players to join
+  # COMMAND - executes a command
+   action-if-fail: NONE
+   command-if-fail: ""
+vanilla-whitelist: 
+  # Available values:
+  # DISABLED - disables the vanilla whitelist command and ignores the vanilla whitelist
+  # IGNORE - ignores the vanilla whitelist
+  # NONE - does nothing
+   modify-type: DISABLED
+messages: 
+   prefix: <bold><#17B90C>N<#7FD024>Whitelist</bold> <grey>>
+   use-prefix: true
+  # Placeholders:
+  # <player> = Player name
+  # <prefix> = Message prefix (if disabled it will be replaced with an empty string)
+   not-whitelisted: <red>You are not whitelisted on this server.
+  # Console message if a player name is changed since their uuid is present (mostly for premium players)
+   name-change-console: <prefix><yellow><name> has joined with another name (probably a premium player)
+  # Player message if their name is changed since their uuid is present (mostly for premium players)
+   name-change-player: <green>Successfully validated uuid, welcome back <name>!
+version: 
+  # Notify when there is a new update.
+   notify-update: false
+  # DO NOT MODIFY, THIS MAY FORCE CHANGES AND CREATE ERRORS
+   version: 3

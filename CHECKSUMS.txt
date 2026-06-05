@@ -1,0 +1,17 @@
+4b5fecbf9074e7f0d1b5c9942875777b6351912594e0241492652979d119d2bc  leaf-1.21.11-158.jar
+58948fcbc697497506257d09d8a7909bf48de6aefe7bec6ba5ab4c41be41b7b8  plugins/AuthMe-6.0.0-Paper.jar
+456af808a22e097e60e2da034487a0ef3fa61e98436aa25f0f53ab2978f21be2  plugins/packetevents-spigot-2.12.2.jar
+df70bd999bce620eff7cf7318fc90ce83119fccca7809800175957185074c324  plugins/NobleWhitelist-1.2.23.jar
+2a5477fc80f71012e15ade1ce34dbeb836e17623b28db112492c0f1443c09721  plugins/Chunky-Bukkit-1.4.40.jar
+fc8d4eccbf11c1e844af4527f018bbfde90c1866a9aba1bf880173a8e644cd59  plugins/LuckPerms-Bukkit-5.5.53.jar
+e31f192d330d86584afd53eedc99765d2232eab8c7a250ecace4cf7185bfc463  plugins/Vault-1.7.4.jar
+e7fc2613353eb4691ddc9fbcd63018ba6cddcf4d2a2219ede02ee20c1d74b8c5  plugins/CMILib1.5.9.6.jar
+2ca86b682e9b4dc28cb500c6d0c7cadef50909ab074e833fce74c85ba1badebf  plugins/CMI-9.8.7.7.jar
+0ee152b1be5dfb51500505e2bf5a8c9d66f09c7fa484bf9aea384d7e7b459b06  plugins/worldedit-bukkit-7.4.2.jar
+3a3aa97d6138c58e1c85319d1df54307c5d71ddb91d87051d1a638bc386feb01  plugins/ViaVersion-5.9.1.jar
+2de618bbcafa8bb84da44e51e77613e4ba271aef54f0f42a7a24a9162573d719  plugins/ViaBackwards-5.9.1.jar
+f87b7638a73e12d9ccbe00944c806cf2ebe27ad038bdc4ad11c07911f466e551  plugins/ViaRewind-4.1.1.jar
+2d78bbe8b0b4e3d6c95b7df8022cb33132c8d18acc53195c273eed3e2b04925b  plugins/CoreProtect-CE-23.2.jar
+28ecb62f9648751e48f64ef4d0c538aeb1cc1207f65acd4a26949a85900c68a5  plugins/minimotd-paper-2.2.3.jar
+444d021e6a25672cdeae4fd75e9c3e65e3ef501228af11ae59ab77fd9cdf8731  server-icon.png
+444d021e6a25672cdeae4fd75e9c3e65e3ef501228af11ae59ab77fd9cdf8731  plugins/MiniMOTD/icons/leaf.png

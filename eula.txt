@@ -1,0 +1,3 @@
+# By running this server you agree to the Minecraft EULA:
+# https://aka.ms/MinecraftEULA
+eula=true

@@ -1,0 +1,16 @@
+name: builder
+permissions:
+- worldedit.*
+- cmi.chatgroup.2
+- cmi.command.feed
+- cmi.command.fly
+- cmi.command.gamemode
+- cmi.command.gm
+- cmi.command.god
+- cmi.command.heal
+- cmi.command.repair
+parents:
+- default
+prefixes:
+- '&b[建筑]&r ':
+    priority: 50

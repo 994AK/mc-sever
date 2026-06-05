@@ -1,0 +1,37 @@
+name: default
+permissions:
+- cmi.chatgroup.1
+- cmi.command.afk
+- cmi.command.back
+- cmi.command.back.ondeath
+- cmi.command.balance
+- cmi.command.baltop
+- cmi.command.delhome
+- cmi.command.helpop
+- cmi.command.home
+- cmi.command.homes
+- cmi.command.ignore
+- cmi.command.ignorelist
+- cmi.command.list
+- cmi.command.mail
+- cmi.command.mail.send
+- cmi.command.msg
+- cmi.command.pay
+- cmi.command.ping
+- cmi.command.reply
+- cmi.command.rules
+- cmi.command.seen
+- cmi.command.sethome
+- cmi.command.spawn
+- cmi.command.suicide
+- cmi.command.tpa
+- cmi.command.tpacancel
+- cmi.command.tpaccept
+- cmi.command.tpahere
+- cmi.command.tpdeny
+- cmi.command.warp
+- cmi.command.warp.showlist
+- cmi.command.warps
+prefixes:
+- '&7[玩家]&r ':
+    priority: 10

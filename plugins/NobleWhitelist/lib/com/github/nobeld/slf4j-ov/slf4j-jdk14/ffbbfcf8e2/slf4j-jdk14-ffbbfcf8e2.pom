@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.github.nobeld.slf4j-ov</groupId>
+    <artifactId>slf4j-parent</artifactId>
+    <version>ffbbfcf8e2</version>
+    <relativePath>../parent/pom.xml</relativePath>
+  </parent>
+  <groupId>com.github.nobeld.slf4j-ov</groupId>
+  <artifactId>slf4j-jdk14</artifactId>
+  <version>ffbbfcf8e2</version>
+  <name>SLF4J JDK14 Provider</name>
+  <description>SLF4J JDK14 Provider</description>
+  <url>http://www.slf4j.org</url>
+  <properties>
+    <slf4j.provider.type>jul</slf4j.provider.type>
+    <slf4j.provider.implementation>org.slf4j.jul.JULServiceProvider</slf4j.provider.implementation>
+    <module-name>org.slf4j.jul</module-name>
+  </properties>
+  <dependencies>
+    <dependency>
+      <groupId>com.github.nobeld.slf4j-ov</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>ffbbfcf8e2</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.nobeld.slf4j-ov</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>ffbbfcf8e2</version>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>

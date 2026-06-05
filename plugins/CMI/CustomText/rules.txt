@@ -1,0 +1,7 @@
+<AutoPage>
+&8&m--------------------------------
+&fRules
+&71. Respect other players.
+&72. No cheats, scripts, or malicious griefing.
+&73. Report serious bugs before abusing them.
+&8&m--------------------------------

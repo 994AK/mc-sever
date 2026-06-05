@@ -1,0 +1,10 @@
+name: admin
+permissions:
+- coreprotect.*
+- '*'
+- cmi.chatgroup.3
+parents:
+- builder
+prefixes:
+- '&c[管理]&r ':
+    priority: 100

@@ -1,0 +1,67 @@
+# OS / editor noise
+.DS_Store
+Thumbs.db
+desktop.ini
+*.tmp
+*.bak
+*.swp
+
+# Runtime output
+logs/
+crash-reports/
+cache/
+libraries/
+versions/
+bundler/
+*.log
+
+# World data is backed up, not committed.
+world/
+world_nether/
+world_the_end/
+
+# Local release and backup folders
+backups/
+releases/
+staging/
+*.zip
+*.7z
+*.tar
+*.tar.gz
+
+# Runtime player/server state
+usercache.json
+ops.json
+whitelist.json
+banned-players.json
+banned-ips.json
+
+# Runtime databases and secrets
+*.db
+*.sqlite
+*.sqlite.db
+*.db-journal
+*.sqlite-journal
+plugins/CMI/security.key
+plugins/**/security.key
+
+# Plugin runtime caches and generated files
+plugins/bStats/
+plugins/spark/tmp/
+plugins/CMI/Logs/
+plugins/CMI/DatabaseBackups/
+plugins/CMI/cmi.sqlite.db
+plugins/CMI/Saves/SkinsCache.yml
+plugins/AuthMe/playerdata/
+plugins/AuthMe/authme.db
+plugins/CoreProtect/database.db
+plugins/NobleWhitelist/data.db
+plugins/Chunky/tasks/
+plugins/WorldEdit/sessions/
+plugins/LuckPerms/libs/
+plugins/LuckPerms/translations/
+
+# LuckPerms groups are operator-managed, but runtime cache/action files are not.
+plugins/LuckPerms/yaml-storage/*
+!plugins/LuckPerms/yaml-storage/groups/
+!plugins/LuckPerms/yaml-storage/groups/*.yml
