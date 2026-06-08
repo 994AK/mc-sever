@@ -1,10 +1,11 @@
 name: admin
 permissions:
 - coreprotect.*
+- griefprevention.admin.*
 - '*'
 - cmi.chatgroup.3
 parents:
 - builder
 prefixes:
-- '&c[管理]&r ':
+- '&4[&c管理&4]&r ':
     priority: 100

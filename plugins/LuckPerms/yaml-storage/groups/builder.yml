@@ -12,5 +12,5 @@ permissions:
 parents:
 - default
 prefixes:
-- '&b[建筑]&r ':
+- '&8[&b建筑&8]&r ':
     priority: 50

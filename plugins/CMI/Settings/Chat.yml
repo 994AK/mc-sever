@@ -63,7 +63,7 @@ Chat:
     StaffMessages: true
   # Used for simple chat messages. Optional variables: {displayName} {world} {prefix} {suffix} {group} {shout} {shoutcolor} {message} {nicknameprefix}. Supporting PlaceHolderAPI variables like %player_server% %cmi_user_chatcolor%
   # ATTENTION! Don't use gradient colors for {message} variable, if you want to apply gradient for it, utilize GeneralMessageFormat section
-  GeneralFormat: '&8{prefix}&f{displayName}&8: &7{message}'
+  GeneralFormat: '&8[&7玩家&8] &f{displayName}&8 > &f{message}'
   # Will define message format itself, this allows to have gradients in messages
   # It NEEDS to contain {message} otherwise we will ignore this setup
   # For 1.16+ servers you can use color gradients like '{#b3a28f>}{message}{#d7b8e6<}'
@@ -126,9 +126,9 @@ Chat:
 
   # ATTENTION! Don't use gradient colors for {message} variable, if you want to apply gradient for it, utilize GroupMessageFormat section
   GroupFormat:
-    '1': '&8{prefix}&f{displayName}&8: &7{message}'
-    '2': '&8{prefix}&b{displayName}&8: &f{message}'
-    '3': '&8{prefix}&c{displayName}&8: &f{message}'
+    '1': '&8[&7玩家&8] &f{displayName}&8 > &f{message}'
+    '2': '&8[&b建筑&8] &b{displayName}&8 > &f{message}'
+    '3': '&4[&c管理&4] &c{displayName}&8 > &f{message}'
   # Use numeric increments to separate groups from each other. If player has more than one, then line with higher number will be used
   # Add as many lines as you need too
   # cmi.chatmessagegroup.[id] permnission node to use

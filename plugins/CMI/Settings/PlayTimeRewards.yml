@@ -1,2 +1,21 @@
-# Playtime rewards are intentionally disabled and empty.
-{}
+flight_charge_30m:
+  DisplayName: "&b飞行充能奖励"
+  AutoClaim: true
+  Description:
+  - "&7每在线 30 分钟获得 10000 点飞行充能"
+  - "&7飞得越快，消耗越快；点数用完就不能继续飞"
+  PayEvery: 1800
+  Commands:
+  - asConsole! cmi flightcharge add [playerName] 10000 -s
+  - "msg! [playerName] &a在线奖励：已获得 10000 点飞行充能。输入 /flyc 开关飞行。"
+
+phantom_membrane_30m:
+  DisplayName: "&d幻翼膜补给"
+  AutoClaim: false
+  Description:
+  - "&7每在线 30 分钟可领取 20 个幻翼膜"
+  - "&7输入 /prewards 打开奖励列表领取"
+  PayEvery: 1800
+  Commands:
+  - asConsole! minecraft:give [playerName] minecraft:phantom_membrane 20
+  - "msg! [playerName] &a你已领取 20 个幻翼膜。"

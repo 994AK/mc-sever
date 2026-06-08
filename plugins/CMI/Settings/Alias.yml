@@ -837,8 +837,8 @@ Alias:
     Tab: true
   # /cmi pos $1-
   pos:
-    Enabled: true
-    Tab: true
+    Enabled: false
+    Tab: false
   # /cmi preview $1-
   preview:
     Enabled: true
@@ -1097,8 +1097,8 @@ Alias:
     Tab: true
   # /cmi skin $1-
   skin:
-    Enabled: true
-    Tab: true
+    Enabled: false
+    Tab: false
   # /cmi smite $1-
   smite:
     Enabled: true

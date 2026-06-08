@@ -191,7 +191,7 @@ flightCharge: true
 #  
 # Handles shulker box as backpacks
 # Applies for servers from 1.11.x and up
-shulkerBackpack: true
+shulkerBackpack: false
 #  
 # Handles decorated pot content display
 # Applies for servers from 1.20.x and up
@@ -199,7 +199,7 @@ decoratedpot: true
 #  
 # Handles player skins
 # Applies for servers from 1.8.x and up
-skin: true
+skin: false
 #  
 # Handles selection areas. While this is disabled, command can still be used
 # Applies for servers from 1.7.x and up
@@ -235,7 +235,7 @@ rideAnimation: true
 #  
 # Handling of boss bar compass
 # Applies for servers from 1.9.x and up
-bossBarCompass: true
+bossBarCompass: false
 #  
 # Elytra boost
 # Applies for servers from 1.9.x and up

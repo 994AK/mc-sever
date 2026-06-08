@@ -86,9 +86,9 @@ LuckPerms 已切到 `yaml` 存储，分组文件在 `plugins/LuckPerms/yaml-stor
 
 已内置三组：
 
-- `default`：普通玩家，称号 `[玩家]`，有 `/spawn`、`/back`、`/home`、`/sethome`、`/delhome`、`/tpa`、`/tpahere`、`/tpaccept`、`/tpdeny`、`/tpacancel`、`/msg`、`/reply`、`/mail`、`/pay`、`/balance`、`/baltop`、`/afk`、`/warps`、`/warp`、`/rules`、`/ping`、`/list`、`/seen`、`/ignore`、`/ignorelist`、`/helpop`、`/suicide` 等基础 CMI 命令。
+- `default`：普通玩家，称号 `[玩家]`，有 `/menu`、`/menutool`、`/spawn`、`/back`、`/home`、`/sethome`、`/delhome`、`/tpa`、`/tpahere`、`/tpaccept`、`/tpdeny`、`/tpacancel`、`/msg`、`/reply`、`/mail`、`/pay`、`/balance`、`/baltop`、`/afk`、`/warps`、`/warp`、`/rules`、`/ping`、`/list`、`/seen`、`/ignore`、`/ignorelist`、`/helpop`、`/suicide` 等基础 CMI 命令；默认 3 个家，保留死亡 `/back`，同时有 SkinsRestorer 皮肤命令、飞行充能命令和 GriefPrevention 领地命令。
 - `builder`：建筑/创造组，继承 `default`，称号 `[建筑]`，有 `worldedit.*`、飞行、创造模式、上帝、修复、治疗等命令。
-- `admin`：管理组，继承 `builder`，称号 `[管理]`，有 `*` 和 CoreProtect 管理权限。
+- `admin`：管理组，继承 `builder`，称号 `[管理]`，有 `*`、CoreProtect 和 GriefPrevention 管理权限。
 
 给玩家分组：
 
@@ -104,18 +104,96 @@ lp user 玩家名 parent set default
 lp user 玩家名 meta setprefix 80 "&6[服主]&r "
 ```
 
+普通玩家没有 WorldEdit、CoreProtect 回滚、创造、免费 `/fly`、给别人飞行、管理、强制传送等破坏性权限。公共地点建议由管理设置成 CMI warp：
+
+```text
+/cmi setwarp spawn true
+/cmi setwarp nether true
+/cmi setwarp end true
+```
+
+默认组已预留 `spawn`、`nether`、`end` 三个公共 warp 权限。
+
+## 玩家快捷菜单
+
+已安装 CommandGUI 3.3.0，用于普通玩家快捷菜单。
+
+GUI 插件选型记录见 `docs/research/2026-06-08-gui-plugin-selection.md`。当前结论是：
+第一版玩家快捷菜单继续使用 CommandGUI；如果以后要做商店、任务、多页复杂菜单或
+Bedrock/Floodgate 对话框，再考虑升级到 CommandPanels。
+
+玩家可用：
+
+```text
+/menu
+/menutool
+/commandgui
+/cg
+```
+
+- `/menu`：打开快捷菜单。
+- `/menutool`：菜单钟丢失时重新领取菜单钟。
+- 右键菜单钟：打开和 `/menu` 相同的快捷菜单。
+
+菜单内目前包含：出生点、死亡返回、家、公共地标、传送请求提示、私聊提示、在线奖励、飞行开关、飞行能量、飞行速度提示、皮肤菜单、服务器规则和联系管理。
+
+菜单第一版暂不包含领地入口。普通玩家只能使用 `commandgui.use` 和 `commandgui.tool`，没有 `commandgui.reload`、`commandgui.give` 或 bypass 权限。
+
 ## CMI 配置
 
 CMI/CMILib/Vault 已作为基础插件启用，并接入 LuckPerms：
 
 - CMI 经济已通过 Vault hook。
-- CMI 聊天格式由 LuckPerms 前缀显示称号：`[称号] 玩家名: 消息`。
+- CMI 聊天格式已改成高对比简洁样式：`[玩家/建筑/管理] 玩家名 > 消息`。
 - 已清空新手礼包：`plugins/CMI/Kits/Kits.yml`。
-- 已清空挂机奖励：`plugins/CMI/Settings/PlayTimeRewards.yml`。
+- 在线时长奖励已改成可玩性奖励：每在线 30 分钟自动获得 10000 点 flight charge；每在线 30 分钟可用 `/prewards` 手动领取 20 个幻翼膜。
 - 已清空 CMI 默认 Rank/Schedule：`plugins/CMI/Settings/Ranks.yml`、`plugins/CMI/Settings/Schedules.yml`。
 - AFK 开启但不踢人、不免伤、不反挂机机器；AFK 时停止 CMI playtime 计时。
 - 生物头掉落已开启，玩家头掉落关闭。
-- CMI tablist、气泡聊天、默认入服消息、kit、rank、schedule 模块已关闭，避免默认内容干扰。
+- CMI tablist、气泡聊天、默认入服消息、kit、rank、schedule、skin 模块已关闭，避免默认内容干扰；皮肤由 SkinsRestorer 接管。
+
+## 皮肤
+
+已安装 SkinsRestorer 15.12.0，用于离线服恢复和切换玩家皮肤。普通玩家可用：
+
+```text
+/skin set 正版玩家名
+/skin clear
+/skin update
+/skins
+```
+
+CMI 自带的 `/skin` 已关闭，避免两个插件抢同一个命令。
+
+## 领地保护
+
+已安装 GriefPrevention 16.18.7，用于普通玩家自助圈地和防熊。普通玩家已开放：
+
+```text
+/claim 半径
+/trust 玩家名
+/untrust 玩家名
+/containertrust 玩家名
+/accesstrust 玩家名
+/trustlist
+/claimslist
+/abandonclaim
+/abandonallclaims
+/trapped
+```
+
+默认圈地方式是使用金铲子选两个角点，木棍可查看附近领地边界。普通玩家已禁止 `/buyclaimblocks`、`/sellclaimblocks` 和 `/siege`。
+
+管理常用命令：
+
+```text
+/adminclaims
+/deleteclaim
+/deleteallclaims 玩家名
+/ignoreclaims
+/adjustbonusclaimblocks 玩家名 数量
+/gpreload
+```
 
 ## 服务器列表头像和文案
 
@@ -202,6 +280,11 @@ chunky pause
 - Vault 1.7.4 jar：经济/权限桥接，运行时显示为 Vault 1.7.3-CMI
 - CMILib 1.5.9.6：CMI 依赖库
 - CMI 9.8.7.7：基础命令、经济、聊天、AFK、生物头
+- CommandGUI 3.3.0：玩家快捷菜单和菜单钟入口
+- SkinsRestorer 15.12.0：离线服皮肤恢复和切换
+- GriefPrevention 16.18.7：玩家领地保护和防熊
+- OpenShulk 1.21.x：快捷潜影盒
+- JEI Recipe Bridge 1.0.0：JEI 配方同步桥接
 - WorldEdit 7.4.2：创造/建筑工具
 - ViaVersion 5.9.1：跨版本协议
 - ViaBackwards 5.9.1：旧版客户端兼容
@@ -224,7 +307,7 @@ CMILib 可能会提示无法下载部分 `Translations/Items/items_*.yml`，这�
 
 - Java 21 可运行。
 - Leaf `1.21.11-158-ver/1.21.11@dfd6281` 启动成功。
-- 14 个插件被识别并加载。
+- 19 个插件被识别并加载。`leafmc-2026.06.07-r3` 已确认 CommandGUI、SkinsRestorer、GriefPrevention、OpenShulk 和 JEI Recipe Bridge 能启动加载。
 - NobleWhitelist 已关闭，`nwl status` 显示 `Whitelist state: off`。
 - LuckPerms 使用 YAML 存储，`default`、`builder`、`admin` 三组已写入；default 组已补齐普通玩家常用命令。
 - CMI 经济成功 hook Vault，CMI 权限识别 LuckPerms。
@@ -233,6 +316,7 @@ CMILib 可能会提示无法下载部分 `Translations/Items/items_*.yml`，这�
 - MiniMOTD 启用。
 - 服务端出现 `Done`。
 - 发送 `stop` 后世界正常保存并退出。
+- 2026-06-07 20:23 已完成一次短启动验证：CommandGUI 3.3.0 启用成功，`zh_cn.yml` 加载成功，15 个菜单项加载成功，CMI 加载 2 个 custom alias。玩家实际右键 GUI 仍建议上线后用普通测试号确认。
 
 ## 关键文件
 
@@ -245,6 +329,12 @@ CMILib 可能会提示无法下载部分 `Translations/Items/items_*.yml`，这�
 - `plugins/AuthMe/config.yml`：登录插件配置
 - `plugins/NobleWhitelist/config.yml`：白名单插件配置
 - `plugins/CMI/`：CMI 配置目录
+- `plugins/CommandGUI-3.3.0.jar`：玩家快捷菜单插件
+- `plugins/CommandGUI/config.yml`：玩家快捷菜单和菜单钟配置
+- `plugins/SkinsRestorer-15.12.0.jar`：皮肤插件
+- `plugins/GriefPrevention-16.18.7.jar`：领地保护插件
+- `plugins/OpenShulk-1.21.x.jar`：快捷潜影盒插件
+- `plugins/JEI-Recipe-Bridge-1.0.0.jar`：JEI 配方同步桥接插件
 - `plugins/LuckPerms/yaml-storage/groups/`：权限组配置
 - `plugins/MiniMOTD/main.conf`：服务器列表文案
 - `plugins/CoreProtect/config.yml`：回滚插件配置

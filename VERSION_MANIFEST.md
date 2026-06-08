@@ -2,8 +2,8 @@
 
 ## Release
 
-- Server release: `leafmc-2026.06.05-r1`
-- Date: `2026-06-05`
+- Server release: `leafmc-2026.06.07-r3`
+- Date: `2026-06-07`
 - Minecraft version: `1.21.11`
 - Core: `Leaf 1.21.11 build 158`
 - Java target: `Java 21`
@@ -18,6 +18,9 @@
 - AuthMe enabled for offline login/register.
 - NobleWhitelist installed but disabled.
 - LuckPerms storage is YAML.
+- CommandGUI owns `/commandgui` and `/cg`; CMI CustomAlias provides `/menu` and `/menutool`.
+- SkinsRestorer owns `/skin`; CMI skin module is disabled.
+- GriefPrevention owns player land claims.
 - CoreProtect CE uses local SQLite.
 - MiniMOTD owns server-list text and icon.
 
@@ -34,6 +37,11 @@
 | Vault | 1.7.4 jar | `plugins/Vault-1.7.4.jar` |
 | CMILib | 1.5.9.6 | `plugins/CMILib1.5.9.6.jar` |
 | CMI | 9.8.7.7 | `plugins/CMI-9.8.7.7.jar` |
+| CommandGUI | 3.3.0 | `plugins/CommandGUI-3.3.0.jar` |
+| SkinsRestorer | 15.12.0 | `plugins/SkinsRestorer-15.12.0.jar` |
+| GriefPrevention | 16.18.7 | `plugins/GriefPrevention-16.18.7.jar` |
+| OpenShulk | 1.21.x | `plugins/OpenShulk-1.21.x.jar` |
+| JEI Recipe Bridge | 1.0.0 | `plugins/JEI-Recipe-Bridge-1.0.0.jar` |
 | WorldEdit | 7.4.2 | `plugins/worldedit-bukkit-7.4.2.jar` |
 | ViaVersion | 5.9.1 | `plugins/ViaVersion-5.9.1.jar` |
 | ViaBackwards | 5.9.1 | `plugins/ViaBackwards-5.9.1.jar` |

@@ -1948,7 +1948,7 @@ world-settings:
       mob-spawning:
         village-cats: default
         raid-patrols: default
-        phantoms: default
+        phantoms: false
         wandering-traders: default
         village-sieges: default
         ignore-creative-players: false

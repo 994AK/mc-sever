@@ -22,10 +22,13 @@
 # and if possible spread them out with a delay by using "delay! 0.3" or similar variable
 # This will allow server to catch up with his calculation instead of forcing him to do all of those commands at once
 firstJoinServer:
-  Enabled: false
+  Enabled: true
   Commands:
-  - cmi msg [playerName] !This is event command example!
-  - cmi msg [playerName] !Originates from sneakingSwapHandItems event!
+  - delay! 3
+  - asConsole! commandgui give [playerName]
+  - msg! [playerName] &a欢迎来到 LeafMC！&7已给你菜单钟，右键可打开快捷菜单。
+  - msg! [playerName] &7也可以输入 &f/menu &7打开菜单；菜单钟丢失可输入 &f/menutool&7。
+  - msg! [playerName] &7飞行：&f/flyc &7开关，&f/flightcharge &7查看能量；奖励：&f/prewards&7。
 joinServer:
   Enabled: false
   Commands:

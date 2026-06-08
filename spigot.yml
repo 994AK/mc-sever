@@ -84,10 +84,10 @@ world-settings:
     entity-activation-range:
       animals: 32
       monsters: 32
-      raiders: 64
+      raiders: 96
       misc: 16
       water: 16
-      villagers: 32
+      villagers: 64
       flying-monsters: 32
       wake-up-inactive:
         animals-max-per-tick: 4
@@ -109,10 +109,10 @@ world-settings:
       ignore-spectators: false
     entity-tracking-range:
       players: 128
-      animals: 96
-      monsters: 96
-      misc: 96
-      display: 128
+      animals: 64
+      monsters: 64
+      misc: 48
+      display: 96
       other: 64
     ticks-per:
       hopper-transfer: 8

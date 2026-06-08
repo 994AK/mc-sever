@@ -487,11 +487,11 @@ Optimizations:
 PlaytimeRewards:
   # Enable or disable playtime rewards.
   # This is required if you want to have auto rewards
-  Enabled: false
+  Enabled: true
   # When enabled, while player is in afk mode, repeatable playtime rewards will not increase in playtime
   # ATTENTION! this setting will not have any effect if you have Afk.StopPlayTime set to true
   # When StopPlayTime set to true, afk will be expluded automatically
-  ExcludeAfk: true
+  ExcludeAfk: false
   # Defines time in minutes to inform player about pending reward which needs to be claimed
   RewardInform: 15
   # Defines how many one time rewards you want to show in list
@@ -1144,20 +1144,20 @@ FlightCharge:
   ShowBossBar: true
   # When set to true, each time player gets flight charge or relogs, his fly mode will be toggled on
   # If set to false, then players will have to manually turn on flight with /cmi flyc
-  EnabledByDefault: true
+  EnabledByDefault: false
   # When set to true, in event of player changing his game mode from survival/adventure to creative/spectator his flight charge  mode will get disabled
   # Same applies when changing game mode from creative/spectator to survival/adventure
   AutoSwitch: false
   # How much it costs for one recharge point in exp points. Value can be in decimals, like 0.2 but it cant be equal or lower than 0
   # Set to 0 to disable this type of recharge
-  ExpRechargeCost: 1.0
+  ExpRechargeCost: 0.0
   # How much it costs for one recharge point. Value can be in decimals, like 0.2 but it cant be equal or lower than 0
   # Set to 0 to disable this type of recharge
-  MoneyRechargeCost: 1.0
+  MoneyRechargeCost: 0.0
   # Defines maximum amount of charge player can have
   # One charge is one traveled block while flying
   # if player doesn't move, then one charge for each second while hovering
-  MaxChargeLevel: 1000
+  MaxChargeLevel: 60000
   # Defines multiplier when player doesn't move but is hovering. For each second player hovers.
   # Set to 0 to disable
   DeductOnIdling: 1.0
