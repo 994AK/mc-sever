@@ -1,0 +1,148 @@
+# YuHua服务器 player convenience menu.
+# /commandgui opens the GUI; /menu is provided by CMI CustomAlias.
+language-file: "zh_cn.yml"
+verbose-mode: false
+gui-size-mode: "dynamic"
+gui-tool: "CLOCK"
+
+gui-items:
+  - slot: 0
+    name: "&a出生点"
+    command: "spawn"
+    item: "BEACON"
+    run-as-player: true
+    cooldown: 3
+    lore:
+      - "&7回到服务器出生点"
+
+  - slot: 1
+    name: "&b返回上一个位置"
+    command: "back"
+    item: "ENDER_PEARL"
+    run-as-player: true
+    cooldown: 5
+    lore:
+      - "&7死亡或传送后返回"
+
+  - slot: 2
+    name: "&e我的家"
+    command: "homes"
+    item: "RED_BED"
+    run-as-player: true
+    cooldown: 2
+    lore:
+      - "&7查看并传送到已设置的家"
+
+  - slot: 3
+    name: "&6设置家"
+    command: "cmi msg %player% &e用法：/sethome 名字 &7在当前位置设置家；普通玩家最多 3 个家。"
+    item: "OAK_DOOR"
+    run-as-player: false
+    cooldown: 2
+    lore:
+      - "&7需要输入家的名字"
+      - "&f/sethome 家名"
+
+  - slot: 4
+    name: "&d公共地标"
+    command: "warps"
+    item: "NETHER_STAR"
+    run-as-player: true
+    cooldown: 2
+    lore:
+      - "&7查看 spawn / nether / end 等公共地点"
+
+  - slot: 6
+    name: "&a传送请求"
+    command: "cmi msg %player% &e用法：/tpa 玩家名 &7向在线玩家发送传送请求；/tpaccept 接受。"
+    item: "PLAYER_HEAD"
+    run-as-player: false
+    cooldown: 2
+    lore:
+      - "&7需要输入玩家名"
+      - "&f/tpa 玩家名"
+
+  - slot: 7
+    name: "&f私聊"
+    command: "cmi msg %player% &e用法：/msg 玩家名 内容 &7私聊；/reply 内容 回复上一条私聊。"
+    item: "WRITABLE_BOOK"
+    run-as-player: false
+    cooldown: 2
+    lore:
+      - "&7和其他玩家私聊"
+
+  - slot: 8
+    name: "&6联系管理"
+    command: "cmi msg %player% &e用法：/helpop 内容 &7遇到卡顿、丢物、熊服或问题时联系管理。"
+    item: "BELL"
+    run-as-player: false
+    cooldown: 2
+    lore:
+      - "&7向管理发送求助信息"
+
+  - slot: 10
+    name: "&d在线奖励"
+    command: "prewards"
+    item: "EXPERIENCE_BOTTLE"
+    run-as-player: true
+    cooldown: 2
+    lore:
+      - "&7领取可手动领取的在线奖励"
+      - "&7幻翼膜在这里领取"
+
+  - slot: 11
+    name: "&b飞行开关"
+    command: "flyc"
+    item: "FEATHER"
+    run-as-player: true
+    cooldown: 2
+    lore:
+      - "&7使用飞行充能开关飞行"
+
+  - slot: 12
+    name: "&e飞行能量"
+    command: "flightcharge"
+    item: "SUNFLOWER"
+    run-as-player: true
+    cooldown: 2
+    lore:
+      - "&7查看当前剩余 flight charge"
+      - "&7在线 30 分钟自动获得 10000 点"
+
+  - slot: 13
+    name: "&f飞行速度"
+    command: "cmi msg %player% &e飞行速度：/flyspeed 1-3 &7数字越高飞得越快，也会更快消耗能量。"
+    item: "SUGAR"
+    run-as-player: false
+    cooldown: 2
+    lore:
+      - "&7普通玩家最高 3 档"
+
+  - slot: 15
+    name: "&a皮肤菜单"
+    command: "skins"
+    item: "LEATHER_CHESTPLATE"
+    run-as-player: true
+    cooldown: 2
+    lore:
+      - "&7打开 SkinsRestorer 皮肤菜单"
+      - "&f/skin set 正版名 &7也可直接设置"
+
+  - slot: 16
+    name: "&f服务器规则"
+    command: "rules"
+    item: "BOOK"
+    run-as-player: true
+    cooldown: 2
+    lore:
+      - "&7查看服务器规则和常用入口"
+
+  - slot: 17
+    name: "&b取回菜单钟"
+    command: "commandgui tool"
+    item: "CLOCK"
+    run-as-player: true
+    cooldown: 10
+    lore:
+      - "&7丢了菜单钟时点这里重新领取"
+      - "&7也可以输入 &f/menutool"

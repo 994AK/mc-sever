@@ -1,0 +1,254 @@
+# YuHua服务器 player convenience menu.
+# /commandgui opens the GUI; /menu is provided by CMI CustomAlias.
+language-file: "zh_cn.yml"
+verbose-mode: false
+gui-size-mode: "dynamic"
+gui-tool: "CLOCK"
+
+gui-items:
+  - slot: 0
+    name: "&a出生点"
+    command: "spawn"
+    item: "BEACON"
+    run-as-player: true
+    cooldown: 3
+    lore:
+      - "&7回到服务器出生点"
+
+  - slot: 1
+    name: "&b返回上一个位置"
+    command: "back"
+    item: "ENDER_PEARL"
+    run-as-player: true
+    cooldown: 5
+    lore:
+      - "&7死亡或传送后返回"
+
+  - slot: 2
+    name: "&e我的家"
+    command: "homes"
+    item: "RED_BED"
+    run-as-player: true
+    cooldown: 2
+    lore:
+      - "&7查看并传送到已设置的家"
+
+  - slot: 3
+    name: "&6设置家"
+    command: "cmi msg %player% &e用法：/sethome 名字 &7在当前位置设置家；普通玩家最多 3 个家。"
+    item: "OAK_DOOR"
+    run-as-player: false
+    cooldown: 2
+    lore:
+      - "&7需要输入家的名字"
+      - "&f/sethome 家名"
+
+  - slot: 4
+    name: "&d公共地标"
+    command: "warps"
+    item: "NETHER_STAR"
+    run-as-player: true
+    cooldown: 2
+    lore:
+      - "&7查看 spawn / nether / end 等公共地点"
+
+  - slot: 6
+    name: "&a传送请求"
+    command: "cmi msg %player% &e用法：/tpa 玩家名 &7向在线玩家发送传送请求；/tpaccept 接受。"
+    item: "PLAYER_HEAD"
+    run-as-player: false
+    cooldown: 2
+    lore:
+      - "&7需要输入玩家名"
+      - "&f/tpa 玩家名"
+
+  - slot: 7
+    name: "&f私聊"
+    command: "cmi msg %player% &e用法：/msg 玩家名 内容 &7私聊；/reply 内容 回复上一条私聊。"
+    item: "WRITABLE_BOOK"
+    run-as-player: false
+    cooldown: 2
+    lore:
+      - "&7和其他玩家私聊"
+
+  - slot: 8
+    name: "&6联系管理"
+    command: "cmi msg %player% &e用法：/helpop 内容 &7遇到卡顿、丢物、熊服或问题时联系管理。"
+    item: "BELL"
+    run-as-player: false
+    cooldown: 2
+    lore:
+      - "&7向管理发送求助信息"
+
+  - slot: 5
+    name: "&d在线奖励"
+    command: "prewards"
+    item: "EXPERIENCE_BOTTLE"
+    run-as-player: true
+    cooldown: 2
+    lore:
+      - "&7领取可手动领取的在线奖励"
+      - "&7幻翼膜在这里领取"
+
+  - slot: 11
+    name: "&b飞行开关"
+    command: "flyc"
+    item: "FEATHER"
+    run-as-player: true
+    cooldown: 2
+    lore:
+      - "&7使用飞行充能开关飞行"
+
+  - slot: 12
+    name: "&e飞行能量"
+    command: "flightcharge"
+    item: "SUNFLOWER"
+    run-as-player: true
+    cooldown: 2
+    lore:
+      - "&7查看当前剩余 flight charge"
+      - "&7在线 30 分钟自动获得 10000 点"
+
+  - slot: 13
+    name: "&f飞行速度"
+    command: "cmi msg %player% &e飞行速度：/flyspeed 1-3 &7数字越高飞得越快，也会更快消耗能量。"
+    item: "SUGAR"
+    run-as-player: false
+    cooldown: 2
+    lore:
+      - "&7普通玩家最高 3 档"
+
+  - slot: 15
+    name: "&a皮肤菜单"
+    command: "skins"
+    item: "LEATHER_CHESTPLATE"
+    run-as-player: true
+    cooldown: 2
+    lore:
+      - "&7打开 SkinsRestorer 皮肤菜单"
+      - "&f/skin set 正版名 &7也可直接设置"
+
+  - slot: 16
+    name: "&f服务器规则"
+    command: "rules"
+    item: "BOOK"
+    run-as-player: true
+    cooldown: 2
+    lore:
+      - "&7查看服务器规则和常用入口"
+
+  - slot: 17
+    name: "&b取回菜单钟"
+    command: "commandgui tool"
+    item: "CLOCK"
+    run-as-player: true
+    cooldown: 10
+    lore:
+      - "&7丢了菜单钟时点这里重新领取"
+      - "&7也可以输入 &f/menutool"
+
+  - slot: 18
+    name: "&2领地怎么圈"
+    command: "cmi msg %player% &2普通圈地：&71. 用木锄左键点第一个角；2. 右键点第二个角；3. 输入 /res select vert；4. 输入 /res create 名字。"
+    item: "OAK_SIGN"
+    run-as-player: false
+    cooldown: 2
+    lore:
+      - "&7普通 Residence 圈地流程"
+      - "&7木锄点两个对角"
+      - "&7再创建领地"
+      - "&7不懂先看圈地规范"
+
+  - slot: 19
+    name: "&a领取木锄"
+    command: "cmi give %player% wooden_hoe 1"
+    item: "WOODEN_HOE"
+    run-as-player: false
+    cooldown: 30
+    lore:
+      - "&7用木锄选择两个对角"
+      - "&7左键第一个点"
+      - "&7右键第二个点"
+      - "&7不要当普通工具浪费"
+
+  - slot: 20
+    name: "&e快速选 48x48"
+    command: "res select 48 3 48"
+    item: "LIME_WOOL"
+    run-as-player: true
+    cooldown: 2
+    lore:
+      - "&7站在建筑中心点这里"
+      - "&7自动选择 48x48x3"
+      - "&7再输入 &f/res select vert"
+      - "&7最后 &f/res create 名字"
+
+  - slot: 21
+    name: "&b我的领地"
+    command: "res list"
+    item: "GRASS_BLOCK"
+    run-as-player: true
+    cooldown: 2
+    lore:
+      - "&7查看自己已经创建的领地"
+      - "&7免费创建，最多 10 个"
+      - "&7不知道名字时先点这里"
+
+  - slot: 22
+    name: "&6查看限制"
+    command: "res limits"
+    item: "PAPER"
+    run-as-player: true
+    cooldown: 2
+    lore:
+      - "&7查看当前还能圈多少地"
+      - "&7普通玩家最多 10 个"
+      - "&7单个领地最大 128x128"
+
+  - slot: 23
+    name: "&d给朋友权限"
+    command: "cmi msg %player% &d给朋友权限：&7建筑 /res pset 领地名 玩家名 build true；箱子 /res pset 领地名 玩家名 container true；取消 /res pset 领地名 玩家名 removeall"
+    item: "PLAYER_HEAD"
+    run-as-player: false
+    cooldown: 2
+    lore:
+      - "&7只给信任的人权限"
+      - "&fbuild true &7允许建造"
+      - "&fcontainer true &7允许开箱"
+      - "&fremoveall &7取消全部权限"
+
+  - slot: 24
+    name: "&c删除或改小"
+    command: "cmi msg %player% &c删除领地：&7/res remove 名字 后输入 /res confirm。圈大了建议重新选区再建，不要长期占公共区域。"
+    item: "BARRIER"
+    run-as-player: false
+    cooldown: 2
+    lore:
+      - "&7圈错了不要放着不管"
+      - "&f/res remove 名字"
+      - "&f/res confirm"
+      - "&7需要时重新按建筑范围圈"
+
+  - slot: 25
+    name: "&e圈地命令"
+    command: "cmi msg %player% &e圈地命令：&7木锄点两个对角后输入 /res select vert，再 /res create 名字。站中心可用 /res select 48 3 48 快速选区。"
+    item: "WOODEN_HOE"
+    run-as-player: false
+    cooldown: 2
+    lore:
+      - "&7木锄点两个对角"
+      - "&7或站中心快速选择"
+      - "&f/res select vert"
+      - "&f/res create 名字"
+
+  - slot: 26
+    name: "&e圈地规范"
+    command: "cmi msg %player% &e圈地规范：&7只圈自己的建筑、机器、仓库和预留施工边；不要圈公共道路、村庄、地狱门、别人家或大片未开发空地。不会处理用 /helpop 内容。"
+    item: "LECTERN"
+    run-as-player: false
+    cooldown: 2
+    lore:
+      - "&7只圈自己实际使用区域"
+      - "&7边界离建筑外 3-8 格即可"
+      - "&7不要长条、大片空地占位"
+      - "&f/helpop 内容"

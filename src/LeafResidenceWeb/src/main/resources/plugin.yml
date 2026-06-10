@@ -1,0 +1,17 @@
+name: LeafResidenceWeb
+version: 1.0.0
+main: net.leafmc.residenceweb.LeafResidenceWebPlugin
+api-version: '1.21'
+depend:
+  - Residence
+commands:
+  resweb:
+    description: Open and confirm web-based Residence selections.
+    usage: /resweb [link|confirm|cancel|reload]
+permissions:
+  leafresidenceweb.use:
+    description: Allows players to use the web Residence planner.
+    default: true
+  leafresidenceweb.admin:
+    description: Allows admins to reload LeafResidenceWeb.
+    default: op

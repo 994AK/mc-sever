@@ -1,0 +1,18 @@
+questData:
+  daily-project-checkin:
+    passwords-said:
+    - false
+currentQuests:
+- daily-project-checkin
+currentStages:
+- 0
+quest-points: 0
+completedRedoableQuests:
+- weekly-project-board-support
+- weekly-redstone-support
+- daily-project-checkin
+completedQuestTimes:
+- 1781022745582
+- 1781022745582
+- 1781022745582
+lastKnownName: 66a

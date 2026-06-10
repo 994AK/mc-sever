@@ -26,9 +26,9 @@ firstJoinServer:
   Commands:
   - delay! 3
   - asConsole! commandgui give [playerName]
-  - msg! [playerName] &a欢迎来到 LeafMC！&7已给你菜单钟，右键可打开快捷菜单。
+  - msg! [playerName] &a欢迎来到 YuHua服务器！&7已给你菜单钟，右键可打开快捷菜单。
   - msg! [playerName] &7也可以输入 &f/menu &7打开菜单；菜单钟丢失可输入 &f/menutool&7。
-  - msg! [playerName] &7飞行：&f/flyc &7开关，&f/flightcharge &7查看能量；奖励：&f/prewards&7。
+  - msg! [playerName] &7本周项目：&f/projects&7；每日任务：&f/daily&7；公会功能暂时下架。
 joinServer:
   Enabled: false
   Commands:

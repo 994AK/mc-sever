@@ -2,7 +2,7 @@
 
 ## Recommendation
 
-Use CommandGUI 3.3.0 for the first LeafMC player menu.
+Use CommandGUI 3.3.0 for the first YuHua服务器 player menu.
 
 Reason: this server only needs a safe, lightweight command launcher for `/menu`
 and a clock shortcut. CommandGUI directly supports Paper/Leaf 1.21-1.21.11,
@@ -11,10 +11,10 @@ PlaceholderAPI or a larger menu framework.
 
 ## Options Checked
 
-| Plugin | Current relevant version checked | Fit for LeafMC 1.21.11 | Notes |
+| Plugin | Current relevant version checked | Fit for YuHua服务器 1.21.11 | Notes |
 | --- | --- | --- | --- |
 | CommandGUI | 3.3.0 | Best first choice | Official Hangar page lists Paper 1.21-1.21.11 support. Provides `/commandgui`, `/commandgui tool`, configurable items, player/console execution, cooldowns, and separate permissions for use, tool, give, reload, and bypass. |
-| CommandPanels | 4.1.6 for 1.21.11 | Best upgrade path for complex menus | More powerful GUI framework with inventory/dialog/Floodgate GUI support and an online editor. Good if LeafMC later needs shops, quests, animations, conditions, or Bedrock-specific menus. It is more than needed for the current simple player utility menu. |
+| CommandPanels | 4.1.6 for 1.21.11 | Best upgrade path for complex menus | More powerful GUI framework with inventory/dialog/Floodgate GUI support and an online editor. Good if YuHua服务器 later needs shops, quests, animations, conditions, or Bedrock-specific menus. It is more than needed for the current simple player utility menu. |
 | DeluxeMenus | 1.14.1 | Mature, but not selected | Very mature and widely used, but the checked Hangar listing only advertises Paper 1.16-1.21.8. It also requires PlaceholderAPI. For a 1.21.11 server, it adds more dependency and version risk than CommandGUI. |
 
 ## Sources

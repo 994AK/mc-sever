@@ -1,0 +1,23 @@
+web:
+  enabled: true
+  bind-address: "0.0.0.0"
+  port: 8124
+  # 上线后改成玩家能访问的地址，例如 http://你的服务器IP:8124
+  public-url: "http://127.0.0.1:8124"
+  session-hours: 24
+
+integrations:
+  # auto 会按玩家打开网页的主机名自动指向同一台服务器的 8100 端口。
+  # 如果 BlueMap 放在反代域名下，也可以改成完整地址，例如 https://map.example.com
+  bluemap-url: "auto"
+
+residence:
+  max-residences: 10
+  max-xz-size: 128
+  recommended-size: 48
+  min-size: 3
+  # Minecraft 1.21 默认 -64..319 正好是 384 格高度，匹配当前普通玩家 MaxUpDown: 384。
+  min-y: -64
+  max-y: 319
+  # 防止玩家在网页上隔很远乱圈；0 表示不限制距离。
+  max-submit-distance: 192

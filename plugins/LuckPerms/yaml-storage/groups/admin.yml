@@ -1,7 +1,6 @@
 name: admin
 permissions:
 - coreprotect.*
-- griefprevention.admin.*
 - '*'
 - cmi.chatgroup.3
 parents:

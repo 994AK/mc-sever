@@ -1,0 +1,10 @@
+phantom_membrane_30m:
+  DisplayName: "&d幻翼膜补给"
+  AutoClaim: false
+  Description:
+  - "&7每在线 30 分钟可领取 20 个幻翼膜"
+  - "&7输入 /prewards 打开奖励列表领取"
+  PayEvery: 1800
+  Commands:
+  - asConsole! minecraft:give [playerName] minecraft:phantom_membrane 20
+  - "msg! [playerName] &a你已领取 20 个幻翼膜。"

@@ -1,10 +1,12 @@
 #NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
-#Fri Jun 05 18:36:40 CST 2026
+#Mon Jun 08 15:42:48 CST 2026
 annotations-22.0.0.jar>repo1=
 annotations-22.0.0.jar>repo10=
+annotations-22.0.0.jar>repo3=
 annotations-22.0.0.jar>repo5=
 annotations-22.0.0.jar>repo8=
 annotations-22.0.0.pom>repo1=
 annotations-22.0.0.pom>repo10=
+annotations-22.0.0.pom>repo3=
 annotations-22.0.0.pom>repo5=
 annotations-22.0.0.pom>repo8=

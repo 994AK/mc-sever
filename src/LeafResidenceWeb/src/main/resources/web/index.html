@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LeafMC 领地绑定</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #f5f1e8;
+      color: #20241f;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      padding: 16px;
+    }
+
+    main {
+      width: min(420px, 100%);
+      border: 1px solid #d6c9b3;
+      border-radius: 8px;
+      background: #fffaf0;
+      box-shadow: 0 18px 50px rgba(48, 39, 24, 0.14);
+      padding: 18px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 22px;
+      line-height: 1.25;
+    }
+
+    p {
+      margin: 0 0 14px;
+      color: #6d705f;
+      line-height: 1.55;
+    }
+
+    form,
+    .stack {
+      display: grid;
+      gap: 10px;
+    }
+
+    input {
+      width: 100%;
+      min-height: 40px;
+      border: 1px solid #d6c9b3;
+      border-radius: 6px;
+      background: #fffdf7;
+      color: #20241f;
+      padding: 0 10px;
+      font: inherit;
+    }
+
+    button,
+    a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 40px;
+      border: 1px solid #1f5d39;
+      border-radius: 6px;
+      background: #2f7d4a;
+      color: #fff;
+      padding: 0 12px;
+      font: inherit;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    a.secondary {
+      border-color: #d6c9b3;
+      background: #fffaf0;
+      color: #20241f;
+    }
+
+    .message {
+      border: 1px solid #d6c9b3;
+      border-radius: 6px;
+      background: #fffdf7;
+      color: #6d705f;
+      padding: 10px;
+      line-height: 1.5;
+      font-size: 13px;
+    }
+
+    .message.bad {
+      border-color: rgba(180, 67, 53, 0.5);
+      background: rgba(180, 67, 53, 0.08);
+      color: #8d3026;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>LeafMC 领地</h1>
+    <p>游戏内输入 <strong>/resweb link</strong>，绑定后会跳到真实地图。</p>
+    <form id="form">
+      <input id="code" inputmode="numeric" autocomplete="one-time-code" maxlength="12" placeholder="绑定码">
+      <button type="submit">绑定并打开地图</button>
+      <a class="secondary" id="mapLink" href="#">直接打开地图</a>
+      <div class="message" id="message">在 BlueMap 上点两个对角创建领地。</div>
+    </form>
+  </main>
+
+  <script>
+    const tokenKey = "leaf_resweb_token";
+    const message = document.getElementById("message");
+    const mapLink = document.getElementById("mapLink");
+    const apiBase = window.location.origin;
+    const mapBase = `${window.location.protocol}//${window.location.hostname}:8100/`;
+
+    function mapUrl(token = localStorage.getItem(tokenKey) || "") {
+      const url = new URL(mapBase);
+      if (token) url.searchParams.set("reswebToken", token);
+      return url.toString();
+    }
+
+    function params(data) {
+      return new URLSearchParams(data).toString();
+    }
+
+    async function request(path, options = {}) {
+      const response = await fetch(`${apiBase}${path}`, options);
+      const payload = await response.json();
+      if (!response.ok || payload.ok === false) throw new Error(payload.error || "请求失败");
+      return payload;
+    }
+
+    async function bind(code) {
+      const payload = await request("/api/link", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: params({ code })
+      });
+      localStorage.setItem(tokenKey, payload.token);
+      window.location.href = mapUrl(payload.token);
+    }
+
+    document.getElementById("form").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      try {
+        message.className = "message";
+        message.textContent = "正在绑定...";
+        await bind(document.getElementById("code").value.trim());
+      } catch (error) {
+        message.className = "message bad";
+        message.textContent = error.message;
+      }
+    });
+
+    mapLink.href = mapUrl();
+  </script>
+</body>
+</html>

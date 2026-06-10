@@ -1,0 +1,18 @@
+# Veuillez NE PAS utiliser de codes couleur sauf indication contraire.
+# %player% sera remplacé par le nom du joueur. %name% sera remplacé par l'objet utilisé.
+# %time% sera remplacé par le temps de recharge restant.
+
+messages:
+  no_permission: "Vous n'avez pas la permission d'utiliser cette commande."
+  only_players: "[CommandGUI] Seuls les joueurs peuvent utiliser cette commande !"
+  reload_success: "Configuration de CommandGUI rechargée !"
+  tool_given: "Vous avez donné un outil CommandGUI à %player% !"
+  tool_received: "Vous avez reçu un outil CommandGUI"
+  player_not_found: "Joueur %player% introuvable !"
+  invalid_usage: "Utilisation invalide ! Usage : /cg give <player>"
+  gui_title: "&aCommandGUI" # Couleur modifiable
+  tool_name: "&aOutil CommandGUI" # Couleur modifiable
+  tool_description: "&7Clic droit pour ouvrir le Command GUI." # Couleur modifiable
+  cooldown_active: "Vous devez attendre %time% secondes avant de réutiliser ceci."
+  verbose_message: "[CommandGUI] %player% a utilisé %name%"
+  invalid_subcommand: "Sous-commande invalide. Utilisez /commandgui [tool|give <player>|reload]."

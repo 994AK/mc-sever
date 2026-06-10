@@ -1,0 +1,24 @@
+<AutoPage>
+&8&m--------------------------------
+&2领地保护 &8| &7模块 3/7
+&7绿色入口只服务普通玩家自助保护，不包含 Residence 管理权限。
+&r
+&f基础流程：
+&71. <T>&a[领取木锄]</T><H>&7由服务器发 1 把 Residence 选区木锄</H><C>menuhoe</C> &7左键第一个角，右键第二个角。
+&72. <T>&7[/res select vert]</T><H>&7点击后填入命令，木锄选完两个角后发送</H><SC>/res select vert</SC> &7上下扩展选区。
+&73. <T>&7[/res create 名字]</T><H>&7点击后填入命令，改成自己的领地名再发送</H><SC>/res create 名字</SC> &7创建领地。
+&r
+&f快捷操作：
+<T>&2[快速选 48x48]</T><H>&7站在建筑中心，执行 /res select 48 3 48</H><C>res select 48 3 48</C> &7适合第一块小型基地。
+<T>&2[我的领地]</T><H>&7执行 /res list</H><C>res list</C> &7查看自己已有领地。
+<T>&2[查看限制]</T><H>&7执行 /res limits</H><C>res limits</C> &7查看还能圈多少地。
+&r
+&f授权和删除：
+<T>&7[/res pset 领地名 玩家名 build true]</T><H>&7给朋友建筑权限，先确认对方可信</H><SC>/res pset 领地名 玩家名 build true</SC>
+<T>&7[/res pset 领地名 玩家名 container true]</T><H>&7给朋友开箱权限，谨慎使用</H><SC>/res pset 领地名 玩家名 container true</SC>
+<T>&c[/res remove 名字]</T><H>&7删除领地，随后通常需要 /res confirm</H><SC>/res remove 名字</SC> &8→ <T>&c[/res confirm]</T><H>&7确认删除</H><SC>/res confirm</SC>
+&r
+&7规范：只圈自己的建筑、机器、仓库和施工边；不要圈公共道路、村庄、地狱门、别人家或大片未开发空地。
+&r
+<T>&7[上一页：家园与地标]</T><H>&7打开家园模块</H><C>menuhome</C> &8| <T>&a[回主菜单]</T><H>&7重新打开 /menu</H><C>menu</C> &8| <T>&7[下一页：项目日活]</T><H>&7打开项目模块</H><C>menuprojects</C>
+&8&m--------------------------------

@@ -1,0 +1,950 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>YuHua服务器 领地规划器</title>
+  <style>
+    :root {
+      --bg: #f5f1e8;
+      --panel: #fffaf0;
+      --panel-strong: #f0e2c8;
+      --ink: #1f2a24;
+      --muted: #6b6254;
+      --line: #d2c5aa;
+      --grass: #2f7d4a;
+      --grass-dark: #1f5d39;
+      --water: #2f6f91;
+      --amber: #b46a22;
+      --red: #b63f32;
+      --shadow: 0 18px 42px rgba(49, 38, 24, 0.14);
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background:
+        linear-gradient(135deg, rgba(47, 125, 74, 0.08), transparent 34%),
+        linear-gradient(315deg, rgba(47, 111, 145, 0.08), transparent 28%),
+        var(--bg);
+      color: var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #ffffff;
+      color: var(--ink);
+      cursor: pointer;
+      min-height: 38px;
+      transition: background 140ms ease, border-color 140ms ease, transform 140ms ease;
+    }
+
+    button:hover {
+      background: #f7ecd8;
+      border-color: #bba887;
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    button:focus-visible,
+    input:focus-visible {
+      outline: 3px solid rgba(47, 111, 145, 0.28);
+      outline-offset: 2px;
+    }
+
+    .shell {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 22px;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: end;
+      padding: 6px 0 18px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(28px, 4vw, 46px);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin: 10px 0 0;
+      color: var(--muted);
+      max-width: 760px;
+      line-height: 1.65;
+    }
+
+    .limit-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: rgba(255, 250, 240, 0.76);
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: minmax(520px, 1fr) 420px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .workspace,
+    .inspector {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 250, 240, 0.92);
+      box-shadow: var(--shadow);
+    }
+
+    .workspace {
+      overflow: hidden;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px;
+      border-bottom: 1px solid var(--line);
+      background: var(--panel);
+    }
+
+    .tool-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tool-button {
+      padding: 0 12px;
+    }
+
+    .tool-button.primary {
+      background: var(--grass);
+      border-color: var(--grass);
+      color: #ffffff;
+    }
+
+    .tool-button.primary:hover {
+      background: var(--grass-dark);
+    }
+
+    .canvas-wrap {
+      position: relative;
+      min-height: 620px;
+      background: #e7dcc4;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 620px;
+      cursor: crosshair;
+      touch-action: none;
+    }
+
+    .canvas-hint {
+      position: absolute;
+      left: 14px;
+      bottom: 14px;
+      max-width: min(520px, calc(100% - 28px));
+      padding: 10px 12px;
+      border: 1px solid rgba(31, 42, 36, 0.12);
+      border-radius: 6px;
+      background: rgba(255, 250, 240, 0.9);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+      backdrop-filter: blur(6px);
+    }
+
+    .inspector {
+      padding: 16px;
+    }
+
+    .section {
+      padding: 16px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .section:first-child {
+      padding-top: 0;
+      border-top: 0;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.2;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .grid-two {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #ffffff;
+      color: var(--ink);
+      padding: 9px 10px;
+      min-height: 38px;
+    }
+
+    input[type="range"] {
+      padding: 0;
+      accent-color: var(--grass);
+    }
+
+    .presets {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fffdf8;
+      padding: 10px;
+    }
+
+    .stat span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+
+    .stat strong {
+      font-size: 18px;
+      line-height: 1.2;
+    }
+
+    .status {
+      display: grid;
+      gap: 8px;
+    }
+
+    .status-line {
+      border-radius: 6px;
+      padding: 9px 10px;
+      line-height: 1.5;
+      font-size: 13px;
+      background: rgba(47, 125, 74, 0.1);
+      color: var(--grass-dark);
+    }
+
+    .status-line.warn {
+      background: rgba(180, 106, 34, 0.13);
+      color: #7a4818;
+    }
+
+    .status-line.danger {
+      background: rgba(182, 63, 50, 0.13);
+      color: var(--red);
+    }
+
+    .command-box {
+      display: grid;
+      gap: 10px;
+    }
+
+    .command {
+      border: 1px solid #b5a27f;
+      border-radius: 6px;
+      background: #201f1a;
+      color: #f7ecd8;
+      padding: 12px;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 13px;
+      line-height: 1.55;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .copy-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .copy-row button {
+      background: var(--water);
+      border-color: var(--water);
+      color: #ffffff;
+    }
+
+    .copy-row button:hover {
+      background: #245878;
+    }
+
+    .rules {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: 13px;
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 20;
+      transform: translateY(18px);
+      opacity: 0;
+      pointer-events: none;
+      border-radius: 6px;
+      background: #1f2a24;
+      color: #ffffff;
+      padding: 10px 12px;
+      transition: opacity 180ms ease, transform 180ms ease;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    @media (max-width: 1020px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+
+      .canvas-wrap {
+        min-height: 560px;
+      }
+
+      canvas {
+        height: 560px;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .shell {
+        padding: 14px;
+      }
+
+      header {
+        grid-template-columns: 1fr;
+      }
+
+      .limit-pill {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .canvas-wrap {
+        min-height: 430px;
+      }
+
+      canvas {
+        height: 430px;
+      }
+
+      .grid-two,
+      .stat-grid,
+      .copy-row {
+        grid-template-columns: 1fr;
+      }
+
+      .presets {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div>
+        <h1>YuHua服务器 领地规划器</h1>
+        <p class="subtitle">在网页上画出 X/Z 范围，确认尺寸和中心点，再把命令复制到游戏里执行。这个工具不连接服务器，只帮玩家在创建前看清楚自己要圈多大。</p>
+      </div>
+      <div class="limit-pill">默认限制：最多 10 个领地，单块最大 128 x 128</div>
+    </header>
+
+    <main>
+      <section class="workspace" aria-label="领地画布">
+        <div class="toolbar">
+          <div class="tool-group" aria-label="画布操作">
+            <button class="tool-button primary" id="drawMode" type="button">拖拽画范围</button>
+            <button class="tool-button" id="centerMode" type="button">拖动中心点</button>
+            <button class="tool-button" id="fitView" type="button">居中显示</button>
+          </div>
+          <div class="tool-group" aria-label="调整尺寸">
+            <button class="tool-button" data-expand="4" type="button">四边 +4</button>
+            <button class="tool-button" data-expand="-4" type="button">四边 -4</button>
+            <button class="tool-button" id="squareButton" type="button">变成正方形</button>
+          </div>
+        </div>
+        <div class="canvas-wrap">
+          <canvas id="mapCanvas" aria-label="拖拽选择 XZ 领地范围"></canvas>
+          <div class="canvas-hint">拖拽画一个矩形；拖动绿色中心点可移动范围；拖动四角手柄可改大小。网页坐标只用于规划，游戏里仍需要站到中心点附近执行生成的 Residence 命令。</div>
+        </div>
+      </section>
+
+      <aside class="inspector" aria-label="领地参数">
+        <section class="section">
+          <div class="section-title">
+            <h2>领地参数</h2>
+            <span class="hint">单位：方块</span>
+          </div>
+          <div class="grid-two">
+            <label>
+              领地名
+              <input id="resName" value="home" maxlength="32" autocomplete="off">
+            </label>
+            <label>
+              初始高度
+              <input id="heightInput" type="number" min="3" max="384" step="1" value="3">
+            </label>
+            <label>
+              中心 X
+              <input id="centerXInput" type="number" step="1" value="0">
+            </label>
+            <label>
+              中心 Z
+              <input id="centerZInput" type="number" step="1" value="0">
+            </label>
+            <label>
+              X 宽度
+              <input id="widthInput" type="number" min="3" max="128" step="1" value="48">
+            </label>
+            <label>
+              Z 长度
+              <input id="depthInput" type="number" min="3" max="128" step="1" value="48">
+            </label>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-title">
+            <h2>常用尺寸</h2>
+          </div>
+          <div class="presets">
+            <button type="button" data-size="32">32 小屋</button>
+            <button type="button" data-size="48">48 推荐</button>
+            <button type="button" data-size="64">64 住宅</button>
+            <button type="button" data-size="96">96 大型</button>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-title">
+            <h2>范围摘要</h2>
+          </div>
+          <div class="stat-grid">
+            <div class="stat"><span>西北角</span><strong id="minCorner">-24, -24</strong></div>
+            <div class="stat"><span>东南角</span><strong id="maxCorner">24, 24</strong></div>
+            <div class="stat"><span>地面面积</span><strong id="areaStat">2,304</strong></div>
+            <div class="stat"><span>中心点</span><strong id="centerStat">0, 0</strong></div>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-title">
+            <h2>规范检查</h2>
+          </div>
+          <div class="status" id="statusList" aria-live="polite"></div>
+        </section>
+
+        <section class="section">
+          <div class="section-title">
+            <h2>游戏内命令</h2>
+          </div>
+          <div class="command-box">
+            <div class="command" id="selectCommand">/res select 48 3 48</div>
+            <div class="command">/res select vert</div>
+            <div class="command" id="createCommand">/res create home</div>
+            <div class="copy-row">
+              <button type="button" id="copySelect">复制选区命令</button>
+              <button type="button" id="copyCreate">复制创建命令</button>
+            </div>
+          </div>
+          <p class="hint">进游戏后先站到中心点附近，执行选区命令，再执行 /res select vert 拉满高度；看 Residence 的边界效果满意后，再执行创建命令。</p>
+        </section>
+
+        <section class="section">
+          <div class="section-title">
+            <h2>圈地规则</h2>
+          </div>
+          <ul class="rules">
+            <li>只圈自己的建筑、机器、仓库和明确施工边。</li>
+            <li>边界离建筑外 3-8 格通常足够。</li>
+            <li>不要圈公共道路、公共地狱门、村庄、别人家或大片空地。</li>
+            <li>超过 96x96 前先确认真的需要。</li>
+          </ul>
+        </section>
+      </aside>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">已复制</div>
+
+  <script>
+    const state = {
+      centerX: 0,
+      centerZ: 0,
+      width: 48,
+      depth: 48,
+      height: 3,
+      scale: 6,
+      offsetX: 0,
+      offsetZ: 0,
+      mode: "draw",
+      drag: null
+    };
+
+    const maxSize = 128;
+    const canvas = document.getElementById("mapCanvas");
+    const ctx = canvas.getContext("2d");
+    const inputs = {
+      name: document.getElementById("resName"),
+      height: document.getElementById("heightInput"),
+      centerX: document.getElementById("centerXInput"),
+      centerZ: document.getElementById("centerZInput"),
+      width: document.getElementById("widthInput"),
+      depth: document.getElementById("depthInput")
+    };
+
+    function clamp(value, min, max) {
+      return Math.min(max, Math.max(min, value));
+    }
+
+    function roundBlock(value) {
+      return Math.round(Number(value) || 0);
+    }
+
+    function bounds() {
+      const halfW = state.width / 2;
+      const halfD = state.depth / 2;
+      return {
+        minX: Math.round(state.centerX - halfW),
+        maxX: Math.round(state.centerX + halfW),
+        minZ: Math.round(state.centerZ - halfD),
+        maxZ: Math.round(state.centerZ + halfD)
+      };
+    }
+
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.round(rect.width * dpr);
+      canvas.height = Math.round(rect.height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      fitToView(false);
+      draw();
+    }
+
+    function worldToScreen(x, z) {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: rect.width / 2 + (x - state.offsetX) * state.scale,
+        y: rect.height / 2 + (z - state.offsetZ) * state.scale
+      };
+    }
+
+    function screenToWorld(x, y) {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: state.offsetX + (x - rect.width / 2) / state.scale,
+        z: state.offsetZ + (y - rect.height / 2) / state.scale
+      };
+    }
+
+    function fitToView(resetCenter = true) {
+      const rect = canvas.getBoundingClientRect();
+      const biggest = Math.max(state.width, state.depth, 64);
+      state.scale = clamp(Math.min(rect.width, rect.height) / (biggest + 42), 2.2, 10);
+      if (resetCenter) {
+        state.offsetX = state.centerX;
+        state.offsetZ = state.centerZ;
+      }
+    }
+
+    function drawGrid(rect) {
+      ctx.fillStyle = "#e7dcc4";
+      ctx.fillRect(0, 0, rect.width, rect.height);
+
+      const minor = 8;
+      const major = 32;
+      const topLeft = screenToWorld(0, 0);
+      const bottomRight = screenToWorld(rect.width, rect.height);
+      const minX = Math.floor(topLeft.x / minor) * minor;
+      const maxX = Math.ceil(bottomRight.x / minor) * minor;
+      const minZ = Math.floor(topLeft.z / minor) * minor;
+      const maxZ = Math.ceil(bottomRight.z / minor) * minor;
+
+      for (let x = minX; x <= maxX; x += minor) {
+        const p = worldToScreen(x, 0);
+        ctx.strokeStyle = x % major === 0 ? "rgba(91, 77, 53, 0.22)" : "rgba(91, 77, 53, 0.1)";
+        ctx.lineWidth = x % major === 0 ? 1.2 : 1;
+        ctx.beginPath();
+        ctx.moveTo(p.x, 0);
+        ctx.lineTo(p.x, rect.height);
+        ctx.stroke();
+      }
+
+      for (let z = minZ; z <= maxZ; z += minor) {
+        const p = worldToScreen(0, z);
+        ctx.strokeStyle = z % major === 0 ? "rgba(91, 77, 53, 0.22)" : "rgba(91, 77, 53, 0.1)";
+        ctx.lineWidth = z % major === 0 ? 1.2 : 1;
+        ctx.beginPath();
+        ctx.moveTo(0, p.y);
+        ctx.lineTo(rect.width, p.y);
+        ctx.stroke();
+      }
+
+      const axisX = worldToScreen(0, 0);
+      ctx.strokeStyle = "rgba(31, 42, 36, 0.28)";
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(axisX.x, 0);
+      ctx.lineTo(axisX.x, rect.height);
+      ctx.moveTo(0, axisX.y);
+      ctx.lineTo(rect.width, axisX.y);
+      ctx.stroke();
+    }
+
+    function drawSelection() {
+      const b = bounds();
+      const p1 = worldToScreen(b.minX, b.minZ);
+      const p2 = worldToScreen(b.maxX, b.maxZ);
+      const x = Math.min(p1.x, p2.x);
+      const y = Math.min(p1.y, p2.y);
+      const w = Math.abs(p2.x - p1.x);
+      const h = Math.abs(p2.y - p1.y);
+
+      ctx.fillStyle = "rgba(47, 125, 74, 0.18)";
+      ctx.strokeStyle = state.width > maxSize || state.depth > maxSize ? "#b63f32" : "#2f7d4a";
+      ctx.lineWidth = 3;
+      ctx.fillRect(x, y, w, h);
+      ctx.strokeRect(x, y, w, h);
+
+      ctx.fillStyle = "rgba(47, 111, 145, 0.16)";
+      const center = worldToScreen(state.centerX, state.centerZ);
+      ctx.beginPath();
+      ctx.arc(center.x, center.y, 8, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "#2f6f91";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      const handles = handlePoints();
+      ctx.fillStyle = "#fffaf0";
+      ctx.strokeStyle = "#1f5d39";
+      ctx.lineWidth = 2;
+      handles.forEach((point) => {
+        ctx.beginPath();
+        ctx.rect(point.x - 5, point.y - 5, 10, 10);
+        ctx.fill();
+        ctx.stroke();
+      });
+
+      ctx.fillStyle = "#1f2a24";
+      ctx.font = "12px ui-sans-serif, system-ui";
+      ctx.fillText(`${state.width} x ${state.depth}`, x + 10, y + 20);
+    }
+
+    function handlePoints() {
+      const b = bounds();
+      const corners = [
+        { name: "nw", x: b.minX, z: b.minZ },
+        { name: "ne", x: b.maxX, z: b.minZ },
+        { name: "sw", x: b.minX, z: b.maxZ },
+        { name: "se", x: b.maxX, z: b.maxZ }
+      ];
+      return corners.map((corner) => ({ ...corner, ...worldToScreen(corner.x, corner.z) }));
+    }
+
+    function draw() {
+      const rect = canvas.getBoundingClientRect();
+      drawGrid(rect);
+      drawSelection();
+    }
+
+    function sanitizeName(value) {
+      return (value || "home").replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 32) || "home";
+    }
+
+    function syncInputs() {
+      inputs.centerX.value = Math.round(state.centerX);
+      inputs.centerZ.value = Math.round(state.centerZ);
+      inputs.width.value = state.width;
+      inputs.depth.value = state.depth;
+      inputs.height.value = state.height;
+
+      const b = bounds();
+      const area = state.width * state.depth;
+      const name = sanitizeName(inputs.name.value);
+      document.getElementById("minCorner").textContent = `${b.minX}, ${b.minZ}`;
+      document.getElementById("maxCorner").textContent = `${b.maxX}, ${b.maxZ}`;
+      document.getElementById("areaStat").textContent = area.toLocaleString("zh-CN");
+      document.getElementById("centerStat").textContent = `${Math.round(state.centerX)}, ${Math.round(state.centerZ)}`;
+      document.getElementById("selectCommand").textContent = `/res select ${state.width} ${state.height} ${state.depth}`;
+      document.getElementById("createCommand").textContent = `/res create ${name}`;
+      renderStatus();
+    }
+
+    function renderStatus() {
+      const status = document.getElementById("statusList");
+      const lines = [];
+      const area = state.width * state.depth;
+      if (state.width > maxSize || state.depth > maxSize) {
+        lines.push(["danger", "超过当前默认组单边 128 格上限，普通玩家创建会失败。"]);
+      } else {
+        lines.push(["ok", "尺寸在普通玩家默认限制内。"]);
+      }
+      if (state.width > 96 || state.depth > 96) {
+        lines.push(["warn", "范围已经偏大，适合大型建筑或机器，创建前确认没有占公共区域。"]);
+      }
+      if (area < 256) {
+        lines.push(["warn", "范围很小，箱子、动物或机器可能很快放不下。"]);
+      }
+      if (state.width !== state.depth) {
+        lines.push(["ok", "非正方形可以用，但避免做成长条阻断道路或矿道。"]);
+      }
+      status.innerHTML = lines.map(([type, text]) => `<div class="status-line ${type === "ok" ? "" : type}">${text}</div>`).join("");
+    }
+
+    function updateFromInputs() {
+      state.centerX = roundBlock(inputs.centerX.value);
+      state.centerZ = roundBlock(inputs.centerZ.value);
+      state.width = clamp(roundBlock(inputs.width.value), 3, 256);
+      state.depth = clamp(roundBlock(inputs.depth.value), 3, 256);
+      state.height = clamp(roundBlock(inputs.height.value), 3, 384);
+      syncInputs();
+      draw();
+    }
+
+    function applySize(width, depth = width) {
+      state.width = width;
+      state.depth = depth;
+      fitToView();
+      syncInputs();
+      draw();
+    }
+
+    function pointerPosition(event) {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: event.clientX - rect.left,
+        y: event.clientY - rect.top
+      };
+    }
+
+    function pickHandle(pos) {
+      const center = worldToScreen(state.centerX, state.centerZ);
+      if (Math.hypot(pos.x - center.x, pos.y - center.y) <= 14) {
+        return { type: "center" };
+      }
+      return handlePoints().find((point) => Math.abs(pos.x - point.x) <= 12 && Math.abs(pos.y - point.y) <= 12) || null;
+    }
+
+    function setBoundsFromCorners(a, b) {
+      const minX = Math.min(a.x, b.x);
+      const maxX = Math.max(a.x, b.x);
+      const minZ = Math.min(a.z, b.z);
+      const maxZ = Math.max(a.z, b.z);
+      state.centerX = Math.round((minX + maxX) / 2);
+      state.centerZ = Math.round((minZ + maxZ) / 2);
+      state.width = clamp(Math.round(maxX - minX), 3, 256);
+      state.depth = clamp(Math.round(maxZ - minZ), 3, 256);
+    }
+
+    canvas.addEventListener("pointerdown", (event) => {
+      canvas.setPointerCapture(event.pointerId);
+      const pos = pointerPosition(event);
+      const world = screenToWorld(pos.x, pos.y);
+      const picked = pickHandle(pos);
+      if (picked) {
+        state.drag = { type: picked.type || "corner", handle: picked.name, start: world, original: { ...state } };
+      } else if (state.mode === "center") {
+        state.drag = { type: "center", start: world, original: { ...state } };
+      } else {
+        state.drag = { type: "draw", start: world };
+        setBoundsFromCorners(world, world);
+      }
+      syncInputs();
+      draw();
+    });
+
+    canvas.addEventListener("pointermove", (event) => {
+      if (!state.drag) return;
+      const pos = pointerPosition(event);
+      const world = screenToWorld(pos.x, pos.y);
+
+      if (state.drag.type === "center") {
+        state.centerX = Math.round(state.drag.original.centerX + (world.x - state.drag.start.x));
+        state.centerZ = Math.round(state.drag.original.centerZ + (world.z - state.drag.start.z));
+      }
+
+      if (state.drag.type === "draw") {
+        setBoundsFromCorners(state.drag.start, world);
+      }
+
+      if (state.drag.type === "corner") {
+        const b = bounds();
+        const fixed = {
+          nw: { x: b.maxX, z: b.maxZ },
+          ne: { x: b.minX, z: b.maxZ },
+          sw: { x: b.maxX, z: b.minZ },
+          se: { x: b.minX, z: b.minZ }
+        }[state.drag.handle];
+        setBoundsFromCorners(fixed, world);
+      }
+
+      syncInputs();
+      draw();
+    });
+
+    canvas.addEventListener("pointerup", () => {
+      state.drag = null;
+    });
+
+    canvas.addEventListener("pointercancel", () => {
+      state.drag = null;
+    });
+
+    Object.values(inputs).forEach((input) => {
+      input.addEventListener("input", () => {
+        if (input === inputs.name) {
+          syncInputs();
+          return;
+        }
+        updateFromInputs();
+      });
+    });
+
+    document.querySelectorAll("[data-size]").forEach((button) => {
+      button.addEventListener("click", () => applySize(Number(button.dataset.size)));
+    });
+
+    document.querySelectorAll("[data-expand]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const amount = Number(button.dataset.expand);
+        state.width = clamp(state.width + amount * 2, 3, 256);
+        state.depth = clamp(state.depth + amount * 2, 3, 256);
+        fitToView(false);
+        syncInputs();
+        draw();
+      });
+    });
+
+    document.getElementById("squareButton").addEventListener("click", () => {
+      const size = Math.max(state.width, state.depth);
+      applySize(size, size);
+    });
+
+    document.getElementById("fitView").addEventListener("click", () => {
+      fitToView();
+      draw();
+    });
+
+    document.getElementById("drawMode").addEventListener("click", () => {
+      state.mode = "draw";
+      canvas.style.cursor = "crosshair";
+    });
+
+    document.getElementById("centerMode").addEventListener("click", () => {
+      state.mode = "center";
+      canvas.style.cursor = "grab";
+    });
+
+    function showToast(text) {
+      const toast = document.getElementById("toast");
+      toast.textContent = text;
+      toast.classList.add("show");
+      window.clearTimeout(showToast.timer);
+      showToast.timer = window.setTimeout(() => toast.classList.remove("show"), 1600);
+    }
+
+    async function copyText(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast("已复制到剪贴板");
+      } catch (error) {
+        const area = document.createElement("textarea");
+        area.value = text;
+        document.body.appendChild(area);
+        area.select();
+        document.execCommand("copy");
+        document.body.removeChild(area);
+        showToast("已复制");
+      }
+    }
+
+    document.getElementById("copySelect").addEventListener("click", () => {
+      copyText(document.getElementById("selectCommand").textContent);
+    });
+
+    document.getElementById("copyCreate").addEventListener("click", () => {
+      copyText(document.getElementById("createCommand").textContent);
+    });
+
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+    syncInputs();
+    draw();
+  </script>
+</body>
+</html>

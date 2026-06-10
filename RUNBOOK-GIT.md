@@ -5,14 +5,14 @@
 服务器上可以用 `git pull`，但建议不要裸跑。推荐用：
 
 ```powershell
-cd D:\LeafMC\current\leafmc-server
+cd D:\YuHua服务器\current\leafmc-server
 .\scripts\git-pull-update.ps1
 ```
 
 这个脚本会先检查服务端是否还在运行，做一次备份，然后执行 `git pull --ff-only`。如果你已经手动停服并备份，裸命令也可以：
 
 ```powershell
-cd D:\LeafMC\current\leafmc-server
+cd D:\YuHua服务器\current\leafmc-server
 git pull --ff-only
 ```
 
@@ -60,7 +60,7 @@ Git 不管这些：
 在服务端目录里执行：
 
 ```powershell
-cd D:\LeafMC\current\leafmc-server
+cd D:\YuHua服务器\current\leafmc-server
 git init
 git branch -M main
 git add .
@@ -100,7 +100,7 @@ git push -u origin main
 5. 在服务器执行：
 
 ```powershell
-cd D:\LeafMC\current\leafmc-server
+cd D:\YuHua服务器\current\leafmc-server
 .\scripts\git-pull-update.ps1
 ```
 
@@ -125,8 +125,8 @@ co rollback u:玩家名 t:1h r:20
 如果是更新导致服务端启动失败，用备份回滚：
 
 ```powershell
-cd D:\LeafMC\current\leafmc-server
-.\scripts\backup-before-pull.ps1 -ServerDir . -BackupRoot D:\LeafMC\backups\manual
+cd D:\YuHua服务器\current\leafmc-server
+.\scripts\backup-before-pull.ps1 -ServerDir . -BackupRoot D:\YuHua服务器\backups\manual
 ```
 
 真正回滚时，把 `backups/pre-pull/` 里对应时间的 ZIP 解压回 `current\leafmc-server`。不要用 `git checkout` 回滚世界和数据库，因为 Git 没有管理这些运行期数据。

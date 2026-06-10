@@ -1,0 +1,56 @@
+Messages:
+  1:
+    LeaveMessage: Now leaving %residence.
+    EnterMessage: Welcome %player to %residence, owned by %owner.
+Flags:
+  1:
+    container: true
+    ignite: true
+    harvest: true
+    move: true
+    shear: true
+    use: true
+    destroy: true
+    riding: true
+    animalkilling: true
+    hook: true
+    trade: true
+    mobkilling: true
+    build: true
+    vehicledestroy: true
+    leash: true
+    tp: true
+  2:
+    container: false
+    ignite: false
+    harvest: false
+    shear: false
+    firespread: false
+    use: false
+    destroy: false
+    riding: false
+    pvp: false
+    animalkilling: false
+    hook: false
+    build: false
+    explode: false
+    skulk: false
+    vehicledestroy: false
+    tnt: false
+    leash: false
+    pistonprotection: true
+    tp: false
+    creeper: false
+Residences:
+  home:
+    TPLoc: -479.3:65.0:352.7:-88.2:132.9
+    Messages: 1
+    Permissions:
+      PlayerFlags:
+        ced6a867-d90e-3a03-bb84-f32e20fa84b6: 1
+      AreaFlags: 2
+      OwnerUUID: ced6a867-d90e-3a03-bb84-f32e20fa84b6
+      OwnerLastKnownName: 66a
+    CreatedOn: 1780976537753
+    Areas:
+      main: -504:-64:315:-433:319:375

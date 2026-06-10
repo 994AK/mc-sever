@@ -1,0 +1,51 @@
+# For non-English characters, this file MUST stay encoded in UTF-8
+quests:
+  daily-project-checkin:
+    name: '每日项目签到'
+    ask-message: '<yellow>先查看 <aqua>/projects <yellow>，确认今天能参与什么。看完后在聊天输入 <green>项目已读 <yellow>完成今日签到。'
+    finish-message: '<green>已完成今日项目签到。这个任务只是每日入口，不等于公会贡献；公会贡献仍以项目负责人名单和管理验收为准。'
+    redo-delay: 86400
+    stages:
+      ordered:
+        1:
+          password-displays:
+            - '<green>在聊天输入：项目已读'
+          password-phrases:
+            - '项目已读'
+    rewards:
+      quest-points: 0
+
+  weekly-project-board-support:
+    name: '每周项目墙协助'
+    ask-message: '<yellow>协助本周项目墙：放置 2 个橡木告示牌，用于写项目、负责人、截止时间或参与名单。完成后仍需负责人确认贡献。'
+    finish-message: '<green>项目墙协助任务完成。请把你的具体贡献告诉项目负责人，最终记录以人工验收为准。'
+    redo-delay: 604800
+    stages:
+      ordered:
+        1:
+          place-block-names:
+            - OAK_SIGN
+          place-block-amounts:
+            - 2
+          place-block-durability:
+            - 0
+    rewards:
+      quest-points: 0
+
+  weekly-redstone-support:
+    name: '每周红石材料协助'
+    ask-message: '<yellow>为公共红石材料池准备基础元件：合成 4 个中继器和 2 个比较器。请把材料交给项目负责人或放入指定公共箱。'
+    finish-message: '<green>红石材料协助任务完成。材料是否计入本周公会项目，由负责人和管理按公共价值确认。'
+    redo-delay: 604800
+    stages:
+      ordered:
+        1:
+          items-to-craft:
+            - ==: org.bukkit.inventory.ItemStack
+              type: REPEATER
+              amount: 4
+            - ==: org.bukkit.inventory.ItemStack
+              type: COMPARATOR
+              amount: 2
+    rewards:
+      quest-points: 0

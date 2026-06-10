@@ -1,0 +1,18 @@
+# 除非另有说明，否则请勿使用颜色代码。
+# %player% 将被替换为玩家的名字。%name% 将被替换为使用的物品。
+# %time% 将被替换为剩余的冷却时间。
+
+messages:
+  no_permission: "你没有权限使用此命令。"
+  only_players: "[CommandGUI] 只有玩家可以使用此命令！"
+  reload_success: "CommandGUI 配置已重新加载！"
+  tool_given: "你已给予 %player% 一个 CommandGUI 工具！"
+  tool_received: "你已获得一个 CommandGUI 工具"
+  player_not_found: "未找到玩家 %player%！"
+  invalid_usage: "使用无效！用法: /cg give <player>"
+  gui_title: "&2YuHua 模块菜单" # 可以编辑颜色
+  tool_name: "&6YuHua 菜单钟" # 可以编辑颜色
+  tool_description: "&7右键打开 /menu 模块菜单。" # 可以编辑颜色
+  cooldown_active: "你必须等待 %time% 秒才能再次使用。"
+  verbose_message: "[CommandGUI] %player% 使用了 %name%"
+  invalid_subcommand: "子命令无效。使用 /commandgui [tool|give <player>|reload]。"

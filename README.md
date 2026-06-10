@@ -1,4 +1,4 @@
-# LeafMC 1.21.11 离线技术生存服
+# YuHua服务器 1.21.11 离线技术生存服
 
 这是已经配置好的 Leaf 1.21.11 build 158 服务端目录。目标是：离线模式、登录注册、纯净生存、保守性能优化、不破坏生存和生电玩法，并开启常见技术服需要的破坏性 bug 特性。
 
@@ -86,9 +86,9 @@ LuckPerms 已切到 `yaml` 存储，分组文件在 `plugins/LuckPerms/yaml-stor
 
 已内置三组：
 
-- `default`：普通玩家，称号 `[玩家]`，有 `/menu`、`/menutool`、`/spawn`、`/back`、`/home`、`/sethome`、`/delhome`、`/tpa`、`/tpahere`、`/tpaccept`、`/tpdeny`、`/tpacancel`、`/msg`、`/reply`、`/mail`、`/pay`、`/balance`、`/baltop`、`/afk`、`/warps`、`/warp`、`/rules`、`/ping`、`/list`、`/seen`、`/ignore`、`/ignorelist`、`/helpop`、`/suicide` 等基础 CMI 命令；默认 3 个家，保留死亡 `/back`，同时有 SkinsRestorer 皮肤命令、飞行充能命令和 GriefPrevention 领地命令。
+- `default`：普通玩家，称号 `[玩家]`，有 `/menu`、`/menutool`、`/menunav`、`/menuteleport`、`/menuhome`、`/menuland`、`/menuprojects`、`/menuprofile`、`/menusocial`、`/menuhelp`、`/projects`、`/daily`、`/guildhelp`、`/proposal`、`/projectrewards`、`/projectsubmit`、`/spawn`、`/back`、`/rt`、`/rtp`、`/flyc`、`/flightcharge`、`/flyspeed 1-3`、`/home`、`/sethome`、`/delhome`、`/tpa`、`/tpahere`、`/tpaccept`、`/tpdeny`、`/tpacancel`、`/msg`、`/reply`、`/mail`、`/pay`、`/balance`、`/baltop`、`/afk`、`/warps`、`/warp`、`/rules`、`/ping`、`/list`、`/seen`、`/ignore`、`/ignorelist`、`/helpop`、`/suicide` 等基础 CMI 命令；默认 3 个家，保留死亡 `/back`，同时有 SkinsRestorer 皮肤命令、Residence 领地命令、Quests 基础任务命令和当前公会暂停说明入口。
 - `builder`：建筑/创造组，继承 `default`，称号 `[建筑]`，有 `worldedit.*`、飞行、创造模式、上帝、修复、治疗等命令。
-- `admin`：管理组，继承 `builder`，称号 `[管理]`，有 `*`、CoreProtect 和 GriefPrevention 管理权限。
+- `admin`：管理组，继承 `builder`，称号 `[管理]`，有 `*`、CoreProtect 和 Residence 管理权限。
 
 给玩家分组：
 
@@ -104,7 +104,7 @@ lp user 玩家名 parent set default
 lp user 玩家名 meta setprefix 80 "&6[服主]&r "
 ```
 
-普通玩家没有 WorldEdit、CoreProtect 回滚、创造、免费 `/fly`、给别人飞行、管理、强制传送等破坏性权限。公共地点建议由管理设置成 CMI warp：
+普通玩家没有 WorldEdit、CoreProtect 回滚、创造、免费 `/fly`、给别人飞行、管理、强制传送等破坏性权限；但保留消耗型 flight charge 飞行，可用 `/flyc` 开关。公共地点建议由管理设置成 CMI warp：
 
 ```text
 /cmi setwarp spawn true
@@ -131,26 +131,111 @@ Bedrock/Floodgate 对话框，再考虑升级到 CommandPanels。
 /cg
 ```
 
-- `/menu`：打开快捷菜单。
+- `/menu`：打开模块化主菜单。
 - `/menutool`：菜单钟丢失时重新领取菜单钟。
 - 右键菜单钟：打开和 `/menu` 相同的快捷菜单。
 
-菜单内目前包含：出生点、死亡返回、家、公共地标、传送请求提示、私聊提示、在线奖励、飞行开关、飞行能量、飞行速度提示、皮肤菜单、服务器规则和联系管理。
+菜单主界面使用 27 格布局。当前 20 个按钮会让 CommandGUI `dynamic` 模式计算出 27 格，最大 slot 为 26，不会触发此前高 slot 越界问题。第一行是模块入口，第二行保留最常用直达，底部放上一页 / 回主菜单 / 下一页导航。
 
-菜单第一版暂不包含领地入口。普通玩家只能使用 `commandgui.use` 和 `commandgui.tool`，没有 `commandgui.reload`、`commandgui.give` 或 bypass 权限。
+模块入口：
+
+- `生存传送`：出生点、死亡返回、随机传送、公共地标、传送请求。
+- `家园与地标`：家列表、设置家、删除家、公共地标。
+- `领地保护`：圈地流程、领取木锄、快速 48x48、领地列表、限制、授权、删除和规范。
+- `项目日活`：本周项目、每日任务、公会说明、提案、奖励边界和验收提交。
+- `奖励与外观`：在线奖励、飞行充能、皮肤菜单、延迟和皮肤设置说明。
+- `玩家社交`：私聊、回复、传送请求、公会小队说明。
+- `规则与帮助`：服务器规则、菜单指南、菜单钟、联系管理。
+
+配色约定：
+
+- 蓝色：传送 / 移动。
+- 金色：家园 / 地标。
+- 绿色：领地 / 生存保护。
+- 黄色：项目 / 公共建设。
+- 紫色：奖励 / 外观。
+- 白色：规则 / 帮助。
+- 红色：风险动作 / 联系管理。
+
+需要参数的功能不会在菜单里直接执行失败命令，而是点击后把示例命令填入聊天框，例如 `/sethome 家名`、`/tpa 玩家名`、`/helpop 内容`。可以直接执行的功能才做点击执行，例如 `/spawn`、`/back`、`/homes`、`/prewards`。
+
+随机传送使用 CMI 原生 `/rt`，同时打开 `/rtp` 别名。当前只开放主世界随机传送，范围是以 0,0 为中心的 500-1000 格，避开水、岩浆、树叶和常见海洋/河流生物群系。
+
+普通玩家只能使用 `commandgui.use` 和 `commandgui.tool`，没有 `commandgui.reload`、`commandgui.give` 或 bypass 权限。
+
+## 公会项目日活体系
+
+已加入一套游戏内可用的公会项目 / 日活入口，目标是让玩家每天上线能看到公共项目、组队参与、完成轻任务，但不走战斗力、不送免费飞行、不靠挂机刷贡献。
+
+玩家入口：
+
+```text
+/projects
+/daily
+/guildhelp
+/proposal
+/projectrewards
+/projectsubmit
+```
+
+- `/projects`：查看本周官方项目、公会提案位、参与方式和相关入口。
+- `/daily`：查看每日/每周 Quests 任务，并列出可接任务。
+- `/guildhelp`：查看当前公会/小队暂停说明和替代报名方式。
+- `/proposal`：查看公会项目提案模板。
+- `/projectrewards`：查看允许和禁止奖励。
+- `/projectsubmit`：项目负责人提交验收时使用的模板。
+
+本周 v1 默认项目：
+
+- `W1-O1`：主城项目墙 + 公会荣誉墙。
+- `W1-P1`：公共红石材料池 v1；如果有更好的玩家提案，管理审核后可替换。
+
+插件分工：
+
+- BetterTeams 配置保留，但当前玩家侧公会创建、加入、邀请、聊天和公会名展示暂时下架；项目参与先通过项目负责人或 `/helpop 内容` 登记。
+- Quests 只用于每日/每周轻任务入口；任务完成不会自动算公会贡献，不自动发强奖励。
+- CMI CustomText + CustomAlias 提供 `/projects`、`/daily`、`/guildhelp`、`/menuland` 等游戏内说明入口。
+- CommandGUI 主菜单只负责模块分流和常用直达，具体说明由独立子菜单承载。
+
+贡献确认方式仍然是项目负责人名单 + 可见成果 + 截图/坐标/物资记录 + 管理验收。奖励只给项目记录、署名、展示、称号候选和少量非战斗补给；禁止免费 `/fly`、额外 flight charge 奖励、神装、高效率工具、创造、WorldEdit、CoreProtect、强制传送和管理权限。
+
+上线后用 `docs/operations/guild-projects/2026-06-09-runtime-smoke-test.md` 跑普通玩家冒烟测试，确认 `/projects`、`/daily`、`/guildhelp`、`/quests take 每日项目签到`、`/flyc`、`/flightcharge` 可用，并确认 `/fly`、`/tfly`、`/team home`、`/team echest` 等被拒绝或不可用。
 
 ## CMI 配置
 
 CMI/CMILib/Vault 已作为基础插件启用，并接入 LuckPerms：
 
 - CMI 经济已通过 Vault hook。
-- CMI 聊天格式已改成高对比简洁样式：`[玩家/建筑/管理] 玩家名 > 消息`。
+- 普通聊天由 SimpleChat 接管，格式为 `LuckPerms 前缀 + 玩家名 > 消息`；普通玩家白名、建筑组青色名、管理组红色名。
 - 已清空新手礼包：`plugins/CMI/Kits/Kits.yml`。
-- 在线时长奖励已改成可玩性奖励：每在线 30 分钟自动获得 10000 点 flight charge；每在线 30 分钟可用 `/prewards` 手动领取 20 个幻翼膜。
+- CMI flight charge 模块已开启；普通玩家可用 `/flyc`、`/flightcharge`、`/flyspeed 1-3`，但没有免费 `/fly`、给别人飞行或管理飞行权限。
+- 在线 30 分钟自动获得 10000 点 flight charge；手动 `/prewards` 仍可领取 20 个幻翼膜。
 - 已清空 CMI 默认 Rank/Schedule：`plugins/CMI/Settings/Ranks.yml`、`plugins/CMI/Settings/Schedules.yml`。
 - AFK 开启但不踢人、不免伤、不反挂机机器；AFK 时停止 CMI playtime 计时。
 - 生物头掉落已开启，玩家头掉落关闭。
-- CMI tablist、气泡聊天、默认入服消息、kit、rank、schedule、skin 模块已关闭，避免默认内容干扰；皮肤由 SkinsRestorer 接管。
+- CMI 的聊天格式监听、hover/click 聊天、tablist、气泡聊天、默认入服消息、kit、rank、schedule、skin 模块已关闭，避免多个插件同时改聊天或玩家列表；皮肤由 SkinsRestorer 接管。
+- CMI `shulkerBackpack` 模块已开启，用于蹲下打开潜影盒；OpenShulk 仍保留为快捷潜影盒插件。
+
+## 聊天格式
+
+已安装 SimpleChat 1.2.0 作为聊天格式替代方案。CMI 继续保留 `/msg`、`/reply`、`/mail`、`/helpop` 等命令，但不再接管普通公屏聊天格式。
+
+当前配置在 `plugins/SimpleChat/config.yml`：
+
+- `default`：`%prefix% + 白色玩家名 + > + 白色消息`
+- `builder`：`%prefix% + 青色玩家名 + > + 白色消息`
+- `admin`：`%prefix% + 红色玩家名 + > + 白色消息`
+- 监听优先级为 `HIGHEST`，支持旧式 `&` 颜色码。
+
+## 玩家列表
+
+已安装 TAB 6.0.3 Vanilla，专门接管游戏内按 Tab 打开的玩家列表；CMI 的 tablist 模块继续保持关闭，避免两个插件同时写 header/footer 或玩家名格式。
+
+当前配置在 `plugins/TAB/`：
+
+- `config.yml`：启用 header/footer、tablist-name-formatting、scoreboard-teams 和 40 槽 Layout；关闭 bossbar、scoreboard、playerlist objective、proxy-support。
+- `groups.yml`：按 LuckPerms 分组排序，玩家行只显示 LuckPerms 前缀 + 玩家名 + 延迟，避免 TAB 固定组名和 LuckPerms 前缀重复。
+- Layout 使用两列槽位：`2-20` 和 `22-40` 显示玩家，`1` 和 `21` 是列标题；超过 38 名在线玩家会显示剩余人数提示。
 
 ## 皮肤
 
@@ -167,33 +252,88 @@ CMI 自带的 `/skin` 已关闭，避免两个插件抢同一个命令。
 
 ## 领地保护
 
-已安装 GriefPrevention 16.18.7，用于普通玩家自助圈地和防熊。普通玩家已开放：
+已安装 Residence 6.0.1.8，用于普通玩家自助圈地和防熊。Residence 官网下载页提供免费 jar；当前使用 `plugins/Residence6.0.1.8.jar`。
+
+## 普通圈地流程
+
+当前暂时不开放地图网站。`plugins/LeafResidenceWeb-1.0.0.jar.disabled` 和 `plugins/bluemap-5.16-paper.jar.disabled` 保留在目录里，但不会随服务端启动加载。
+
+玩家使用 Residence 原生流程圈地：
+
+- 打开 `/menu`，点 `领地保护`，再点聊天页里的 `领取木锄`。
+- 用木锄左键点第一个对角，右键点第二个对角。
+- 输入 `/res select vert`，让选区覆盖上下高度。
+- 输入 `/res create 名字` 创建领地。
+- 创建后用 `/res list` 检查。
+
+也可以站在建筑中心点打开 `领地保护` 子菜单，点 `快速选 48x48`，再输入 `/res select vert` 和 `/res create 名字`。
+
+当前安全限制：
+
+- 普通玩家最多 10 个领地，单个领地 X/Z 最大 128 格。
+- Residence 会按配置检查大小、数量、重叠和权限。
+
+旧的 `docs/tools/residence-planner.html` 保留为离线草稿工具；实际给玩家使用时以游戏内 Residence 为准。
+
+当前默认配置：
+
+- 中文语言：`plugins/Residence/config.yml` 的 `Global.Language: Chinese`
+- 免费圈地：关闭 Residence 经济、租赁、租金系统，默认组 `BuyCost/SellCost/RenewCost` 全部为 `0.0`
+- 普通玩家最多 10 个领地
+- 单个领地 X/Z 最大 128 格，Y 轴覆盖 -64 到 320
+
+新手推荐流程：
 
 ```text
-/claim 半径
-/trust 玩家名
-/untrust 玩家名
-/containertrust 玩家名
-/accesstrust 玩家名
-/trustlist
-/claimslist
-/abandonclaim
-/abandonallclaims
-/trapped
+打开 /menu
+点击 领地保护
+点击 领取木锄
+左键点第一个对角
+右键点第二个对角
+输入 /res select vert
+输入 /res create 名字
+输入 /res list 检查
 ```
 
-默认圈地方式是使用金铲子选两个角点，木棍可查看附近领地边界。普通玩家已禁止 `/buyclaimblocks`、`/sellclaimblocks` 和 `/siege`。
+圈地规范：
+
+- 只圈自己的建筑、机器、仓库和明确要施工的边缘。
+- 新手第一块地优先用 `领地保护` 子菜单里的 `快速选 48x48`。
+- 边界离建筑外 3-8 格通常足够，不要为了“以后可能用到”圈大片空地。
+- 不要圈公共道路、公共地狱门、村庄、刷怪塔、公共农场、别人家或别人机器。
+- 不要用长条形领地截断道路、河道、矿道或公共通行路线。
+- 圈错了用 `/res remove 名字` 再 `/res confirm` 删除，重新按实际范围创建。
+
+普通玩家常用命令：
+
+```text
+/res select
+/res select 48 3 48
+/res select vert
+/res create 名字
+/res auto 名字
+/res list
+/res info
+/res limits
+/res tp 名字
+/res set
+/res pset 领地名 玩家名 权限 true/false/remove
+/res remove 名字
+/res confirm
+/res unstuck
+```
+
+默认使用木锄或 `/res select` 选择范围。`/menuland` 子菜单会提供圈地步骤、木锄、快速 48x48、领地列表、限制查看、权限提示、删除流程和圈地规范。
 
 管理常用命令：
 
 ```text
-/adminclaims
-/deleteclaim
-/deleteallclaims 玩家名
-/ignoreclaims
-/adjustbonusclaimblocks 玩家名 数量
-/gpreload
+/resadmin
+/resreload
+/resload
 ```
+
+旧 GriefPrevention 数据目录 `plugins/GriefPreventionData/` 保留，旧 jar 已改名为 `plugins/GriefPrevention-16.18.7.jar.disabled`，正常启动时不会加载。
 
 ## 服务器列表头像和文案
 
@@ -203,10 +343,10 @@ CMI 自带的 `/skin` 已关闭，避免两个插件抢同一个命令。
 
 - 配置文件：`plugins/MiniMOTD/main.conf`
 - 图标文件：`plugins/MiniMOTD/icons/leaf.png`
-- 当前第一行：`LeafMC 1.21.11 纯净生存`
+- 当前第一行：`YuHua服务器 1.21.11 纯净生存`
 - 当前第二行：`纯净服 | 生电友好 | 离线登录 | 跨版本`
 
-`server.properties` 的 `motd=LeafMC 1.21.11 Pure Survival` 只是 MiniMOTD 未加载时的兜底。
+`server.properties` 的 `motd=YuHua服务器 1.21.11 Pure Survival` 只是 MiniMOTD 未加载时的兜底。
 
 ## 跨版本
 
@@ -279,10 +419,14 @@ chunky pause
 - LuckPerms 5.5.53：权限和称号
 - Vault 1.7.4 jar：经济/权限桥接，运行时显示为 Vault 1.7.3-CMI
 - CMILib 1.5.9.6：CMI 依赖库
-- CMI 9.8.7.7：基础命令、经济、聊天、AFK、生物头
+- CMI 9.8.7.7：基础命令、经济、AFK、生物头
+- SimpleChat 1.2.0：普通公屏聊天格式
 - CommandGUI 3.3.0：玩家快捷菜单和菜单钟入口
 - SkinsRestorer 15.12.0：离线服皮肤恢复和切换
-- GriefPrevention 16.18.7：玩家领地保护和防熊
+- Residence 6.0.1.8：玩家领地保护和防熊
+- TAB 6.0.3 Vanilla：两列式玩家列表、玩家称号和延迟显示
+- BetterTeams 5.1.2：轻公会/小队身份和队聊
+- Quests 5.3.1：每日/每周轻任务入口
 - OpenShulk 1.21.x：快捷潜影盒
 - JEI Recipe Bridge 1.0.0：JEI 配方同步桥接
 - WorldEdit 7.4.2：创造/建筑工具
@@ -317,6 +461,11 @@ CMILib 可能会提示无法下载部分 `Translations/Items/items_*.yml`，这�
 - 服务端出现 `Done`。
 - 发送 `stop` 后世界正常保存并退出。
 - 2026-06-07 20:23 已完成一次短启动验证：CommandGUI 3.3.0 启用成功，`zh_cn.yml` 加载成功，15 个菜单项加载成功，CMI 加载 2 个 custom alias。玩家实际右键 GUI 仍建议上线后用普通测试号确认。
+- 2026-06-09 Residence 替换 GriefPrevention 后仅做静态配置检查，本次没有启动服务端验证；上线前需确认 Residence 和 CMILib 正常加载。
+- 2026-06-10 01:47 已完成一次本地短启动验证：23 个插件被识别并加载，服务端出现 `Done (31.875s)`；CommandGUI 加载 20 个菜单项，包含 slot 17 `随机传送`，dynamic 菜单大小 27 格，最大 slot 26；CMI 加载 17 个 custom alias、15 个 custom text，并可热重载菜单配置。
+- 2026-06-09 LeafResidenceWeb 和 BlueMap 已改为 `.disabled`，当前玩家圈地回到 Residence 原生流程；本次没有启动服务端验证。
+- 2026-06-09 TAB 玩家列表已完成 jar 哈希校验和 YAML 静态检查；本次没有启动服务端验证，首次上线后建议用 `/tab reload` 或重启后按 Tab 检查占位符是否全部解析。
+- 2026-06-09 公会项目日活体系已完成静态配置：BetterTeams 5.1.2 和 Quests 5.3.1 jar 元数据已检查；默认组权限已收紧；CommandGUI 最大 slot 仍为 26；flight charge 后续已恢复为消耗型飞行。本次没有重新启动服务端验证，首次上线后需按 `docs/operations/guild-projects/2026-06-09-runtime-smoke-test.md` 重启确认 BetterTeams、Quests、CMI alias/custom text 和默认玩家权限正常。
 
 ## 关键文件
 
@@ -330,9 +479,22 @@ CMILib 可能会提示无法下载部分 `Translations/Items/items_*.yml`，这�
 - `plugins/NobleWhitelist/config.yml`：白名单插件配置
 - `plugins/CMI/`：CMI 配置目录
 - `plugins/CommandGUI-3.3.0.jar`：玩家快捷菜单插件
-- `plugins/CommandGUI/config.yml`：玩家快捷菜单和菜单钟配置
+- `plugins/CommandGUI/config.yml`：模块化玩家主菜单和菜单钟配置
 - `plugins/SkinsRestorer-15.12.0.jar`：皮肤插件
-- `plugins/GriefPrevention-16.18.7.jar`：领地保护插件
+- `plugins/Residence6.0.1.8.jar`：领地保护插件
+- `plugins/Residence/`：Residence 中文、免费圈地和默认组限制配置
+- `plugins/LeafResidenceWeb-1.0.0.jar.disabled`：暂时禁用的网页领地插件
+- `plugins/bluemap-5.16-paper.jar.disabled`：暂时禁用的 BlueMap 插件
+- `plugins/TAB-6.0.3-Vanilla.jar`：玩家列表插件
+- `plugins/TAB/`：两列式玩家列表配置
+- `plugins/SimpleChat-1.2.0.jar`：普通聊天格式插件
+- `plugins/SimpleChat/config.yml`：普通玩家、建筑组、管理组聊天格式
+- `plugins/BetterTeams-5.1.2.jar`：轻公会/小队插件
+- `plugins/BetterTeams/`：轻公会配置，关闭队伍传送、队伍银行、队伍箱子、击杀加分和 scoreboard team
+- `plugins/Quests-5.3.1.jar`：任务插件
+- `plugins/Quests/`：每日/每周轻任务配置
+- `plugins/CMI/CustomAlias/CustomAlias.yml`：`/menu*`、`/projects`、`/daily`、`/guildhelp` 等入口
+- `plugins/CMI/CustomText/`：菜单子页、项目、提案、奖励边界和验收模板说明
 - `plugins/OpenShulk-1.21.x.jar`：快捷潜影盒插件
 - `plugins/JEI-Recipe-Bridge-1.0.0.jar`：JEI 配方同步桥接插件
 - `plugins/LuckPerms/yaml-storage/groups/`：权限组配置
@@ -358,7 +520,7 @@ CMILib 可能会提示无法下载部分 `Translations/Items/items_*.yml`，这�
 服务器上推荐这样更新：
 
 ```powershell
-cd D:\LeafMC\current\leafmc-server
+cd D:\YuHua服务器\current\leafmc-server
 .\scripts\git-pull-update.ps1
 .\start-windows.bat
 ```

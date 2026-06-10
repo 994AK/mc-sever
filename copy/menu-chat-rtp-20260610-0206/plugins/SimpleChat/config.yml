@@ -1,0 +1,12 @@
+formats:
+  default: "%prefix%<white>%name%</white><dark_gray> > </dark_gray><white>%message%</white>"
+  builder: "%prefix%<aqua>%name%</aqua><dark_gray> > </dark_gray><white>%message%</white>"
+  admin: "%prefix%<red>%name%</red><dark_gray> > </dark_gray><white>%message%</white>"
+
+priority: HIGHEST
+support_legacy_ampersand: true
+debug: false
+
+messages:
+  no_permission: "<white>Unknown command."
+  reloaded: "<green>Simple Chat Reloaded."

@@ -1,0 +1,40 @@
+Starting org.bukkit.craftbukkit.Main
+[15:37:38 INFO]: [bootstrap] Running Java 21 (OpenJDK 64-Bit Server VM 21.0.2+13-58; Oracle Corporation null) on Mac OS X 26.2 (aarch64)
+[15:37:38 INFO]: [bootstrap] Loading Leaf 1.21.11-158-ver/1.21.11@dfd6281 (2026-06-03T18:10:02Z) for Minecraft 1.21.11
+[15:37:39 INFO]: [LeafConfig] Loading config...
+[15:37:39 INFO]: [LeafConfig] Successfully loaded config in 357ms.
+[15:37:40 INFO]: [PluginInitializerManager] Initializing plugins...
+[15:37:40 INFO]: [PluginRemapper] Remapping plugin 'plugins/GriefPrevention-16.18.7.jar'...
+[15:37:40 INFO]: [PluginRemapper] Remapping plugin 'plugins/OpenShulk-1.21.x.jar'...
+[15:37:41 INFO]: [PluginRemapper] Remapping plugin 'plugins/Vault-1.7.4.jar'...
+[15:37:41 INFO]: [PluginRemapper] Remapping plugin 'plugins/SkinsRestorer-15.12.0.jar'...
+[15:37:41 INFO]: [PluginRemapper] Done remapping plugin 'plugins/OpenShulk-1.21.x.jar' in 656ms.
+[15:37:41 INFO]: [PluginRemapper] Remapping plugin 'plugins/AuthMe-6.0.0-Paper.jar'...
+[15:37:41 INFO]: [PluginRemapper] Done remapping plugin 'plugins/Vault-1.7.4.jar' in 683ms.
+[15:37:41 INFO]: [PluginRemapper] Remapping plugin 'plugins/CMI-9.8.7.7.jar'...
+[15:37:42 INFO]: [PluginRemapper] Done remapping plugin 'plugins/GriefPrevention-16.18.7.jar' in 1216ms.
+[15:37:42 INFO]: [PluginRemapper] Remapping plugin 'plugins/CommandGUI-3.3.0.jar'...
+[15:37:42 INFO]: [PluginRemapper] Done remapping plugin 'plugins/CommandGUI-3.3.0.jar' in 102ms.
+[15:37:42 INFO]: [PluginRemapper] Remapping plugin 'plugins/CMILib1.5.9.6.jar'...
+[15:37:42 INFO]: [PluginRemapper] Done remapping plugin 'plugins/AuthMe-6.0.0-Paper.jar' in 802ms.
+[15:37:43 INFO]: [PluginRemapper] Done remapping plugin 'plugins/CMILib1.5.9.6.jar' in 1176ms.
+[15:37:45 INFO]: [PluginRemapper] Done remapping plugin 'plugins/CMI-9.8.7.7.jar' in 3874ms.
+[15:37:47 INFO]: [PluginRemapper] Done remapping plugin 'plugins/SkinsRestorer-15.12.0.jar' in 6343ms.
+[15:37:47 INFO]: [PluginInitializerManager] Initialized 19 plugins
+[15:37:47 INFO]: [PluginInitializerManager] Paper plugins (3):
+ - JEIRecipeBridge (1.0.0), MiniMOTD (2.2.3), NobleWhitelist (1.2.23)
+[15:37:47 INFO]: [PluginInitializerManager] Bukkit plugins (16):
+ - AuthMe (6.0.0-b2734), CMI (9.8.7.7), CMILib (1.5.9.6), Chunky (1.4.40), CommandGUI (3.3.0), CoreProtect (23.2), GriefPrevention (16.18.7), LuckPerms (5.5.53), OpenShulk (1.0.0), SkinsRestorer (15.12.0), Vault (1.7.3-CMI), ViaBackwards (5.9.1), ViaRewind (4.1.1), ViaVersion (5.9.1), WorldEdit (7.4.2+7450-eb8e82c), packetevents (2.12.2)
+[15:38:08 INFO]: Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, profilesHost=https://api.mojang.com, name=PROD]
+[31;1m[15:38:08 ERROR]: Failed to start the minecraft server
+net.minecraft.util.DirectoryLock$LockException: /Users/yangguanghua/Documents/Codex/2026-06-05/1-5/outputs/leafmc-server/./world/session.lock: already locked (possibly by other Minecraft instance?)
+        at net.minecraft.util.DirectoryLock$LockException.alreadyLocked(DirectoryLock.java:99) ~[leaf-1.21.11.jar:1.21.11-158-dfd6281]
+        at net.minecraft.util.DirectoryLock.create(DirectoryLock.java:29) ~[leaf-1.21.11.jar:1.21.11-158-dfd6281]
+        at net.minecraft.world.level.storage.LevelStorageSource$LevelStorageAccess.<init>(LevelStorageSource.java:431) ~[leaf-1.21.11.jar:1.21.11-158-dfd6281]
+        at net.minecraft.world.level.storage.LevelStorageSource.validateAndCreateAccess(LevelStorageSource.java:346) ~[leaf-1.21.11.jar:1.21.11-158-dfd6281]
+        at net.minecraft.server.Main.main(Main.java:191) ~[leaf-1.21.11.jar:1.21.11-158-dfd6281]
+        at io.papermc.paper.PaperBootstrap.boot(PaperBootstrap.java:21) ~[leaf-1.21.11.jar:1.21.11-158-dfd6281]
+        at org.bukkit.craftbukkit.Main.main(Main.java:212) ~[leaf-1.21.11.jar:1.21.11-158-dfd6281]
+        at cn.dreeam.leaper.QuantumLeaper.lambda$main$0(QuantumLeaper.java:51) ~[?:?]
+        at java.base/java.lang.Thread.run(Thread.java:1583) ~[?:?]
+[m

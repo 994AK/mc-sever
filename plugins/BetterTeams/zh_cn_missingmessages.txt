@@ -1,0 +1,21 @@
+# Please translate these messages and submit them to the Booksaw Development Discord
+# (https://discord.gg/JF9DNs3) in the #messages-submissions channel for a special rank
+# Your translations will be included in the next update
+# When done translating, run '/teama importmessages' to include the translated messages
+
+rank.perks.header: &6&lNext Level Perks:
+rank.perks.warps: &7- &a+{0} &7Max Warps
+rank.perks.members: &7- &a+{0} &7Max Members
+rank.perks.chests: &7- &a+{0} &7Max Chest Claims
+rank.perks.bank: &7- &aIncreased Bank Limit (&e${0}&a)
+rank.perks.admins: &7- &a+{0} &7Max Admins
+rank.perks.owners: &7- &a+{0} &7Max Owners
+disband.warning: &4All items in your &bechest &band all money in your &bteam bank &4will be deleted
+info.limits: &6Limits: &7Members &b{0}/{1} &7| &7Warps &b{2}/{3}
+teleport.noTeleport: &6The location is in the world &b{0} &6at &b{1}, {2}, {3}
+admin.versionnoconflicts: none detected
+admin.versionextensions: &6Extensions: {0}
+admin.versionnomanager: &cManager not loaded
+admin.versionnoextensions: &eNone
+webhook.allychat.title: Team Ally Chat Message: {0} [{1}]
+webhook.allychat.description: {0}
