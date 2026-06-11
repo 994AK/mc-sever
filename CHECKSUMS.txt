@@ -10,6 +10,7 @@ efb201b506b1bad84958c8a467218b618e3119f837d140e5440ba409466428ea  plugins/GriefP
 f443bd7cb57291b8a937ea1dfeca27a9f44b9200d9df40777cae54111e9f2195  plugins/JEI-Recipe-Bridge-1.0.0.jar
 dc17793b24d7f2069af179dc64966b705eaf8f62285eaee58af0dafefcaa6a22  plugins/LeafResidenceWeb-1.0.0.jar.disabled
 886f80a2014d3bb6bdec4d99a5301dcf21eceb60ee389ef7277d34068daac982  plugins/LeafGomoku-0.1.0.jar
+d5cda4cecc858afd72caf4d60627ef7f301a8420859b59245057d37134355832  plugins/LeafFriends-0.1.0.jar
 79dbaeb260532dbd56624f8bce8ab22fbca158ae4a2860b04fcceffb9e4676ca  plugins/bluemap-5.16-paper.jar.disabled
 fc8d4eccbf11c1e844af4527f018bbfde90c1866a9aba1bf880173a8e644cd59  plugins/LuckPerms-Bukkit-5.5.53.jar
 444d021e6a25672cdeae4fd75e9c3e65e3ef501228af11ae59ab77fd9cdf8731  plugins/MiniMOTD/icons/leaf.png

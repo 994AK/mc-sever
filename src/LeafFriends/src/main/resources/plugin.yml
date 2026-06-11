@@ -1,0 +1,25 @@
+name: LeafFriends
+version: 0.1.0
+main: net.leafmc.friends.LeafFriendsPlugin
+api-version: '1.21'
+commands:
+  friend:
+    description: Manage friends, friend chat, and friend teleport requests.
+    usage: /friend [add|accept|deny|cancel|remove|list|msg|tp|tpaccept|tpdeny|toggle|block|unblock|gui|reload]
+    aliases:
+      - friends
+      - f
+      - haoyou
+      - menufriends
+permissions:
+  leaffriends.use:
+    description: Allows players to use the LeafFriends player commands.
+    default: true
+  leaffriends.admin:
+    description: Allows admins to manage LeafFriends.
+    default: op
+    children:
+      leaffriends.reload: true
+  leaffriends.reload:
+    description: Allows admins to reload LeafFriends configuration and data.
+    default: op

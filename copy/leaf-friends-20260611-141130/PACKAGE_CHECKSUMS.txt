@@ -1,0 +1,5 @@
+2b4983007484de4ebbb673f956d93abdac3c8067864cbfa3d8be9908abcf4834  ./README.md
+e3604e4e7256f580da36bca5b37d1643d93c31a0712caaf1353901c8dc43a161  ./plugins/DeluxeMenus/gui_menus/social.yml
+d5cda4cecc858afd72caf4d60627ef7f301a8420859b59245057d37134355832  ./plugins/LeafFriends-0.1.0.jar
+94517714dcf5579fdbe2a33b6fa932315db7ed3bf51610edc55c1ca253b412d3  ./plugins/LeafFriends/config.yml
+5739d9858102c71cd717b07ff7cc7f4abcc9b08062a43cdc64105654a406955a  ./plugins/LuckPerms/yaml-storage/groups/default.yml

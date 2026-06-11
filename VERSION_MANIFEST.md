@@ -24,6 +24,7 @@
 - BetterTeams config is retained but the jar is currently disabled; guild/team player features stay paused.
 - Quests owns daily/weekly light task prompts only; automatic rewards and contribution scoring are not used.
 - LeafGomoku owns `/gomoku` room-based Gomoku play and the `/menugomoku`/`/gomoku gui` paged dynamic room lobby: room setup from admin location, safety floor, glass room frame, participant seats, spectator sessions, turn broadcasts, victory fireworks, delayed auto-reset, stats, leaderboard, GUI actions, fall-damage protection for participants/spectators, and optional PlaceholderAPI variables; it remains independent of economy, item rewards, and combat-power systems.
+- LeafFriends owns `/friend`, `/friends`, `/f`, `/haoyou`, and `/menufriends`: friend requests, friend list GUI, friend-only private chat, online notifications, blacklist/privacy toggles, and consent-only friend teleport requests; it remains independent of economy, item rewards, flight, guild rank, and combat-power systems.
 - CMI flight charge is enabled for default players through `/flyc`, `/flightcharge`, and `/flyspeed 1-3`; plain `/fly` and flight admin permissions remain blocked.
 - CMI AFK marks default players after 10 minutes idle; AFK players are damage-protected, cannot damage mobs, do not pick up items/exp, and do not accrue CMI playtime.
 - CMI shulkerBackpack is enabled for crouch shulker opening; OpenShulk remains installed.
@@ -52,6 +53,7 @@
 | DeluxeMenus | 1.14.1-Release | `plugins/DeluxeMenus-1.14.1-Release.jar` |
 | PlaceholderAPI | 2.12.2 | `plugins/PlaceholderAPI-2.12.2.jar` |
 | LeafGomoku | 0.1.0 | `plugins/LeafGomoku-0.1.0.jar` |
+| LeafFriends | 0.1.0 | `plugins/LeafFriends-0.1.0.jar` |
 | SkinsRestorer | 15.12.0 | `plugins/SkinsRestorer-15.12.0.jar` |
 | Residence | 6.0.1.8 | `plugins/Residence6.0.1.8.jar` |
 | TAB | 6.0.3 Vanilla | `plugins/TAB-6.0.3-Vanilla.jar` |

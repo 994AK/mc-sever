@@ -1,0 +1,10 @@
+request-expiry-seconds: 120
+request-cooldown-seconds: 15
+teleport-expiry-seconds: 60
+teleport-cooldown-seconds: 30
+allowed-teleport-worlds:
+  - world
+messages:
+  prefix: "§b[好友] §f"
+gui:
+  title: "§0好友菜单"

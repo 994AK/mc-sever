@@ -86,7 +86,7 @@ LuckPerms 已切到 `yaml` 存储，分组文件在 `plugins/LuckPerms/yaml-stor
 
 已内置三组：
 
-- `default`：普通玩家，称号 `[玩家]`，有 `/menu`、`/menutool`、`/menunav`、`/menuteleport`、`/menuhome`、`/menuland`、`/menugomoku`、`/menuprojects`、`/menuprofile`、`/menusocial`、`/menuhelp`、`/gomoku gui`、`/gomoku join`、`/gomoku spectate`、`/gomoku stats`、`/gomoku leaderboard`、`/projects`、`/daily`、`/guildhelp`、`/proposal`、`/projectrewards`、`/projectsubmit`、`/spawn`、`/back`、`/rt`、`/rtp`、`/flyc`、`/flightcharge`、`/flyspeed 1-3`、`/home`、`/sethome`、`/delhome`、`/tpa`、`/tpahere`、`/tpaccept`、`/tpdeny`、`/tpacancel`、`/msg`、`/reply`、`/mail`、`/pay`、`/balance`、`/baltop`、`/afk`、自动 AFK、`/warps`、`/warp`、`/rules`、`/ping`、`/list`、`/seen`、`/ignore`、`/ignorelist`、`/helpop`、`/suicide` 等基础 CMI 命令；默认 3 个家，保留死亡 `/back`，同时有 SkinsRestorer 皮肤命令、Residence 领地命令、Quests 基础任务命令和当前公会暂停说明入口。
+- `default`：普通玩家，称号 `[玩家]`，有 `/menu`、`/menutool`、`/menunav`、`/menuteleport`、`/menuhome`、`/menuland`、`/menugomoku`、`/menufriends`、`/menuprojects`、`/menuprofile`、`/menusocial`、`/menuhelp`、`/gomoku gui`、`/gomoku join`、`/gomoku spectate`、`/gomoku stats`、`/gomoku leaderboard`、`/friend`、`/friends`、`/f`、`/projects`、`/daily`、`/guildhelp`、`/proposal`、`/projectrewards`、`/projectsubmit`、`/spawn`、`/back`、`/rt`、`/rtp`、`/flyc`、`/flightcharge`、`/flyspeed 1-3`、`/home`、`/sethome`、`/delhome`、`/tpa`、`/tpahere`、`/tpaccept`、`/tpdeny`、`/tpacancel`、`/msg`、`/reply`、`/mail`、`/pay`、`/balance`、`/baltop`、`/afk`、自动 AFK、`/warps`、`/warp`、`/rules`、`/ping`、`/list`、`/seen`、`/ignore`、`/ignorelist`、`/helpop`、`/suicide` 等基础 CMI 命令；默认 3 个家，保留死亡 `/back`，同时有 SkinsRestorer 皮肤命令、Residence 领地命令、Quests 基础任务命令和当前公会暂停说明入口。
 - `builder`：建筑/创造组，继承 `default`，称号 `[建筑]`，有 `worldedit.*`、飞行、创造模式、上帝、修复、治疗等命令。
 - `admin`：管理组，继承 `builder`，称号 `[管理]`，有 `*`、CoreProtect 和 Residence 管理权限。
 
@@ -131,6 +131,7 @@ GUI 插件选型记录见 `docs/research/2026-06-08-gui-plugin-selection.md`。�
 /menuhome
 /menuland
 /menugomoku
+/menufriends
 /menuprojects
 /menuprofile
 /menusocial
@@ -141,6 +142,7 @@ GUI 插件选型记录见 `docs/research/2026-06-08-gui-plugin-selection.md`。�
 - `/menutool`：菜单钟丢失时重新领取一个提示物。当前菜单钟不绑定右键打开，打开菜单请直接输入 `/menu`。
 - `/menu*`：直接打开对应模块子菜单。
 - `/menugomoku`：打开 LeafGomoku 动态房间大厅。
+- `/menufriends`：打开 LeafFriends 好友菜单。
 
 菜单主界面使用 27 格布局，子菜单使用 36 或 45 格布局。第一行是模块入口，第二行保留最常用直达，底部放上一页 / 回主菜单 / 下一页导航。
 
@@ -152,7 +154,7 @@ GUI 插件选型记录见 `docs/research/2026-06-08-gui-plugin-selection.md`。�
 - `五子棋`：动态大厅、主房间加入/观战、统计和排行榜。
 - `项目日活`：本周项目、每日任务、公会说明、提案、奖励边界和验收提交。
 - `奖励与外观`：在线奖励、飞行充能、皮肤菜单、延迟和皮肤设置说明。
-- `玩家社交`：私聊、回复、传送请求、公会小队说明。
+- `玩家社交`：好友列表、好友申请、好友传送、私聊、回复、传送请求、公会小队说明。
 - `规则与帮助`：服务器规则、菜单指南、菜单钟、联系管理。
 
 配色约定：
@@ -171,6 +173,47 @@ GUI 插件选型记录见 `docs/research/2026-06-08-gui-plugin-selection.md`。�
 随机传送使用 CMI 原生 `/rt`，同时打开 `/rtp` 别名。当前只开放主世界随机传送，范围是以 0,0 为中心的 500-1000 格，避开水、岩浆、树叶和常见海洋/河流生物群系。
 
 普通玩家不需要 DeluxeMenus 管理权限，也不开放 `/dm open`、`/dm reload`、`deluxemenus.admin`、`deluxemenus.open` 或 bypass 权限。
+
+## 好友系统
+
+已加入 LeafFriends 0.1.0，用于纯净服轻社交：好友申请、好友列表、好友私聊、好友上线提醒、黑名单、隐私开关和同意制好友传送。插件不接入经济、物资奖励、飞行、战力、亲密度属性或公会等级。
+
+玩家入口：
+
+```text
+/menufriends
+/friend gui
+/friend add <玩家>
+/friend accept <玩家>
+/friend deny <玩家>
+/friend cancel <玩家>
+/friend remove <玩家>
+/friend list
+/friend msg <玩家> <内容>
+/friend tp <玩家>
+/friend tpaccept <玩家>
+/friend tpdeny <玩家>
+/friend toggle <requests|teleports|messages|notifications|status> [on|off]
+/friend block <玩家>
+/friend unblock <玩家>
+```
+
+行为边界：
+
+- 好友关系按 UUID 存储，同时保存最近一次玩家名用于显示。
+- 好友传送必须由对方输入 `/friend tpaccept 玩家名` 同意，不会直接把人拉走。
+- `/friend msg` 只发给好友；离线留言继续使用 CMI 的 `/mail`。
+- 玩家可以关闭好友申请、好友传送、好友私聊、上线提醒或隐藏在线状态。
+- 黑名单会阻止好友申请、好友私聊和好友传送请求。
+- v1 不自动给 Residence 领地授权，不共享家、箱子、飞行、物资或任何战力能力。
+
+管理入口：
+
+```text
+/friend reload
+```
+
+默认普通玩家只有 `leaffriends.use`；`leaffriends.reload` 和 `leaffriends.admin` 只给管理组/OP。
 
 ## 五子棋房间平台
 
@@ -492,6 +535,7 @@ chunky pause
 - Residence 6.0.1.8：玩家领地保护和防熊
 - TAB 6.0.3 Vanilla：两列式玩家列表、玩家称号和延迟显示
 - LeafGomoku 0.1.0：主城五子棋房间平台插件
+- LeafFriends 0.1.0：好友申请、好友列表、好友私聊、好友传送请求和隐私开关
 - BetterTeams 5.1.2（jar 已禁用）：轻公会/小队配置保留，玩家侧功能暂停
 - Quests 5.3.1：每日/每周轻任务入口
 - OpenShulk 1.21.x：快捷潜影盒
@@ -531,6 +575,7 @@ CMILib 可能会提示无法下载部分 `Translations/Items/items_*.yml`，这�
 - 2026-06-09 Residence 替换 GriefPrevention 后仅做静态配置检查，本次没有启动服务端验证；上线前需确认 Residence 和 CMILib 正常加载。
 - 2026-06-10 已完成 DeluxeMenus 迁移和五子棋 GUI 接入验证：CommandGUI jar/config 已删除；DeluxeMenus jar、PlaceholderAPI jar、`config.yml` 和 8 个已注册菜单已加载；`/menu` 里的五子棋入口会执行 LeafGomoku 的 `/menugomoku` 动态大厅。
 - 2026-06-10 已完成 LeafGomoku 房间平台构建、纯 Java 规则/统计/布局测试和本地重启验证：`scripts/test-leaf-gomoku.sh` 通过，`plugins/LeafGomoku-0.1.0.jar` 已生成；本地服已确认 LeafGomoku、`leafgomoku` PlaceholderAPI expansion、`/menugomoku` 命令、`/gomoku status main` 正常，并已 refresh `main`/`test1` 生成玻璃外圈。
+- 2026-06-11 已完成 LeafFriends 构建和纯 Java 状态测试：`scripts/test-leaf-friends.sh` 通过，`plugins/LeafFriends-0.1.0.jar` 已生成；本次未启动服务端，首次上线后需用两个测试账号确认 `/menufriends`、申请/同意/拒绝、好友私聊、好友传送、黑名单和隐私开关。
 - 2026-06-09 LeafResidenceWeb 和 BlueMap 已改为 `.disabled`，当前玩家圈地回到 Residence 原生流程；本次没有启动服务端验证。
 - 2026-06-09 TAB 玩家列表已完成 jar 哈希校验和 YAML 静态检查；本次没有启动服务端验证，首次上线后建议用 `/tab reload` 或重启后按 Tab 检查占位符是否全部解析。
 - 2026-06-09 公会项目日活体系已完成静态配置：BetterTeams 5.1.2 和 Quests 5.3.1 jar 元数据已检查；默认组权限已收紧；flight charge 后续已恢复为消耗型飞行。本次没有重新启动服务端验证，首次上线后需按 `docs/operations/guild-projects/2026-06-09-runtime-smoke-test.md` 重启确认 BetterTeams、Quests、DeluxeMenus、CMI alias/custom text 和默认玩家权限正常。
@@ -554,6 +599,9 @@ CMILib 可能会提示无法下载部分 `Translations/Items/items_*.yml`，这�
 - `plugins/LeafGomoku/config.yml`：五子棋 legacy main 房间迁移源和默认模板
 - `plugins/LeafGomoku/rooms.yml`：五子棋房间坐标、座位、观众点和生命周期配置
 - `plugins/LeafGomoku/stats.yml`：五子棋玩家统计、排行榜和已记录比赛 ID
+- `plugins/LeafFriends-0.1.0.jar`：好友系统插件
+- `plugins/LeafFriends/config.yml`：好友申请、好友传送、冷却和 GUI 配置
+- `plugins/LeafFriends/friends.yml`：运行时生成的好友关系、隐私设置和黑名单数据
 - `plugins/SkinsRestorer-15.12.0.jar`：皮肤插件
 - `plugins/Residence6.0.1.8.jar`：领地保护插件
 - `plugins/Residence/`：Residence 中文、免费圈地和默认组限制配置
