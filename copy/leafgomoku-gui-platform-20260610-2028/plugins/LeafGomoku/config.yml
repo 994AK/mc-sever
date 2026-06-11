@@ -1,0 +1,84 @@
+arena:
+  # Legacy/default main room template. On first v2 startup this is migrated into rooms.yml as room "main".
+  # New rooms should be created in-game with /gomoku admin create <room>.
+  world: "world"
+
+  board:
+    # Row 0, column 0. Each cell is one block.
+    origin:
+      x: 700
+      y: 100
+      z: -680
+    row-axis: "+z"
+    column-axis: "+x"
+
+  preview:
+    # Top-left preview cell. Default axes make a vertical 15x15 wall.
+    origin:
+      x: 700
+      y: 115
+      z: -660
+    row-axis: "-y"
+    column-axis: "+x"
+
+  emitters:
+    black:
+      x: 697
+      y: 101
+      z: -673
+    white:
+      x: 717
+      y: 101
+      z: -673
+
+  seats:
+    black:
+      x: 707.5
+      y: 101.0
+      z: -682.5
+      yaw: 0.0
+      pitch: 0.0
+    white:
+      x: 707.5
+      y: 101.0
+      z: -684.5
+      yaw: 0.0
+      pitch: 0.0
+
+  spectators:
+    spawn:
+      x: 707.5
+      y: 102.0
+      z: -687.5
+      yaw: 0.0
+      pitch: 0.0
+    exit:
+      x: 707.5
+      y: 102.0
+      z: -689.5
+      yaw: 0.0
+      pitch: 0.0
+    capacity: 24
+
+  lifecycle:
+    open-by-default: true
+    disconnect-recovery-ticks: 600
+    forfeit-on-disconnect-timeout: true
+
+  materials:
+    empty-board: "LIGHT_GRAY_CONCRETE"
+    empty-preview: "WHITE_CONCRETE"
+    black: "BLACK_CONCRETE"
+    white: "QUARTZ_BLOCK"
+    floor: "SMOOTH_STONE"
+    frame: "GLASS"
+
+  animation:
+    ticks: 22
+    arc-height: 1.4
+
+  celebration:
+    fireworks: 3
+
+  gameplay:
+    auto-reset-ticks: 120

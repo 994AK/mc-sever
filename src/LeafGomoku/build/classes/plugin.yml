@@ -1,0 +1,66 @@
+name: LeafGomoku
+version: 0.1.0
+main: net.leafmc.gomoku.LeafGomokuPlugin
+api-version: '1.21'
+softdepend:
+  - PlaceholderAPI
+commands:
+  gomoku:
+    description: Play and manage Gomoku rooms.
+    usage: /gomoku [gui|join|spectate|leave|status|leaderboard|stats|theme|skin|buy|var|admin]
+    aliases:
+      - menugomoku
+      - gomokumenu
+      - wzq
+      - wuziqi
+permissions:
+  leafgomoku.play:
+    description: Allows players to join and play Gomoku.
+    default: true
+  leafgomoku.spectate:
+    description: Allows players to spectate Gomoku rooms.
+    default: true
+  leafgomoku.gui:
+    description: Allows players to open the Gomoku lobby GUI.
+    default: true
+  leafgomoku.stats:
+    description: Allows players to view Gomoku stats.
+    default: true
+  leafgomoku.leaderboard:
+    description: Allows players to view Gomoku leaderboards.
+    default: true
+  leafgomoku.appearance:
+    description: Allows players to select and exchange Gomoku appearances.
+    default: true
+  leafgomoku.admin:
+    description: Allows admins to manage all Gomoku operations.
+    default: op
+    children:
+      leafgomoku.admin.setup: true
+      leafgomoku.admin.room: true
+      leafgomoku.admin.lifecycle: true
+      leafgomoku.admin.stats: true
+      leafgomoku.admin.reload: true
+      leafgomoku.admin.force: true
+      leafgomoku.admin.bypass-protection: true
+  leafgomoku.admin.setup:
+    description: Allows admins to create and initialize Gomoku rooms.
+    default: op
+  leafgomoku.admin.room:
+    description: Allows admins to open, close, inspect, refresh, reset, and delete Gomoku rooms.
+    default: op
+  leafgomoku.admin.lifecycle:
+    description: Allows admins to start, stop, release, and forfeit Gomoku seats.
+    default: op
+  leafgomoku.admin.stats:
+    description: Allows admins to inspect, reset, and grant Gomoku stats points.
+    default: op
+  leafgomoku.admin.reload:
+    description: Allows admins to reload Gomoku data.
+    default: op
+  leafgomoku.admin.force:
+    description: Allows admins to force destructive active-room operations.
+    default: op
+  leafgomoku.admin.bypass-protection:
+    description: Allows admins to edit protected Gomoku room blocks.
+    default: op

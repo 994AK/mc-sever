@@ -86,7 +86,7 @@ LuckPerms 已切到 `yaml` 存储，分组文件在 `plugins/LuckPerms/yaml-stor
 
 已内置三组：
 
-- `default`：普通玩家，称号 `[玩家]`，有 `/menu`、`/menutool`、`/menunav`、`/menuteleport`、`/menuhome`、`/menuland`、`/menuprojects`、`/menuprofile`、`/menusocial`、`/menuhelp`、`/projects`、`/daily`、`/guildhelp`、`/proposal`、`/projectrewards`、`/projectsubmit`、`/spawn`、`/back`、`/rt`、`/rtp`、`/flyc`、`/flightcharge`、`/flyspeed 1-3`、`/home`、`/sethome`、`/delhome`、`/tpa`、`/tpahere`、`/tpaccept`、`/tpdeny`、`/tpacancel`、`/msg`、`/reply`、`/mail`、`/pay`、`/balance`、`/baltop`、`/afk`、`/warps`、`/warp`、`/rules`、`/ping`、`/list`、`/seen`、`/ignore`、`/ignorelist`、`/helpop`、`/suicide` 等基础 CMI 命令；默认 3 个家，保留死亡 `/back`，同时有 SkinsRestorer 皮肤命令、Residence 领地命令、Quests 基础任务命令和当前公会暂停说明入口。
+- `default`：普通玩家，称号 `[玩家]`，有 `/menu`、`/menutool`、`/menunav`、`/menuteleport`、`/menuhome`、`/menuland`、`/menugomoku`、`/menuprojects`、`/menuprofile`、`/menusocial`、`/menuhelp`、`/gomoku gui`、`/gomoku join`、`/gomoku spectate`、`/gomoku stats`、`/gomoku leaderboard`、`/projects`、`/daily`、`/guildhelp`、`/proposal`、`/projectrewards`、`/projectsubmit`、`/spawn`、`/back`、`/rt`、`/rtp`、`/flyc`、`/flightcharge`、`/flyspeed 1-3`、`/home`、`/sethome`、`/delhome`、`/tpa`、`/tpahere`、`/tpaccept`、`/tpdeny`、`/tpacancel`、`/msg`、`/reply`、`/mail`、`/pay`、`/balance`、`/baltop`、`/afk`、自动 AFK、`/warps`、`/warp`、`/rules`、`/ping`、`/list`、`/seen`、`/ignore`、`/ignorelist`、`/helpop`、`/suicide` 等基础 CMI 命令；默认 3 个家，保留死亡 `/back`，同时有 SkinsRestorer 皮肤命令、Residence 领地命令、Quests 基础任务命令和当前公会暂停说明入口。
 - `builder`：建筑/创造组，继承 `default`，称号 `[建筑]`，有 `worldedit.*`、飞行、创造模式、上帝、修复、治疗等命令。
 - `admin`：管理组，继承 `builder`，称号 `[管理]`，有 `*`、CoreProtect 和 Residence 管理权限。
 
@@ -116,32 +116,40 @@ lp user 玩家名 meta setprefix 80 "&6[服主]&r "
 
 ## 玩家快捷菜单
 
-已安装 CommandGUI 3.3.0，用于普通玩家快捷菜单。
+已安装 DeluxeMenus 1.14.1，用于普通玩家快捷菜单；同时将 PlaceholderAPI 升级并补齐到 2.12.2，作为 DeluxeMenus 的官方依赖/软依赖。CommandGUI 已从活跃插件和配置中删除。
 
-GUI 插件选型记录见 `docs/research/2026-06-08-gui-plugin-selection.md`。当前结论是：
-第一版玩家快捷菜单继续使用 CommandGUI；如果以后要做商店、任务、多页复杂菜单或
-Bedrock/Floodgate 对话框，再考虑升级到 CommandPanels。
+GUI 插件选型记录见 `docs/research/2026-06-08-gui-plugin-selection.md`。当前结论按 2026-06-10 的迁移结果更新为：
+玩家主菜单使用 DeluxeMenus；`/menu` 和常规 `/menu*` 子菜单命令由 DeluxeMenus 自己注册，CMI 不再接管这些菜单命令。五子棋的 `/menugomoku` 由 LeafGomoku 注册为动态房间大厅，DeluxeMenus 主菜单只负责跳转。
 
 玩家可用：
 
 ```text
 /menu
 /menutool
-/commandgui
-/cg
+/menunav
+/menuteleport
+/menuhome
+/menuland
+/menugomoku
+/menuprojects
+/menuprofile
+/menusocial
+/menuhelp
 ```
 
 - `/menu`：打开模块化主菜单。
-- `/menutool`：菜单钟丢失时重新领取菜单钟。
-- 右键菜单钟：打开和 `/menu` 相同的快捷菜单。
+- `/menutool`：菜单钟丢失时重新领取一个提示物。当前菜单钟不绑定右键打开，打开菜单请直接输入 `/menu`。
+- `/menu*`：直接打开对应模块子菜单。
+- `/menugomoku`：打开 LeafGomoku 动态房间大厅。
 
-菜单主界面使用 27 格布局。当前 20 个按钮会让 CommandGUI `dynamic` 模式计算出 27 格，最大 slot 为 26，不会触发此前高 slot 越界问题。第一行是模块入口，第二行保留最常用直达，底部放上一页 / 回主菜单 / 下一页导航。
+菜单主界面使用 27 格布局，子菜单使用 36 或 45 格布局。第一行是模块入口，第二行保留最常用直达，底部放上一页 / 回主菜单 / 下一页导航。
 
 模块入口：
 
 - `生存传送`：出生点、死亡返回、随机传送、公共地标、传送请求。
 - `家园与地标`：家列表、设置家、删除家、公共地标。
-- `领地保护`：圈地流程、领取木锄、快速 48x48、领地列表、限制、授权、删除和规范。
+- `领地保护`：圈地流程、领取木锄、快速 48x16x48、领地列表、限制、授权、删除和规范。
+- `五子棋`：动态大厅、主房间加入/观战、统计和排行榜。
 - `项目日活`：本周项目、每日任务、公会说明、提案、奖励边界和验收提交。
 - `奖励与外观`：在线奖励、飞行充能、皮肤菜单、延迟和皮肤设置说明。
 - `玩家社交`：私聊、回复、传送请求、公会小队说明。
@@ -152,16 +160,75 @@ Bedrock/Floodgate 对话框，再考虑升级到 CommandPanels。
 - 蓝色：传送 / 移动。
 - 金色：家园 / 地标。
 - 绿色：领地 / 生存保护。
+- 黑白：五子棋 / 观战。
 - 黄色：项目 / 公共建设。
 - 紫色：奖励 / 外观。
 - 白色：规则 / 帮助。
 - 红色：风险动作 / 联系管理。
 
-需要参数的功能不会在菜单里直接执行失败命令，而是点击后把示例命令填入聊天框，例如 `/sethome 家名`、`/tpa 玩家名`、`/helpop 内容`。可以直接执行的功能才做点击执行，例如 `/spawn`、`/back`、`/homes`、`/prewards`。
+需要参数的功能不会在菜单里直接执行失败命令，而是点击后发送示例命令提示，例如 `/sethome 家名`、`/tpa 玩家名`、`/helpop 内容`。可以直接执行的功能才做点击执行，例如 `/spawn`、`/back`、`/homes`、`/prewards`。
 
 随机传送使用 CMI 原生 `/rt`，同时打开 `/rtp` 别名。当前只开放主世界随机传送，范围是以 0,0 为中心的 500-1000 格，避开水、岩浆、树叶和常见海洋/河流生物群系。
 
-普通玩家只能使用 `commandgui.use` 和 `commandgui.tool`，没有 `commandgui.reload`、`commandgui.give` 或 bypass 权限。
+普通玩家不需要 DeluxeMenus 管理权限，也不开放 `/dm open`、`/dm reload`、`deluxemenus.admin`、`deluxemenus.open` 或 bypass 权限。
+
+## 五子棋房间平台
+
+已加入 LeafGomoku 0.1.0，用于主城实体五子棋装置。当前版本支持从 MVP 单棋盘升级为多房间休闲对局平台：管理员可以从当前位置创建房间，玩家加入黑/白席位，观众进入观战点，胜负写入独立统计和排行榜。插件仍不接入经济、物资、飞行、战斗力奖励或赛事报名系统。
+
+玩家入口：
+
+```text
+/gomoku gui
+/gomoku join [room]
+/gomoku spectate [room]
+/gomoku leave
+/gomoku status [room]
+/gomoku stats [玩家]
+/gomoku leaderboard [points|wins|winrate]
+```
+
+GUI 入口：
+
+- `/menu` 主菜单里的 `五子棋` 直接执行 `/menugomoku`。
+- `/menugomoku` 和 `/gomoku gui` 都打开 LeafGomoku 动态大厅，实时列出 `rooms.yml` 里的全部房间。
+- 动态大厅使用分页房间卡片，每页最多 28 个房间；点击房间先进入详情页，详情页再明确选择 `加入对局`、`只观战`、`输出状态`。房间进行中、已满或关闭时，`加入对局` 会灰掉，不影响只观战。
+- DeluxeMenus 只负责入口和 `%leafgomoku_room_count%` 展示；加入、观战、离开、统计、排行榜和管理动作都回到 `/gomoku` 命令层执行，不绕开权限。
+- 房间初始化、刷新和重置会补齐整块安全地板和玻璃外圈；地板、玻璃外圈、棋盘、大屏和发射器都在保护层内，普通玩家不能拆改。参赛者和观众的摔落伤害也会被取消。
+
+管理入口：
+
+```text
+/gomoku admin create <room>
+/gomoku admin init <room>
+/gomoku admin open <room>
+/gomoku admin close <room>
+/gomoku admin inspect <room>
+/gomoku admin refresh <room>
+/gomoku admin reset <room> [force]
+/gomoku admin release <room> <black|white> [force]
+/gomoku admin forfeit <room> <black|white>
+/gomoku admin stop <room>
+/gomoku admin delete <room> [force]
+/gomoku admin reload
+/gomoku var <key> [玩家]
+```
+
+玩法边界：
+
+- 第一名加入者为黑方，第二名加入者为白方，黑方先手；每个房间独立记录席位、回合、观众和自动重置。
+- 玩家加入后会传送到配置里的黑方 / 白方座位，便于直接开始点击棋盘。
+- 观众通过 `/gomoku spectate [room]` 进入观战点，不能落子，也不能占用黑白席位。
+- 玩家右键点击 15x15 棋盘空格落子，插件校验回合和空位。
+- 黑白双方各有一个固定发射器；合法落子会从对应发射器以弧线动画飞向目标格。
+- 棋盘格和大屏预览在每次合法落子后同步更新。
+- 横、竖、斜任意方向连续五子即胜；满盘无胜方则平局。
+- 对局开始、回合、落子和胜负会广播提示；胜利后播放烟花，保留棋盘几秒后自动重置。
+- 正常胜利、平局和管理判负会写入 `stats.yml`；管理中止、刷新、强制重置不写胜负积分。
+- 普通玩家不能通过手动放置或破坏棋盘/预览区方块改变棋局；需要临时施工时使用 `leafgomoku.admin.bypass-protection`。
+- 插件不消耗玩家背包里的方块，也不发放物资、飞行、权限或战力奖励。
+
+`plugins/LeafGomoku/config.yml` 里的 `arena:` 是旧版 `main` 房间迁移源和默认模板。v2 首次启动会生成 `plugins/LeafGomoku/rooms.yml`，后续房间坐标以 `rooms.yml` 为准。推荐由管理站在目标位置执行 `/gomoku admin create <room>`，插件会使用当前世界、当前 Y、X/Z 和朝向生成棋盘、发射器、座位、观众点和预览墙。上线后按 `docs/operations/gomoku/2026-06-10-runtime-smoke-test.md` 做冒烟测试。
 
 ## 公会项目日活体系
 
@@ -194,8 +261,8 @@ Bedrock/Floodgate 对话框，再考虑升级到 CommandPanels。
 
 - BetterTeams 配置保留，但当前玩家侧公会创建、加入、邀请、聊天和公会名展示暂时下架；项目参与先通过项目负责人或 `/helpop 内容` 登记。
 - Quests 只用于每日/每周轻任务入口；任务完成不会自动算公会贡献，不自动发强奖励。
-- CMI CustomText + CustomAlias 提供 `/projects`、`/daily`、`/guildhelp`、`/menuland` 等游戏内说明入口。
-- CommandGUI 主菜单只负责模块分流和常用直达，具体说明由独立子菜单承载。
+- DeluxeMenus 提供 `/menu` 和 `/menu*` 模块菜单。
+- CMI CustomText + CustomAlias 继续提供 `/projects`、`/daily`、`/guildhelp`、`/proposal`、`/projectrewards`、`/projectsubmit` 等文字说明入口。
 
 贡献确认方式仍然是项目负责人名单 + 可见成果 + 截图/坐标/物资记录 + 管理验收。奖励只给项目记录、署名、展示、称号候选和少量非战斗补给；禁止免费 `/fly`、额外 flight charge 奖励、神装、高效率工具、创造、WorldEdit、CoreProtect、强制传送和管理权限。
 
@@ -211,7 +278,7 @@ CMI/CMILib/Vault 已作为基础插件启用，并接入 LuckPerms：
 - CMI flight charge 模块已开启；普通玩家可用 `/flyc`、`/flightcharge`、`/flyspeed 1-3`，但没有免费 `/fly`、给别人飞行或管理飞行权限。
 - 在线 30 分钟自动获得 10000 点 flight charge；手动 `/prewards` 仍可领取 20 个幻翼膜。
 - 已清空 CMI 默认 Rank/Schedule：`plugins/CMI/Settings/Ranks.yml`、`plugins/CMI/Settings/Schedules.yml`。
-- AFK 开启但不踢人、不免伤、不反挂机机器；AFK 时停止 CMI playtime 计时。
+- AFK 开启但不踢人；普通玩家静止 10 分钟自动进入 AFK。AFK 状态免伤、不能对生物造成伤害、不拾取物品/经验，并停止 CMI playtime 计时。
 - 生物头掉落已开启，玩家头掉落关闭。
 - CMI 的聊天格式监听、hover/click 聊天、tablist、气泡聊天、默认入服消息、kit、rank、schedule、skin 模块已关闭，避免多个插件同时改聊天或玩家列表；皮肤由 SkinsRestorer 接管。
 - CMI `shulkerBackpack` 模块已开启，用于蹲下打开潜影盒；OpenShulk 仍保留为快捷潜影盒插件。
@@ -261,16 +328,16 @@ CMI 自带的 `/skin` 已关闭，避免两个插件抢同一个命令。
 玩家使用 Residence 原生流程圈地：
 
 - 打开 `/menu`，点 `领地保护`，再点聊天页里的 `领取木锄`。
-- 用木锄左键点第一个对角，右键点第二个对角。
-- 输入 `/res select vert`，让选区覆盖上下高度。
+- 用木锄左键点低处角，右键点高处对角。
 - 输入 `/res create 名字` 创建领地。
+- Y 轴按你选的两个点计算，圈多少就是多少。
 - 创建后用 `/res list` 检查。
 
-也可以站在建筑中心点打开 `领地保护` 子菜单，点 `快速选 48x48`，再输入 `/res select vert` 和 `/res create 名字`。
+也可以站在建筑中心点打开 `领地保护` 子菜单，点 `快速选 48x16x48`，再输入 `/res create 名字`。
 
 当前安全限制：
 
-- 普通玩家最多 10 个领地，单个领地 X/Z 最大 128 格。
+- 普通玩家最多 10 个领地，单个领地 X/Z 最大 500 格，最小 1x1。
 - Residence 会按配置检查大小、数量、重叠和权限。
 
 旧的 `docs/tools/residence-planner.html` 保留为离线草稿工具；实际给玩家使用时以游戏内 Residence 为准。
@@ -280,7 +347,7 @@ CMI 自带的 `/skin` 已关闭，避免两个插件抢同一个命令。
 - 中文语言：`plugins/Residence/config.yml` 的 `Global.Language: Chinese`
 - 免费圈地：关闭 Residence 经济、租赁、租金系统，默认组 `BuyCost/SellCost/RenewCost` 全部为 `0.0`
 - 普通玩家最多 10 个领地
-- 单个领地 X/Z 最大 128 格，Y 轴覆盖 -64 到 320
+- 单个领地 X/Z 最大 500 格，最小 1x1，Y 轴按玩家选区计算
 
 新手推荐流程：
 
@@ -288,9 +355,8 @@ CMI 自带的 `/skin` 已关闭，避免两个插件抢同一个命令。
 打开 /menu
 点击 领地保护
 点击 领取木锄
-左键点第一个对角
-右键点第二个对角
-输入 /res select vert
+左键点低处角
+右键点高处对角
 输入 /res create 名字
 输入 /res list 检查
 ```
@@ -298,7 +364,7 @@ CMI 自带的 `/skin` 已关闭，避免两个插件抢同一个命令。
 圈地规范：
 
 - 只圈自己的建筑、机器、仓库和明确要施工的边缘。
-- 新手第一块地优先用 `领地保护` 子菜单里的 `快速选 48x48`。
+- 新手第一块地可用 `领地保护` 子菜单里的 `快速选 48x16x48`。
 - 边界离建筑外 3-8 格通常足够，不要为了“以后可能用到”圈大片空地。
 - 不要圈公共道路、公共地狱门、村庄、刷怪塔、公共农场、别人家或别人机器。
 - 不要用长条形领地截断道路、河道、矿道或公共通行路线。
@@ -308,8 +374,7 @@ CMI 自带的 `/skin` 已关闭，避免两个插件抢同一个命令。
 
 ```text
 /res select
-/res select 48 3 48
-/res select vert
+/res select 48 16 48
 /res create 名字
 /res auto 名字
 /res list
@@ -323,7 +388,7 @@ CMI 自带的 `/skin` 已关闭，避免两个插件抢同一个命令。
 /res unstuck
 ```
 
-默认使用木锄或 `/res select` 选择范围。`/menuland` 子菜单会提供圈地步骤、木锄、快速 48x48、领地列表、限制查看、权限提示、删除流程和圈地规范。
+默认使用木锄或 `/res select` 选择范围。`/menuland` 子菜单会提供圈地步骤、木锄、快速 48x16x48、领地列表、限制查看、权限提示、删除流程和圈地规范。
 
 管理常用命令：
 
@@ -421,11 +486,13 @@ chunky pause
 - CMILib 1.5.9.6：CMI 依赖库
 - CMI 9.8.7.7：基础命令、经济、AFK、生物头
 - SimpleChat 1.2.0：普通公屏聊天格式
-- CommandGUI 3.3.0：玩家快捷菜单和菜单钟入口
+- DeluxeMenus 1.14.1：玩家快捷菜单和模块子菜单入口
+- PlaceholderAPI 2.12.2：DeluxeMenus 占位符和消息处理依赖
 - SkinsRestorer 15.12.0：离线服皮肤恢复和切换
 - Residence 6.0.1.8：玩家领地保护和防熊
 - TAB 6.0.3 Vanilla：两列式玩家列表、玩家称号和延迟显示
-- BetterTeams 5.1.2：轻公会/小队身份和队聊
+- LeafGomoku 0.1.0：主城五子棋房间平台插件
+- BetterTeams 5.1.2（jar 已禁用）：轻公会/小队配置保留，玩家侧功能暂停
 - Quests 5.3.1：每日/每周轻任务入口
 - OpenShulk 1.21.x：快捷潜影盒
 - JEI Recipe Bridge 1.0.0：JEI 配方同步桥接
@@ -451,7 +518,7 @@ CMILib 可能会提示无法下载部分 `Translations/Items/items_*.yml`，这�
 
 - Java 21 可运行。
 - Leaf `1.21.11-158-ver/1.21.11@dfd6281` 启动成功。
-- 19 个插件被识别并加载。`leafmc-2026.06.07-r3` 已确认 CommandGUI、SkinsRestorer、GriefPrevention、OpenShulk 和 JEI Recipe Bridge 能启动加载。
+- 19 个插件被识别并加载。`leafmc-2026.06.07-r3` 曾确认 CommandGUI、SkinsRestorer、GriefPrevention、OpenShulk 和 JEI Recipe Bridge 能启动加载；当前菜单插件已替换为 DeluxeMenus，需按最新菜单冒烟测试重新确认。
 - NobleWhitelist 已关闭，`nwl status` 显示 `Whitelist state: off`。
 - LuckPerms 使用 YAML 存储，`default`、`builder`、`admin` 三组已写入；default 组已补齐普通玩家常用命令。
 - CMI 经济成功 hook Vault，CMI 权限识别 LuckPerms。
@@ -460,12 +527,13 @@ CMILib 可能会提示无法下载部分 `Translations/Items/items_*.yml`，这�
 - MiniMOTD 启用。
 - 服务端出现 `Done`。
 - 发送 `stop` 后世界正常保存并退出。
-- 2026-06-07 20:23 已完成一次短启动验证：CommandGUI 3.3.0 启用成功，`zh_cn.yml` 加载成功，15 个菜单项加载成功，CMI 加载 2 个 custom alias。玩家实际右键 GUI 仍建议上线后用普通测试号确认。
+- 2026-06-07 20:23 曾完成一次 CommandGUI 短启动验证；该菜单栈已在 2026-06-10 被 DeluxeMenus 替换。
 - 2026-06-09 Residence 替换 GriefPrevention 后仅做静态配置检查，本次没有启动服务端验证；上线前需确认 Residence 和 CMILib 正常加载。
-- 2026-06-10 01:47 已完成一次本地短启动验证：23 个插件被识别并加载，服务端出现 `Done (31.875s)`；CommandGUI 加载 20 个菜单项，包含 slot 17 `随机传送`，dynamic 菜单大小 27 格，最大 slot 26；CMI 加载 17 个 custom alias、15 个 custom text，并可热重载菜单配置。
+- 2026-06-10 已完成 DeluxeMenus 迁移和五子棋 GUI 接入验证：CommandGUI jar/config 已删除；DeluxeMenus jar、PlaceholderAPI jar、`config.yml` 和 8 个已注册菜单已加载；`/menu` 里的五子棋入口会执行 LeafGomoku 的 `/menugomoku` 动态大厅。
+- 2026-06-10 已完成 LeafGomoku 房间平台构建、纯 Java 规则/统计/布局测试和本地重启验证：`scripts/test-leaf-gomoku.sh` 通过，`plugins/LeafGomoku-0.1.0.jar` 已生成；本地服已确认 LeafGomoku、`leafgomoku` PlaceholderAPI expansion、`/menugomoku` 命令、`/gomoku status main` 正常，并已 refresh `main`/`test1` 生成玻璃外圈。
 - 2026-06-09 LeafResidenceWeb 和 BlueMap 已改为 `.disabled`，当前玩家圈地回到 Residence 原生流程；本次没有启动服务端验证。
 - 2026-06-09 TAB 玩家列表已完成 jar 哈希校验和 YAML 静态检查；本次没有启动服务端验证，首次上线后建议用 `/tab reload` 或重启后按 Tab 检查占位符是否全部解析。
-- 2026-06-09 公会项目日活体系已完成静态配置：BetterTeams 5.1.2 和 Quests 5.3.1 jar 元数据已检查；默认组权限已收紧；CommandGUI 最大 slot 仍为 26；flight charge 后续已恢复为消耗型飞行。本次没有重新启动服务端验证，首次上线后需按 `docs/operations/guild-projects/2026-06-09-runtime-smoke-test.md` 重启确认 BetterTeams、Quests、CMI alias/custom text 和默认玩家权限正常。
+- 2026-06-09 公会项目日活体系已完成静态配置：BetterTeams 5.1.2 和 Quests 5.3.1 jar 元数据已检查；默认组权限已收紧；flight charge 后续已恢复为消耗型飞行。本次没有重新启动服务端验证，首次上线后需按 `docs/operations/guild-projects/2026-06-09-runtime-smoke-test.md` 重启确认 BetterTeams、Quests、DeluxeMenus、CMI alias/custom text 和默认玩家权限正常。
 
 ## 关键文件
 
@@ -478,8 +546,14 @@ CMILib 可能会提示无法下载部分 `Translations/Items/items_*.yml`，这�
 - `plugins/AuthMe/config.yml`：登录插件配置
 - `plugins/NobleWhitelist/config.yml`：白名单插件配置
 - `plugins/CMI/`：CMI 配置目录
-- `plugins/CommandGUI-3.3.0.jar`：玩家快捷菜单插件
-- `plugins/CommandGUI/config.yml`：模块化玩家主菜单和菜单钟配置
+- `plugins/DeluxeMenus-1.14.1-Release.jar`：玩家快捷菜单插件
+- `plugins/PlaceholderAPI-2.12.2.jar`：DeluxeMenus 占位符和消息处理依赖
+- `plugins/DeluxeMenus/config.yml`：DeluxeMenus 菜单加载配置
+- `plugins/DeluxeMenus/gui_menus/`：模块化玩家主菜单和子菜单配置
+- `plugins/LeafGomoku-0.1.0.jar`：五子棋房间平台插件
+- `plugins/LeafGomoku/config.yml`：五子棋 legacy main 房间迁移源和默认模板
+- `plugins/LeafGomoku/rooms.yml`：五子棋房间坐标、座位、观众点和生命周期配置
+- `plugins/LeafGomoku/stats.yml`：五子棋玩家统计、排行榜和已记录比赛 ID
 - `plugins/SkinsRestorer-15.12.0.jar`：皮肤插件
 - `plugins/Residence6.0.1.8.jar`：领地保护插件
 - `plugins/Residence/`：Residence 中文、免费圈地和默认组限制配置
@@ -489,7 +563,7 @@ CMILib 可能会提示无法下载部分 `Translations/Items/items_*.yml`，这�
 - `plugins/TAB/`：两列式玩家列表配置
 - `plugins/SimpleChat-1.2.0.jar`：普通聊天格式插件
 - `plugins/SimpleChat/config.yml`：普通玩家、建筑组、管理组聊天格式
-- `plugins/BetterTeams-5.1.2.jar`：轻公会/小队插件
+- `plugins/BetterTeams-5.1.2.jar.disabled`：已禁用的轻公会/小队插件
 - `plugins/BetterTeams/`：轻公会配置，关闭队伍传送、队伍银行、队伍箱子、击杀加分和 scoreboard team
 - `plugins/Quests-5.3.1.jar`：任务插件
 - `plugins/Quests/`：每日/每周轻任务配置

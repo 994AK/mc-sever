@@ -4,10 +4,17 @@
 
 - 安装 BetterTeams 5.1.2 作为轻公会/小队身份底座；仅开放创建、加入、邀请、队聊、成员管理等基础能力。
 - 安装 Quests 5.3.1 作为每日/每周轻任务入口；覆盖默认 RPG 示例任务，不发钻石剑、金钱、经验或战力奖励。
+- 将玩家快捷菜单从 CommandGUI 迁移到 DeluxeMenus 1.14.1；删除 CommandGUI jar/config/lang，`/menu` 和 `/menu*` 子菜单改由 DeluxeMenus 注册。
+- 将 PlaceholderAPI 升级并补齐到 2.12.2，满足 DeluxeMenus 官方依赖说明；五子棋菜单通过 LeafGomoku 提供 `%leafgomoku_%` 展示变量。
+- 新增 LeafGomoku 0.1.0 五子棋房间平台：支持从管理员当前位置创建房间、黑白参赛席位、观众入口、多房间点击路由、右键棋盘格落子、黑白固定发射器弧线动画、棋盘/大屏同步、交互广播、五连胜负、胜利烟花、延迟自动重置、统计排行榜和可选 PlaceholderAPI 变量。
+- 新增 LeafGomoku 分页动态 GUI 大厅 `/menugomoku` 和 `/gomoku gui`，并接入 DeluxeMenus 主菜单入口；每页最多显示 28 个房间卡片，点击房间进入详情页后再明确选择加入、只观战或输出状态，动作仍回到 `/gomoku` 权限层执行。
+- LeafGomoku 房间初始化、刷新和重置会生成受保护的安全地板和玻璃外圈，并取消参赛者/观众摔落伤害，降低踩空、误拆和外部干扰风险。
+- `/menutool` 改为 CMI 发放菜单钟提示物，不再依赖 CommandGUI tool；打开菜单统一使用 `/menu`。
 - 新增 `/projects`、`/daily`、`/guildhelp`、`/proposal`、`/projectrewards`、`/projectsubmit` 游戏内入口，配合 CMI CustomText 说明本周项目、提案、奖励边界和验收提交；`/guildhelp` 当前说明公会功能暂停和替代报名方式。
 - 快捷菜单重构为模块化主菜单：生存传送、家园与地标、领地保护、项目日活、奖励与外观、玩家社交、规则与帮助，每个独立子菜单都有上一页 / 下一页 / 回主菜单导航和统一配色。
 - 生存传送模块新增随机传送入口，开放普通玩家 `/rt` 并启用 `/rtp` 别名；随机传送仅开放主世界范围，避免下界和末地误传送。
 - 恢复 CMI flight charge 模块和普通玩家 `/flyc`、`/flightcharge`、`/flyspeed 1-3` 权限；在线 30 分钟自动获得 10000 点 flight charge，但仍不开放免费 `/fly` 或管理飞行。
+- 调整 CMI AFK 保护：普通玩家静止 10 分钟自动进入 AFK，AFK 状态免伤、不能对生物造成伤害、不拾取物品/经验，并停止 CMI playtime 计时。
 - 恢复 CMI `shulkerBackpack` 模块，用于蹲下打开潜影盒；OpenShulk 插件继续保留。
 - 收紧 BetterTeams 默认权限：禁止队伍传送、队伍银行、队伍箱子、队伍 rankup、击杀加分、PvP 切换、队伍 warp、队伍 home、队伍 anchor 和管理命令。
 - 收紧 Quests 默认权限：普通玩家不能使用 Quests 管理、编辑器、条件/动作编辑、排行榜和 compass 入口。
@@ -15,10 +22,10 @@
 - 修正 TAB 玩家列表称号重复问题：玩家行只显示 LuckPerms 前缀，不再额外叠加 TAB 固定组名。
 - 安装 SimpleChat 1.2.0 接管普通公屏聊天格式，CMI 保留私聊/邮件/求助等命令但不再接管公屏格式。
 - 安装 Residence 6.0.1.8 免费版并停用 GriefPrevention jar，让 Residence 接管玩家领地保护。
-- Residence 使用中文语言，关闭经济/租赁费用；普通玩家最多 10 个领地，单个领地 X/Z 上限放大到 128 格。
+- Residence 使用中文语言，关闭经济/租赁费用；普通玩家最多 10 个领地，单个领地 X/Z 上限放大到 500 格，最小 1x1，Y 轴按玩家选区计算；默认组绑定到 LuckPerms `default`。
 - 暂时禁用 LeafResidenceWeb 和 BlueMap，圈地回到 Residence 原生木锄/命令流程，不再开放地图网站。
 - 保留 `docs/tools/residence-planner.html` 作为离线草稿工具；正式玩家流程使用 Residence 原生命令。
-- 领地能力移动到 `/menuland` 独立子菜单，包含圈地步骤、领取木锄、快速 48x48 选区、列表、限制、授权、删除和规范入口。
+- 领地能力移动到 `/menuland` 独立子菜单，包含圈地步骤、领取木锄、快速 48x16x48 选区、列表、限制、授权、删除和规范入口。
 - 限制每玩家区块生成、加载和发送突发，并开启 Leaf 实体移动包降载，缓解多人探索或传送时的网络发送队列堆积。
 - 收紧命令补全发送，减少客户端聊天框输入时的补全负担。
 - 关闭 ViaVersion/CoreProtect/Vault/SkinsRestorer 的自动更新外联，并停用 SkinsRestorer Paper 入服即时皮肤监听，减少 TPS 正常时的入服/客户端同步卡顿变量。

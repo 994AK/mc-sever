@@ -1,0 +1,5 @@
+c750e07583c79b66b169cdb8f29715cf5294cede963a64b2c545101890c75317  ./README.md
+4c94f3d97b7911082c2958901dd78808c92674e10d6778b6c9df795a87c6f763  ./plugins/CMI/CustomText/menuland.txt
+ba81f7055f9894ba2c9a0c5b2eb031c09fbd2d43c44d7193b046856597750f5b  ./plugins/DeluxeMenus/gui_menus/land.yml
+79f457064e2689dd27f5a62a578beefa524dd2a3e90d4c09e0c79f4ed28fe4d5  ./plugins/Residence/config.yml
+c42296657fb5f5df3e9bffe0b80907d32de12f98dffca2df18a3c16232f9332f  ./plugins/Residence/groups.yml

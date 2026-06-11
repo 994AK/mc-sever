@@ -1,0 +1,439 @@
+package net.leafmc.gomoku;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabExecutor;
+import org.bukkit.entity.Player;
+
+public final class GomokuCommand implements TabExecutor {
+    private final LeafGomokuPlugin plugin;
+
+    public GomokuCommand(LeafGomokuPlugin plugin) {
+        this.plugin = plugin;
+    }
+
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (List.of("menugomoku", "gomokumenu", "wzq", "wuziqi").contains(label.toLowerCase(Locale.ROOT))) {
+            Player player = requirePlayer(sender);
+            if (player == null || !require(sender, GomokuPermission.GUI, "§c你没有五子棋菜单权限。")) {
+                return true;
+            }
+            plugin.getServer().getScheduler().runTask(plugin, () -> plugin.gui().openLobby(player));
+            return true;
+        }
+        if (args.length == 0 && sender instanceof Player player && sender.hasPermission(GomokuPermission.GUI.node())) {
+            plugin.getServer().getScheduler().runTask(plugin, () -> plugin.gui().openLobby(player));
+            return true;
+        }
+        String sub = args.length == 0 ? "status" : args[0].toLowerCase(Locale.ROOT);
+        switch (sub) {
+            case "join" -> {
+                Player player = requirePlayer(sender);
+                if (player == null || !require(sender, GomokuPermission.PLAY, "§c你没有五子棋权限。")) {
+                    return true;
+                }
+                send(player, plugin.join(player, arg(args, 1)));
+                return true;
+            }
+            case "spectate", "watch" -> {
+                Player player = requirePlayer(sender);
+                if (player == null || !require(sender, GomokuPermission.SPECTATE, "§c你没有五子棋观战权限。")) {
+                    return true;
+                }
+                send(player, plugin.spectate(player, arg(args, 1)));
+                return true;
+            }
+            case "leave" -> {
+                Player player = requirePlayer(sender);
+                if (player != null) {
+                    send(player, plugin.leave(player));
+                }
+                return true;
+            }
+            case "gui", "menu", "lobby" -> {
+                Player player = requirePlayer(sender);
+                if (player == null || !require(sender, GomokuPermission.GUI, "§c你没有五子棋菜单权限。")) {
+                    return true;
+                }
+                plugin.getServer().getScheduler().runTask(plugin, () -> plugin.gui().openLobby(player));
+                return true;
+            }
+            case "status" -> {
+                sender.sendMessage(plugin.statusLine(arg(args, 1)));
+                return true;
+            }
+            case "leaderboard", "top" -> {
+                if (!require(sender, GomokuPermission.LEADERBOARD, "§c你没有五子棋排行榜权限。")) {
+                    return true;
+                }
+                sender.sendMessage(plugin.leaderboardLine(arg(args, 1)));
+                return true;
+            }
+            case "stats" -> {
+                if (!require(sender, GomokuPermission.STATS, "§c你没有五子棋统计权限。")) {
+                    return true;
+                }
+                OfflinePlayer target = args.length >= 2 ? plugin.offlinePlayer(args[1]) : sender instanceof Player player ? player : null;
+                if (target == null) {
+                    sender.sendMessage("§e用法: /gomoku stats <玩家>");
+                } else {
+                    sender.sendMessage(plugin.statsLine(target));
+                }
+                return true;
+            }
+            case "theme" -> {
+                Player player = requirePlayer(sender);
+                if (player == null || !require(sender, GomokuPermission.APPEARANCE, "§c你没有五子棋外观权限。")) {
+                    return true;
+                }
+                if (args.length < 3) {
+                    sender.sendMessage("§e用法: /gomoku theme <room> <theme>");
+                } else {
+                    sender.sendMessage(plugin.selectBoardTheme(player, args[1], args[2]));
+                }
+                return true;
+            }
+            case "skin" -> {
+                Player player = requirePlayer(sender);
+                if (player == null || !require(sender, GomokuPermission.APPEARANCE, "§c你没有五子棋外观权限。")) {
+                    return true;
+                }
+                if (args.length < 2) {
+                    sender.sendMessage("§e用法: /gomoku skin <skin>");
+                } else {
+                    sender.sendMessage(plugin.selectPieceSkin(player, args[1]));
+                }
+                return true;
+            }
+            case "buy", "exchange" -> {
+                Player player = requirePlayer(sender);
+                if (player == null || !require(sender, GomokuPermission.APPEARANCE, "§c你没有五子棋外观权限。")) {
+                    return true;
+                }
+                if (args.length < 3) {
+                    sender.sendMessage("§e用法: /gomoku buy <theme|skin> <id> [room]");
+                } else {
+                    sender.sendMessage(plugin.buyAppearance(player, args[1], args[2], arg(args, 3)));
+                }
+                return true;
+            }
+            case "var" -> {
+                if (!require(sender, GomokuPermission.ADMIN_ROOM, "§c你没有五子棋变量查询权限。")) {
+                    return true;
+                }
+                if (args.length < 2) {
+                    sender.sendMessage("§e用法: /gomoku var <key> [player]");
+                    return true;
+                }
+                OfflinePlayer target = args.length >= 3 ? plugin.offlinePlayer(args[2]) : sender instanceof Player player ? player : null;
+                sender.sendMessage("§6[五子棋变量] §f" + args[1] + " §7= §e" + plugin.variables().resolve(args[1], target));
+                return true;
+            }
+            case "admin" -> {
+                handleAdmin(sender, args);
+                return true;
+            }
+            case "init" -> {
+                if (require(sender, GomokuPermission.ADMIN_SETUP, "§c你没有权限初始化五子棋。")) {
+                    sender.sendMessage(plugin.initRoom(arg(args, 1)));
+                }
+                return true;
+            }
+            case "reset" -> {
+                if (require(sender, GomokuPermission.ADMIN_ROOM, "§c你没有权限重置五子棋。")) {
+                    Boolean force = forceFlag(sender, args);
+                    if (force == null) {
+                        return true;
+                    }
+                    sender.sendMessage(plugin.resetRoom(arg(args, 1), force));
+                }
+                return true;
+            }
+            case "reload" -> {
+                if (require(sender, GomokuPermission.ADMIN_RELOAD, "§c你没有权限重载五子棋。")) {
+                    plugin.reloadAll();
+                    sender.sendMessage("§a五子棋配置、房间和统计已重载。");
+                }
+                return true;
+            }
+            default -> {
+                sendHelp(sender);
+                return true;
+            }
+        }
+    }
+
+    private void handleAdmin(CommandSender sender, String[] args) {
+        String action = args.length < 2 ? "help" : args[1].toLowerCase(Locale.ROOT);
+        switch (action) {
+            case "create" -> {
+                if (!require(sender, GomokuPermission.ADMIN_SETUP, "§c你没有权限创建五子棋房间。")) {
+                    return;
+                }
+                Player player = requirePlayer(sender);
+                if (player == null) {
+                    return;
+                }
+                if (args.length < 3) {
+                    sender.sendMessage("§e用法: /gomoku admin create <room>");
+                    return;
+                }
+                sender.sendMessage(plugin.createRoom(player, args[2]));
+            }
+            case "place", "tool" -> {
+                if (!require(sender, GomokuPermission.ADMIN_SETUP, "§c你没有权限放置五子棋房间。")) {
+                    return;
+                }
+                Player player = requirePlayer(sender);
+                if (player == null) {
+                    return;
+                }
+                if (args.length < 3) {
+                    sender.sendMessage("§e用法: /gomoku admin place <room>");
+                    return;
+                }
+                sender.sendMessage(plugin.prepareRoomPlacement(player, args[2]));
+            }
+            case "init" -> {
+                if (require(sender, GomokuPermission.ADMIN_SETUP, "§c你没有权限初始化房间。")) {
+                    sender.sendMessage(plugin.initRoom(arg(args, 2)));
+                }
+            }
+            case "open", "close" -> {
+                if (require(sender, GomokuPermission.ADMIN_ROOM, "§c你没有权限开关房间。")) {
+                    sender.sendMessage(plugin.setOpen(arg(args, 2), action.equals("open")));
+                }
+            }
+            case "refresh" -> {
+                if (require(sender, GomokuPermission.ADMIN_ROOM, "§c你没有权限刷新房间。")) {
+                    sender.sendMessage(plugin.refreshRoom(arg(args, 2)));
+                }
+            }
+            case "reset" -> {
+                if (require(sender, GomokuPermission.ADMIN_ROOM, "§c你没有权限重置房间。")) {
+                    Boolean force = forceFlag(sender, args);
+                    if (force == null) {
+                        return;
+                    }
+                    sender.sendMessage(plugin.resetRoom(arg(args, 2), force));
+                }
+            }
+            case "delete" -> {
+                if (require(sender, GomokuPermission.ADMIN_ROOM, "§c你没有权限删除房间。")) {
+                    Boolean force = forceFlag(sender, args);
+                    if (force == null) {
+                        return;
+                    }
+                    sender.sendMessage(plugin.deleteRoom(arg(args, 2), force));
+                }
+            }
+            case "inspect" -> {
+                if (require(sender, GomokuPermission.ADMIN_ROOM, "§c你没有权限查看房间。")) {
+                    for (String line : plugin.inspectRoom(arg(args, 2))) {
+                        sender.sendMessage(line);
+                    }
+                }
+            }
+            case "stop" -> {
+                if (require(sender, GomokuPermission.ADMIN_LIFECYCLE, "§c你没有权限中止房间。")) {
+                    sender.sendMessage(plugin.stopRoom(arg(args, 2)));
+                }
+            }
+            case "release" -> {
+                if (require(sender, GomokuPermission.ADMIN_LIFECYCLE, "§c你没有权限释放席位。")) {
+                    Stone side = sideArg(arg(args, 3));
+                    if (side == Stone.EMPTY) {
+                        sender.sendMessage("§e用法: /gomoku admin release <room> <black|white> [force]");
+                    } else {
+                        Boolean force = forceFlag(sender, args);
+                        if (force == null) {
+                            return;
+                        }
+                        sender.sendMessage(plugin.releaseSeat(arg(args, 2), side, force, false));
+                    }
+                }
+            }
+            case "forfeit" -> {
+                if (require(sender, GomokuPermission.ADMIN_LIFECYCLE, "§c你没有权限判负。")) {
+                    Stone side = sideArg(arg(args, 3));
+                    if (side == Stone.EMPTY) {
+                        sender.sendMessage("§e用法: /gomoku admin forfeit <room> <black|white>");
+                    } else {
+                        sender.sendMessage(plugin.releaseSeat(arg(args, 2), side, true, true));
+                    }
+                }
+            }
+            case "reload" -> {
+                if (require(sender, GomokuPermission.ADMIN_RELOAD, "§c你没有权限重载五子棋。")) {
+                    plugin.reloadAll();
+                    sender.sendMessage("§a五子棋配置、房间和统计已重载。");
+                }
+            }
+            case "resetstats" -> {
+                if (!require(sender, GomokuPermission.ADMIN_STATS, "§c你没有权限重置统计。")) {
+                    return;
+                }
+                if (args.length < 3) {
+                    sender.sendMessage("§e用法: /gomoku admin resetstats <玩家>");
+                } else {
+                    sender.sendMessage(plugin.resetStats(plugin.offlinePlayer(args[2])));
+                }
+            }
+            case "points", "addpoints", "givepoints" -> {
+                if (!require(sender, GomokuPermission.ADMIN_STATS, "§c你没有权限发放五子棋积分。")) {
+                    return;
+                }
+                if (args.length < 4) {
+                    sender.sendMessage("§e用法: /gomoku admin points <玩家> <数量> [原因]");
+                    return;
+                }
+                Integer amount = positiveInt(arg(args, 3));
+                if (amount == null) {
+                    sender.sendMessage("§e积分数量必须是正整数。");
+                    return;
+                }
+                sender.sendMessage(plugin.addPoints(plugin.offlinePlayer(args[2]), amount, joinReason(args, 4)));
+            }
+            default -> sendAdminHelp(sender);
+        }
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        if (args.length == 1) {
+            List<String> values = new ArrayList<>(List.of("join", "spectate", "leave", "gui", "status", "leaderboard", "stats", "theme", "skin", "buy"));
+            if (sender.hasPermission(GomokuPermission.ADMIN_ROOM.node()) || sender.hasPermission(GomokuPermission.ADMIN_STATS.node())) {
+                values.add("var");
+                values.add("admin");
+                values.add("init");
+                values.add("reset");
+                values.add("reload");
+            }
+            return filter(values, args[0]);
+        }
+        if (args.length == 2 && args[0].equalsIgnoreCase("admin")) {
+            return filter(List.of("create", "place", "init", "open", "close", "refresh", "reset", "delete", "inspect", "stop", "release", "forfeit", "reload", "resetstats", "points"), args[1]);
+        }
+        if (args.length == 2 && args[0].equalsIgnoreCase("skin")) {
+            return filter(plugin.appearances().pieceSkins().stream().map(PieceSkin::id).toList(), args[1]);
+        }
+        if (args.length == 2 && args[0].equalsIgnoreCase("buy")) {
+            return filter(List.of("theme", "skin"), args[1]);
+        }
+        if ((args.length == 2 && List.of("join", "spectate", "status", "init", "reset").contains(args[0].toLowerCase(Locale.ROOT)))
+            || (args.length == 2 && args[0].equalsIgnoreCase("theme"))
+            || (args.length == 3 && args[0].equalsIgnoreCase("admin") && !List.of("create", "resetstats", "points", "addpoints", "givepoints").contains(args[1].toLowerCase(Locale.ROOT)))) {
+            return filter(plugin.rooms().rooms().stream().map(room -> room.config().id()).toList(), args[args.length - 1]);
+        }
+        if (args.length == 3 && args[0].equalsIgnoreCase("theme")) {
+            return filter(plugin.appearances().boardThemes().stream().map(BoardTheme::id).toList(), args[2]);
+        }
+        if (args.length == 3 && args[0].equalsIgnoreCase("buy") && args[1].equalsIgnoreCase("theme")) {
+            return filter(plugin.appearances().boardThemes().stream().map(BoardTheme::id).toList(), args[2]);
+        }
+        if (args.length == 3 && args[0].equalsIgnoreCase("buy") && args[1].equalsIgnoreCase("skin")) {
+            return filter(plugin.appearances().pieceSkins().stream().map(PieceSkin::id).toList(), args[2]);
+        }
+        if (args.length == 4 && args[0].equalsIgnoreCase("buy") && args[1].equalsIgnoreCase("theme")) {
+            return filter(plugin.rooms().rooms().stream().map(room -> room.config().id()).toList(), args[3]);
+        }
+        if (args.length == 4 && args[0].equalsIgnoreCase("admin") && (args[1].equalsIgnoreCase("release") || args[1].equalsIgnoreCase("forfeit"))) {
+            return filter(List.of("black", "white"), args[3]);
+        }
+        return List.of();
+    }
+
+    private Player requirePlayer(CommandSender sender) {
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage("只有玩家可以执行这个命令。");
+            return null;
+        }
+        return player;
+    }
+
+    private boolean require(CommandSender sender, GomokuPermission permission, String deniedMessage) {
+        if (sender.hasPermission(permission.node())) {
+            return true;
+        }
+        sender.sendMessage(deniedMessage);
+        return false;
+    }
+
+    private Boolean forceFlag(CommandSender sender, String[] args) {
+        if (!hasToken(args, "force")) {
+            return false;
+        }
+        if (!sender.hasPermission(GomokuPermission.ADMIN_FORCE.node())) {
+            sender.sendMessage("§c你没有强制操作权限。");
+            return null;
+        }
+        return true;
+    }
+
+    private boolean hasToken(String[] args, String token) {
+        for (String arg : args) {
+            if (arg.equalsIgnoreCase(token)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Stone sideArg(String value) {
+        return switch (value == null ? "" : value.toLowerCase(Locale.ROOT)) {
+            case "black", "b", "黑", "黑方" -> Stone.BLACK;
+            case "white", "w", "白", "白方" -> Stone.WHITE;
+            default -> Stone.EMPTY;
+        };
+    }
+
+    private String arg(String[] args, int index) {
+        return args.length > index ? args[index] : "";
+    }
+
+    private Integer positiveInt(String value) {
+        try {
+            int parsed = Integer.parseInt(value);
+            return parsed > 0 ? parsed : null;
+        } catch (NumberFormatException error) {
+            return null;
+        }
+    }
+
+    private String joinReason(String[] args, int start) {
+        if (args.length <= start) {
+            return "admin-grant";
+        }
+        return String.join(" ", java.util.Arrays.copyOfRange(args, start, args.length));
+    }
+
+    private void send(CommandSender sender, String message) {
+        if (message != null && !message.isBlank()) {
+            sender.sendMessage(message);
+        }
+    }
+
+    private void sendHelp(CommandSender sender) {
+        sender.sendMessage("§7用法: §f/gomoku gui §7| §f/gomoku join [room] §7| §f/gomoku spectate [room] §7| §f/gomoku leave §7| §f/gomoku status [room]");
+        sender.sendMessage("§7查询: §f/gomoku leaderboard [points|wins|winrate] §7| §f/gomoku stats [玩家]");
+        sender.sendMessage("§7外观: §f/gomoku skin <skin> §7| §f/gomoku theme <room> <theme> §7| §f/gomoku buy <theme|skin> <id>");
+        if (sender.hasPermission(GomokuPermission.ADMIN_ROOM.node())) {
+            sendAdminHelp(sender);
+        }
+    }
+
+    private void sendAdminHelp(CommandSender sender) {
+        sender.sendMessage("§7管理: §f/gomoku admin create/place/init/open/close/refresh/reset/delete/inspect/stop/release/forfeit/reload");
+        sender.sendMessage("§7统计: §f/gomoku admin points <玩家> <数量> [原因] §7| §f/gomoku admin resetstats <玩家>");
+    }
+
+    private List<String> filter(List<String> values, String prefix) {
+        String normalized = prefix == null ? "" : prefix.toLowerCase(Locale.ROOT);
+        return values.stream().filter(value -> value.startsWith(normalized)).toList();
+    }
+}

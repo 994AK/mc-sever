@@ -1,0 +1,63 @@
+rooms:
+  '11':
+    world: world
+    board:
+      origin:
+        x: 727
+        y: 64
+        z: -647
+      row-axis: -z
+      column-axis: -x
+    emitters:
+      black:
+        x: 730
+        y: 65
+        z: -654
+      white:
+        x: 710
+        y: 65
+        z: -654
+    seats:
+      black:
+        x: 720.5
+        y: 65.0
+        z: -643.5
+        yaw: 180.0
+        pitch: 0.0
+      white:
+        x: 720.5
+        y: 65.0
+        z: -663.5
+        yaw: 0.0
+        pitch: 0.0
+    spectators:
+      spawn:
+        x: 720.5
+        y: 65.0
+        z: -639.5
+        yaw: 180.0
+        pitch: 0.0
+      exit:
+        x: 720.5
+        y: 65.0
+        z: -637.5
+        yaw: 180.0
+        pitch: 0.0
+      capacity: 24
+    lifecycle:
+      open-by-default: true
+      disconnect-recovery-ticks: 600
+      forfeit-on-disconnect-timeout: true
+    materials:
+      empty-board: STRIPPED_BIRCH_LOG
+      black: BLACK_CONCRETE
+      white: WHITE_CONCRETE
+      floor: SMOOTH_STONE
+      frame: GLASS
+    animation:
+      ticks: 22
+      arc-height: 1.4
+    celebration:
+      fireworks: 3
+    gameplay:
+      auto-reset-ticks: 120

@@ -1,0 +1,78 @@
+menu_title: "&a菜单指南"
+open_command: menunav
+register_command: true
+size: 36
+items:
+  overview:
+    material: COMPASS
+    slot: 4
+    display_name: "&aYuHua 模块菜单"
+    lore:
+      - "&7主菜单负责分流，子菜单负责具体操作。"
+      - "&7每个子菜单底部都有上一页、下一页、主菜单。"
+  teleport:
+    material: ENDER_PEARL
+    slot: 10
+    display_name: "&b1 生存传送"
+    lore:
+      - "&7出生点、/back、公共地标"
+    click_commands:
+      - "[openguimenu] teleport"
+  home:
+    material: RED_BED
+    slot: 11
+    display_name: "&62 家园与地标"
+    lore:
+      - "&7家列表、设置家、删除家"
+    click_commands:
+      - "[openguimenu] home"
+  land:
+    material: GRASS_BLOCK
+    slot: 12
+    display_name: "&23 领地保护"
+    lore:
+      - "&7圈地、木锄、权限、删除"
+    click_commands:
+      - "[openguimenu] land"
+  profile:
+    material: EXPERIENCE_BOTTLE
+    slot: 14
+    display_name: "&d4 奖励外观"
+    lore:
+      - "&7在线奖励和皮肤"
+    click_commands:
+      - "[openguimenu] profile"
+  social:
+    material: PLAYER_HEAD
+    slot: 15
+    display_name: "&b5 玩家社交"
+    lore:
+      - "&7传送请求、私聊、联系管理"
+    click_commands:
+      - "[openguimenu] social"
+  help:
+    material: BOOK
+    slot: 16
+    display_name: "&f6 规则帮助"
+    lore:
+      - "&7规则、菜单、联系管理"
+    click_commands:
+      - "[openguimenu] help"
+  previous:
+    material: ARROW
+    slot: 27
+    display_name: "&7上一页：规则帮助"
+    click_commands:
+      - "[openguimenu] help"
+  main:
+    material: CLOCK
+    slot: 31
+    display_name: "&a回到主菜单"
+    click_commands:
+      - "[openguimenu] main"
+  next:
+    material: SPECTRAL_ARROW
+    slot: 35
+    display_name: "&7下一页：生存传送"
+    click_commands:
+      - "[openguimenu] teleport"

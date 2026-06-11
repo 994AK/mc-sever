@@ -8,13 +8,14 @@ Run this after copying `deploy/guild-project-system-20260609-233455/` into the s
 
 Confirm the server reaches `Done`, then check startup logs for:
 
-- BetterTeams enabled.
+- BetterTeams jar remains disabled unless guild/team features are explicitly re-enabled.
 - Quests enabled.
 - CMI loaded CustomAlias without errors.
-- CommandGUI loaded the menu without slot errors.
+- DeluxeMenus loaded all `gui_menus/*.yml` menus without errors.
+- PlaceholderAPI loaded before DeluxeMenus or DeluxeMenus reported PlaceholderAPI as available.
 - LuckPerms loaded the `default` group.
 
-Do not continue if BetterTeams or Quests fails to load.
+Do not continue if Quests fails to load. If BetterTeams was intentionally re-enabled for this test, do not continue if it fails to load.
 
 ## Default Player Checks
 
@@ -148,8 +149,8 @@ Expected:
 Pass the rollout only if:
 
 - Players can find projects from `/menu` and `/projects`.
-- Players can create or join a BetterTeams team.
+- BetterTeams remains disabled, or if explicitly re-enabled for a later guild test, players can create or join a BetterTeams team.
 - Players can accept at least the daily Quests task.
 - Project rewards remain messages/recognition only at the plugin level.
 - Free `/fly`, admin flight, and BetterTeams convenience power features are blocked for default players.
-- There are no console errors from BetterTeams, Quests, CMI CustomAlias, CommandGUI, or LuckPerms.
+- There are no console errors from BetterTeams, Quests, DeluxeMenus, PlaceholderAPI, CMI CustomAlias, or LuckPerms.

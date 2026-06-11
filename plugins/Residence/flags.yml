@@ -356,7 +356,7 @@ Global:
     title: true
     # Applies to: Residence
     # Allow or deny tnt explosions
-    tnt: false
+    tnt: true
     # Applies to: Both
     # Allow or disallow teleporting to the residence
     tp: true

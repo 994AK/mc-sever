@@ -1,0 +1,97 @@
+menu_title: "&b生存传送"
+open_command: menuteleport
+register_command: true
+size: 36
+items:
+  spawn:
+    material: BEACON
+    slot: 10
+    display_name: "&b出生点"
+    lore:
+      - "&7执行 /spawn，回服务器出生点"
+    click_commands:
+      - "[player] spawn"
+      - "[close]"
+  back:
+    material: ENDER_EYE
+    slot: 11
+    display_name: "&b返回上一个位置"
+    lore:
+      - "&7执行 /back，死亡或传送后返回"
+    click_commands:
+      - "[player] back"
+      - "[close]"
+  warps:
+    material: END_PORTAL_FRAME
+    slot: 12
+    display_name: "&b公共地标"
+    lore:
+      - "&7执行 /warps，查看 spawn/nether/end 等地标"
+    click_commands:
+      - "[player] warps"
+      - "[close]"
+  random:
+    material: CHORUS_FRUIT
+    slot: 13
+    display_name: "&b随机传送"
+    lore:
+      - "&7执行 /rt，随机传送到主世界野外"
+    click_commands:
+      - "[player] rt"
+      - "[close]"
+  tpa:
+    material: NAME_TAG
+    slot: 15
+    display_name: "&7/tpa 玩家名"
+    lore:
+      - "&7向玩家发送传送请求"
+      - "&8点击后只发送示例，不直接执行"
+    click_commands:
+      - "[message] &7请在聊天中输入：&f/tpa 玩家名"
+      - "[close]"
+  tpahere:
+    material: LEAD
+    slot: 16
+    display_name: "&7/tpahere 玩家名"
+    lore:
+      - "&7邀请玩家传送到你这里"
+      - "&8点击后只发送示例，不直接执行"
+    click_commands:
+      - "[message] &7请在聊天中输入：&f/tpahere 玩家名"
+      - "[close]"
+  tpaccept:
+    material: LIME_DYE
+    slot: 21
+    display_name: "&a接受传送请求"
+    lore:
+      - "&7执行 /tpaccept"
+    click_commands:
+      - "[player] tpaccept"
+      - "[close]"
+  tpdeny:
+    material: RED_DYE
+    slot: 23
+    display_name: "&c拒绝传送请求"
+    lore:
+      - "&7执行 /tpdeny"
+    click_commands:
+      - "[player] tpdeny"
+      - "[close]"
+  previous:
+    material: ARROW
+    slot: 27
+    display_name: "&7上一页：规则帮助"
+    click_commands:
+      - "[openguimenu] help"
+  main:
+    material: CLOCK
+    slot: 31
+    display_name: "&a回到主菜单"
+    click_commands:
+      - "[openguimenu] main"
+  next:
+    material: SPECTRAL_ARROW
+    slot: 35
+    display_name: "&7下一页：家园与地标"
+    click_commands:
+      - "[openguimenu] home"

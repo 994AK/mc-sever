@@ -1,0 +1,78 @@
+menu_title: "&b玩家社交"
+open_command: menusocial
+register_command: true
+size: 36
+items:
+  guild:
+    material: CYAN_BANNER
+    slot: 10
+    display_name: "&b公会小队说明"
+    lore:
+      - "&7查看当前公会暂停说明"
+      - "&7当前先用私聊或 helpop 联系管理。"
+    click_commands:
+      - "[player] guildhelp"
+      - "[close]"
+  list:
+    material: PLAYER_HEAD
+    slot: 12
+    display_name: "&b玩家列表"
+    lore:
+      - "&7执行 /list，查看在线玩家"
+    click_commands:
+      - "[player] list"
+      - "[close]"
+  msg:
+    material: WRITABLE_BOOK
+    slot: 14
+    display_name: "&7/msg 玩家名 内容"
+    lore:
+      - "&7私聊"
+    click_commands:
+      - "[message] &7请在聊天中输入：&f/msg 玩家名 内容"
+      - "[close]"
+  reply:
+    material: PAPER
+    slot: 15
+    display_name: "&7/reply 内容"
+    lore:
+      - "&7回复上一条私聊"
+    click_commands:
+      - "[message] &7请在聊天中输入：&f/reply 内容"
+      - "[close]"
+  tpa:
+    material: ENDER_PEARL
+    slot: 16
+    display_name: "&7/tpa 玩家名"
+    lore:
+      - "&7请求传送"
+    click_commands:
+      - "[message] &7请在聊天中输入：&f/tpa 玩家名"
+      - "[close]"
+  helpop:
+    material: BELL
+    slot: 22
+    display_name: "&7/helpop 内容"
+    lore:
+      - "&7联系管理，请写清楚地点和问题"
+    click_commands:
+      - "[message] &7请在聊天中输入：&f/helpop 内容"
+      - "[close]"
+  previous:
+    material: ARROW
+    slot: 27
+    display_name: "&7上一页：奖励外观"
+    click_commands:
+      - "[openguimenu] profile"
+  main:
+    material: CLOCK
+    slot: 31
+    display_name: "&a回到主菜单"
+    click_commands:
+      - "[openguimenu] main"
+  next:
+    material: SPECTRAL_ARROW
+    slot: 35
+    display_name: "&7下一页：规则帮助"
+    click_commands:
+      - "[openguimenu] help"

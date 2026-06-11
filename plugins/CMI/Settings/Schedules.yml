@@ -41,4 +41,31 @@
 # Supports PlaceHolderAPI variables
 # More information about specialized commands can be found at https://www.zrips.net/cmi/commands/specialized/
 
-{}
+drop_item_cleanup:
+  Enabled: true
+  Delay: 600
+  Repeat: true
+  MinPlayers: 1
+  Feedback: false
+  Commands:
+  - broadcast! &6[系统] &e60秒后清理地面掉落物，请及时回收机器产物。
+  - actionbar! &e60秒后清理地面掉落物，请及时回收机器产物。
+  - delay! 30
+  - broadcast! &6[系统] &e30秒后清理地面掉落物，请及时回收。
+  - actionbar! &e30秒后清理地面掉落物
+  - delay! 20
+  - broadcast! &6[系统] &c10秒后清理地面掉落物。
+  - actionbar! &c10秒后清理地面掉落物
+  - delay! 5
+  - actionbar! &c5秒后清理地面掉落物
+  - delay! 2
+  - actionbar! &c3秒
+  - delay! 1
+  - actionbar! &c2秒
+  - delay! 1
+  - actionbar! &c1秒
+  - delay! 1
+  - asConsole! cmi groundclean -w:world -s
+  - asConsole! cmi groundclean -w:world_nether -s
+  - asConsole! cmi groundclean -w:world_the_end -s
+  - broadcast! &6[系统] &a已清理地面掉落物。机器产物请接入箱子/漏斗回收，避免影响世界 TPS。

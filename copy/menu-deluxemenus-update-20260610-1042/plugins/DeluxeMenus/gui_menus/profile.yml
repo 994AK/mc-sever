@@ -1,0 +1,102 @@
+menu_title: "&d奖励与外观"
+open_command: menuprofile
+register_command: true
+size: 36
+items:
+  prewards:
+    material: AMETHYST_SHARD
+    slot: 10
+    display_name: "&d在线奖励"
+    lore:
+      - "&7执行 /prewards，领取可手动领取的在线奖励"
+    click_commands:
+      - "[player] prewards"
+      - "[close]"
+  skins:
+    material: LEATHER_CHESTPLATE
+    slot: 11
+    display_name: "&d皮肤菜单"
+    lore:
+      - "&7执行 /skins，打开 SkinsRestorer 菜单"
+    click_commands:
+      - "[player] skins"
+      - "[close]"
+  ping:
+    material: REDSTONE_TORCH
+    slot: 12
+    display_name: "&d查看延迟"
+    lore:
+      - "&7执行 /ping"
+    click_commands:
+      - "[player] ping"
+      - "[close]"
+  flyc:
+    material: FEATHER
+    slot: 14
+    display_name: "&b飞行开关"
+    lore:
+      - "&7执行 /flyc，消耗 flight charge 飞行"
+    click_commands:
+      - "[player] flyc"
+      - "[close]"
+  flightcharge:
+    material: PHANTOM_MEMBRANE
+    slot: 15
+    display_name: "&b飞行能量"
+    lore:
+      - "&7执行 /flightcharge，查看剩余 flight charge"
+    click_commands:
+      - "[player] flightcharge"
+      - "[close]"
+  skin_set:
+    material: PLAYER_HEAD
+    slot: 20
+    display_name: "&7/skin set 正版名"
+    lore:
+      - "&7直接设置皮肤"
+    click_commands:
+      - "[message] &7请在聊天中输入：&f/skin set 正版名"
+      - "[close]"
+  flyspeed:
+    material: SUGAR
+    slot: 21
+    display_name: "&7/flyspeed 1-3"
+    lore:
+      - "&7调整飞行速度"
+    click_commands:
+      - "[message] &7请在聊天中输入：&f/flyspeed 1"
+      - "[close]"
+  seen:
+    material: SPYGLASS
+    slot: 22
+    display_name: "&7/seen 玩家名"
+    lore:
+      - "&7查看玩家最近在线时间"
+    click_commands:
+      - "[message] &7请在聊天中输入：&f/seen 玩家名"
+      - "[close]"
+  note:
+    material: OAK_SIGN
+    slot: 24
+    display_name: "&7权限边界"
+    lore:
+      - "&7普通玩家有消耗型 flight charge 飞行。"
+      - "&7没有免费 /fly、神装或创造权限。"
+  previous:
+    material: ARROW
+    slot: 27
+    display_name: "&7上一页：领地保护"
+    click_commands:
+      - "[openguimenu] land"
+  main:
+    material: CLOCK
+    slot: 31
+    display_name: "&a回到主菜单"
+    click_commands:
+      - "[openguimenu] main"
+  next:
+    material: SPECTRAL_ARROW
+    slot: 35
+    display_name: "&7下一页：玩家社交"
+    click_commands:
+      - "[openguimenu] social"

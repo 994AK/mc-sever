@@ -1,0 +1,21 @@
+flight_charge_30m:
+  DisplayName: "&b飞行充能"
+  AutoClaim: true
+  Description:
+  - "&7每在线 30 分钟自动获得 10000 点 flight charge"
+  - "&7用 /flyc 开关飞行，/flightcharge 查看剩余能量"
+  PayEvery: 1800
+  Commands:
+  - asConsole! cmi flightcharge add [playerName] 10000
+  - "msg! [playerName] &a你已获得 10000 点飞行充能。&7输入 /flyc 开关飞行。"
+
+phantom_membrane_30m:
+  DisplayName: "&d幻翼膜补给"
+  AutoClaim: false
+  Description:
+  - "&7每在线 30 分钟可领取 20 个幻翼膜"
+  - "&7输入 /prewards 打开奖励列表领取"
+  PayEvery: 1800
+  Commands:
+  - asConsole! minecraft:give [playerName] minecraft:phantom_membrane 20
+  - "msg! [playerName] &a你已领取 20 个幻翼膜。"

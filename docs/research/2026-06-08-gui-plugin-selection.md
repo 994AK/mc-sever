@@ -1,42 +1,42 @@
-# GUI plugin selection, 2026-06-08
+# GUI plugin selection, updated 2026-06-10
 
 ## Recommendation
 
-Use CommandGUI 3.3.0 for the first YuHua服务器 player menu.
+Use DeluxeMenus 1.14.1 for the YuHua服务器 player menu.
 
-Reason: this server only needs a safe, lightweight command launcher for `/menu`
-and a clock shortcut. CommandGUI directly supports Paper/Leaf 1.21-1.21.11,
-has the exact permission split needed for normal players, and does not require
-PlaceholderAPI or a larger menu framework.
+This supersedes the earlier 2026-06-08 CommandGUI recommendation. The current
+implementation removes CommandGUI completely and lets DeluxeMenus register the
+player menu commands directly: `/menu`, `/menunav`, `/menuteleport`,
+`/menuhome`, `/menuland`, `/menuprojects`, `/menuprofile`, `/menusocial`, and
+`/menuhelp`.
 
 ## Options Checked
 
 | Plugin | Current relevant version checked | Fit for YuHua服务器 1.21.11 | Notes |
 | --- | --- | --- | --- |
-| CommandGUI | 3.3.0 | Best first choice | Official Hangar page lists Paper 1.21-1.21.11 support. Provides `/commandgui`, `/commandgui tool`, configurable items, player/console execution, cooldowns, and separate permissions for use, tool, give, reload, and bypass. |
-| CommandPanels | 4.1.6 for 1.21.11 | Best upgrade path for complex menus | More powerful GUI framework with inventory/dialog/Floodgate GUI support and an online editor. Good if YuHua服务器 later needs shops, quests, animations, conditions, or Bedrock-specific menus. It is more than needed for the current simple player utility menu. |
-| DeluxeMenus | 1.14.1 | Mature, but not selected | Very mature and widely used, but the checked Hangar listing only advertises Paper 1.16-1.21.8. It also requires PlaceholderAPI. For a 1.21.11 server, it adds more dependency and version risk than CommandGUI. |
+| DeluxeMenus | 1.14.1-Release | Current implementation | Mature menu framework. `open_command` must be a single word, `register_command: true` registers player-facing commands after restart, external files are loaded through `gui_menus.<id>.file`. Menu buttons use action tags such as `[player]`, `[message]`, `[openguimenu]`, and `[close]`. PlaceholderAPI 2.12.2 is installed for the documented dependency, even though the current menus avoid custom `%...%` expansions. Hangar currently advertises Paper 1.16-1.21.8, so Leaf 1.21.11 still needs runtime confirmation. |
+| CommandGUI | 3.3.0 | Removed | Previously used for the first simple menu and menu clock, but now deleted from active plugins/configs by operator decision. |
+| CommandPanels | 4.1.6 for 1.21.11 | Later upgrade path | More powerful GUI/dialog framework, still useful if the server later needs shops, Bedrock/Floodgate dialogs, or online visual editing. Not used in the current migration. |
 
 ## Sources
 
-- CommandGUI Hangar: https://hangar.papermc.io/Alfie51m/CommandGUI
-- CommandGUI Modrinth v3.3.0: https://modrinth.com/plugin/commandgui/version/v3.3.0
-- CommandPanels CurseForge: https://www.curseforge.com/minecraft/bukkit-plugins/commandpanels
-- CommandPanels Modrinth versions: https://modrinth.com/plugin/commandpanels/versions
+- DeluxeMenus GUI options: https://wiki.helpch.at/helpchat-plugins/deluxemenus/options-and-configurations/gui
+- DeluxeMenus item options: https://wiki.helpch.at/helpchat-plugins/deluxemenus/options-and-configurations/item
+- DeluxeMenus actions: https://wiki.helpch.at/helpchat-plugins/deluxemenus/options-and-configurations/actions
 - DeluxeMenus Hangar: https://hangar.papermc.io/HelpChat/DeluxeMenus
-- DeluxeMenus Spigot: https://www.spigotmc.org/resources/deluxemenus.11734/
+- CommandGUI Hangar: https://hangar.papermc.io/Alfie51m/CommandGUI
+- CommandPanels CurseForge: https://www.curseforge.com/minecraft/bukkit-plugins/commandpanels
 
 ## Implementation Decision
 
-Keep the current implementation on CommandGUI:
-
-- `/menu` opens the menu through CMI CustomAlias.
-- `/menutool` gives the player a replacement clock tool.
-- Normal players only receive `commandgui.use` and `commandgui.tool`.
-- Do not grant `commandgui.reload`, `commandgui.give`, or
-  `commandgui.bypass` to the default group.
-- Run normal utility actions as the player whenever possible, so the menu does
-  not bypass LuckPerms.
-
-Revisit CommandPanels only if the server later needs multi-page menus, Bedrock
-dialog support, online visual editing, advanced conditions, or animated menus.
+- `plugins/DeluxeMenus/config.yml` loads all menu files from
+  `plugins/DeluxeMenus/gui_menus/` via `gui_menus.<id>.file`.
+- Every player menu uses a single-word `open_command` and `register_command:
+  true`, so normal players do not need `/dm open`.
+- Menu-to-menu navigation uses `[openguimenu] <menu>`.
+- Direct utility actions run as the player with `[player] <command>` to preserve
+  LuckPerms boundaries.
+- Parameterized commands do not auto-run; the menu sends a `[message]` prompt
+  with the command the player should type.
+- `/menutool` remains a CMI alias that gives a reminder clock and points players
+  back to `/menu`; it no longer depends on CommandGUI's right-click tool.

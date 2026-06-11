@@ -8,9 +8,9 @@ currentStages:
 - 0
 quest-points: 0
 completedRedoableQuests:
-- weekly-project-board-support
 - weekly-redstone-support
 - daily-project-checkin
+- weekly-project-board-support
 completedQuestTimes:
 - 1781022745582
 - 1781022745582

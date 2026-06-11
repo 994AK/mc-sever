@@ -41,7 +41,7 @@ Configured boundaries:
 - Towny/Lands/HuskTowns: too heavy for the current identity; they introduce land politics, taxes, claims, nations, or war-shaped assumptions.
 - mcMMO/AuraSkills/Jobs Reborn: pushes the server toward personal progression, skill power, job economy, and grind loops.
 - EliteMobs/RPG-style packs: directly conflicts with "not combat power" and "no overpowered weapons".
-- CommandPanels: useful later for richer menus, but current CommandGUI can carry the v1 entry points without replacing the menu stack.
+- CommandPanels: useful later for richer menus, but current DeluxeMenus setup can carry the v1 entry points without replacing the menu stack again.
 
 ## Sources
 
