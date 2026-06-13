@@ -1,0 +1,15 @@
+lp group default permission set cmi.customalias.menutool true
+lp group default permission set cmi.customalias.menugame true
+lp group default permission set leaffriends.use true
+lp group default permission set leafrecycle.use true
+lp group default permission set leafrecycle.submit true
+lp group default permission set fakeplayer.action true
+lp group default permission set fakeplayer.limit.1 true
+lp group default permission set fakeplayer.spawn true
+lp group default permission set leafchain.use true
+lp group default permission set leafchain.crop.collect true
+lp group default permission set leafchain.crop.sow true
+lp group default permission set leafchain.crop.till true
+lp group default permission set leafchain.crop.fertilize true
+lp group default permission set leafchain.tree true
+lp group default permission set leafchain.ore true

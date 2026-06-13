@@ -1,6 +1,7 @@
 package net.leafmc.chainharvest
 
 import java.io.File
+import java.util.UUID
 import java.util.logging.Logger
 import org.bukkit.Material
 import org.bukkit.configuration.file.FileConfiguration
@@ -79,6 +80,72 @@ class SettingsStore(
     ): LeafChainSettings {
         val state = YamlConfiguration.loadConfiguration(file)
         state.set("materials.${group.key}.${material.name}", enabled)
+        save(state)
+        return load(config, logger)
+    }
+
+    fun loadPlayerSettings(playerId: UUID): PlayerChainSettings {
+        val state = YamlConfiguration.loadConfiguration(file)
+        val root = "players.$playerId"
+        return PlayerChainSettings(
+            actions = FarmAction.entries.filterTo(linkedSetOf()) { action ->
+                state.getBoolean("$root.actions.${action.key}", false)
+            },
+            groups = MaterialGroup.entries.filterTo(linkedSetOf()) { group ->
+                state.getBoolean("$root.groups.${group.key}", false)
+            },
+        )
+    }
+
+    fun applyPlayerPreset(playerId: UUID, playerName: String, preset: ChainPreset): PlayerChainSettings {
+        val state = YamlConfiguration.loadConfiguration(file)
+        val root = "players.$playerId"
+        state.set("$root.name", playerName)
+        when (preset) {
+            ChainPreset.FARM -> {
+                setPlayerActions(state, root, setOf(FarmAction.COLLECT, FarmAction.SOW, FarmAction.TILL, FarmAction.FERTILIZE), true)
+                setPlayerGroups(state, root, setOf(MaterialGroup.CROPS), true)
+            }
+            ChainPreset.CHAIN -> setPlayerGroups(state, root, setOf(MaterialGroup.TREES, MaterialGroup.ORES), true)
+            ChainPreset.ALL -> {
+                setPlayerActions(state, root, FarmAction.entries.toSet(), true)
+                setPlayerGroups(state, root, MaterialGroup.entries.toSet(), true)
+            }
+            ChainPreset.OFF -> {
+                setPlayerActions(state, root, FarmAction.entries.toSet(), false)
+                setPlayerGroups(state, root, MaterialGroup.entries.toSet(), false)
+            }
+        }
+        save(state)
+        return loadPlayerSettings(playerId)
+    }
+
+    fun applyPreset(preset: ChainPreset, config: FileConfiguration, logger: Logger): LeafChainSettings {
+        val state = YamlConfiguration.loadConfiguration(file)
+        val current = load(config, logger)
+
+        when (preset) {
+            ChainPreset.FARM -> {
+                setActions(state, setOf(FarmAction.COLLECT, FarmAction.SOW, FarmAction.TILL, FarmAction.FERTILIZE), true)
+                setMaterials(state, MaterialGroup.CROPS, current.materialsFor(MaterialGroup.CROPS), true)
+            }
+            ChainPreset.CHAIN -> {
+                setMaterials(state, MaterialGroup.TREES, current.materialsFor(MaterialGroup.TREES), true)
+                setMaterials(state, MaterialGroup.ORES, current.materialsFor(MaterialGroup.ORES), true)
+            }
+            ChainPreset.ALL -> {
+                setActions(state, FarmAction.entries.toSet(), true)
+                MaterialGroup.entries.forEach { group ->
+                    setMaterials(state, group, current.materialsFor(group), true)
+                }
+            }
+            ChainPreset.OFF -> {
+                setActions(state, FarmAction.entries.toSet(), false)
+                MaterialGroup.entries.forEach { group ->
+                    setMaterials(state, group, current.materialsFor(group), false)
+                }
+            }
+        }
         save(state)
         return load(config, logger)
     }
@@ -162,6 +229,22 @@ class SettingsStore(
         state.save(file)
     }
 
+    private fun setActions(state: YamlConfiguration, actions: Set<FarmAction>, enabled: Boolean) {
+        actions.forEach { action -> state.set("actions.${action.key}", enabled) }
+    }
+
+    private fun setMaterials(state: YamlConfiguration, group: MaterialGroup, materials: Set<Material>, enabled: Boolean) {
+        materials.forEach { material -> state.set("materials.${group.key}.${material.name}", enabled) }
+    }
+
+    private fun setPlayerActions(state: YamlConfiguration, root: String, actions: Set<FarmAction>, enabled: Boolean) {
+        actions.forEach { action -> state.set("$root.actions.${action.key}", enabled) }
+    }
+
+    private fun setPlayerGroups(state: YamlConfiguration, root: String, groups: Set<MaterialGroup>, enabled: Boolean) {
+        groups.forEach { group -> state.set("$root.groups.${group.key}", enabled) }
+    }
+
     private fun bool(config: YamlConfiguration, path: String, defaultValue: Boolean): Boolean {
         return if (config.contains(path)) config.getBoolean(path) else defaultValue
     }
@@ -169,6 +252,20 @@ class SettingsStore(
     private fun defaultPermission(action: FarmAction): String = when (action) {
         FarmAction.COLLECT -> "leafchain.crop.collect"
         FarmAction.SOW -> "leafchain.crop.sow"
+        FarmAction.TILL -> "leafchain.crop.till"
         FarmAction.FERTILIZE -> "leafchain.crop.fertilize"
+    }
+}
+
+enum class ChainPreset(val key: String, val displayName: String) {
+    FARM("farm", "农作物全套"),
+    CHAIN("chain", "木头矿物连锁"),
+    ALL("all", "全部功能"),
+    OFF("off", "全部关闭");
+
+    companion object {
+        fun parse(raw: String?): ChainPreset? {
+            return entries.firstOrNull { it.key == raw?.lowercase(java.util.Locale.ROOT) }
+        }
     }
 }

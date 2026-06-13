@@ -18,7 +18,7 @@
 - AuthMe enabled for offline login/register.
 - NobleWhitelist installed but disabled.
 - LuckPerms storage is YAML.
-- DeluxeMenus owns `/menu`, `/menunav`, `/menuteleport`, `/menuhome`, `/menuland`, `/menuprojects`, `/menuprofile`, `/menusocial`, and `/menuhelp`; CMI CustomAlias only provides `/menutool` for a menu reminder clock.
+- DeluxeMenus owns `/menu`, `/menuteleport`, `/menuprofile`, and `/menuprojects`; CMI CustomAlias provides `/menutool` and `/menugame`; LeafMenuTool opens `/menu` when a player right-clicks the named menu clock.
 - PlaceholderAPI is installed for DeluxeMenus placeholder/message integration; the DeluxeMenus main menu uses `%leafgomoku_room_count%` from LeafGomoku.
 - CMI CustomAlias provides `/projects`, `/daily`, `/guildhelp`, `/proposal`, `/projectrewards`, and `/projectsubmit`; CMI does not intercept `/guild`.
 - BetterTeams config is retained but the jar is currently disabled; guild/team player features stay paused.
@@ -51,6 +51,7 @@
 | CMI | 9.8.7.7 | `plugins/CMI-9.8.7.7.jar` |
 | SimpleChat | 1.2.0 | `plugins/SimpleChat-1.2.0.jar` |
 | DeluxeMenus | 1.14.1-Release | `plugins/DeluxeMenus-1.14.1-Release.jar` |
+| LeafMenuTool | 0.1.0 | `plugins/LeafMenuTool-0.1.0.jar` |
 | PlaceholderAPI | 2.12.2 | `plugins/PlaceholderAPI-2.12.2.jar` |
 | LeafGomoku | 0.1.0 | `plugins/LeafGomoku-0.1.0.jar` |
 | LeafFriends | 0.1.0 | `plugins/LeafFriends-0.1.0.jar` |

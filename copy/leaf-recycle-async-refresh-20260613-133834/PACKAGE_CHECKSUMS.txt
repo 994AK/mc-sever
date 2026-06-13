@@ -1,0 +1,7 @@
+c95815f138d7789755f0cc2ce3bb3482fb47afbf07543701f1d2d0bbc0106fa7  ./LUCKPERMS-COMMANDS.txt
+160c6ed32670ed01df4cd1ba1de26969e0314b1c04f8410855c70530a523a6c4  ./README.md
+990385fe79321a157d17ba1b5962f54751f25480a4b9e1f0aba1b70aa3eec422  ./plugins/CMI/Settings/Alias.yml
+bf053c1dc2d3b6a003deb47b991fe43d31f4150e098b05a3bf90353c89e54b27  ./plugins/CMI/Settings/Modules.yml
+593675fe849b74d862e4b3d9dbcfcd818e9868cb272ff6dc24630f7f646255ee  ./plugins/CMI/Settings/Schedules.yml
+1badb1698745bea5feb2a6c76b4838409c5573e9cd2b624b69059c001dc976fc  ./plugins/LeafRecycle-0.1.0.jar
+ce651e576e5782fb83f713d92825d58f50578350b6b282bf195ecc5f90e13076  ./plugins/LeafRecycle/config.yml

@@ -18,6 +18,7 @@ permissions:
     children:
       leafchain.crop.collect: true
       leafchain.crop.sow: true
+      leafchain.crop.till: true
       leafchain.crop.fertilize: true
       leafchain.tree: true
       leafchain.ore: true
@@ -26,6 +27,9 @@ permissions:
     default: true
   leafchain.crop.sow:
     description: Allows area sowing actions.
+    default: true
+  leafchain.crop.till:
+    description: Allows area tilling actions.
     default: true
   leafchain.crop.fertilize:
     description: Allows area fertilizing actions.
@@ -53,6 +57,7 @@ permissions:
     default: op
     children:
       leafchain.use: true
+      leafchain.crop.till: true
       leafchain.tree: true
       leafchain.ore: true
       leafchain.reload: true

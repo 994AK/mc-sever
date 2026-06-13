@@ -65,6 +65,22 @@ public final class RecycleGui implements Listener {
         player.openInventory(inventory);
     }
 
+    public void refreshOpenClaimViews() {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            Inventory inventory = player.getOpenInventory().getTopInventory();
+            if (!(inventory.getHolder() instanceof ClaimHolder holder)) {
+                continue;
+            }
+            if (!holder.owner.equals(player.getUniqueId())) {
+                continue;
+            }
+            inventory.clear();
+            holder.actions.clear();
+            fillClaimInventory(holder, inventory);
+            player.updateInventory();
+        }
+    }
+
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         if (!(event.getInventory().getHolder() instanceof RecycleHolder holder)) {
@@ -121,7 +137,9 @@ public final class RecycleGui implements Listener {
             return;
         }
         RecycleService.AddResult result = plugin.recycle().addItems(submitted, player.getUniqueId(), player.getName());
-        plugin.saveRecycleData();
+        if (result.acceptedItems() > 0) {
+            plugin.recyclePoolChanged();
+        }
         for (ItemStack rejected : result.rejectedStacks()) {
             Map<Integer, ItemStack> leftovers = player.getInventory().addItem(rejected);
             leftovers.values().forEach(item -> player.getWorld().dropItemNaturally(player.getLocation(), item));
@@ -279,12 +297,11 @@ public final class RecycleGui implements Listener {
     private void handleEntryClick(Player player, ClaimHolder holder, String entryId, ClickType click) {
         if (holder.admin && click.isRightClick()) {
             if (plugin.recycle().delete(entryId)) {
-                plugin.saveRecycleData();
+                plugin.recyclePoolChanged();
                 player.sendMessage(plugin.prefix() + "已删除这一组回收物。");
             } else {
                 player.sendMessage(plugin.prefix() + "这一组物品已经不存在。");
             }
-            openAdmin(player, holder.page);
             return;
         }
 
@@ -309,9 +326,8 @@ public final class RecycleGui implements Listener {
         if (!leftovers.isEmpty()) {
             leftovers.values().forEach(leftover -> player.getWorld().dropItemNaturally(player.getLocation(), leftover));
         }
-        plugin.saveRecycleData();
+        plugin.recyclePoolChanged();
         player.sendMessage(plugin.prefix() + (holder.admin ? "已取出 " : "已领取 ") + describe(claimed) + "。");
-        openSameMode(player, holder, holder.page);
     }
 
     private void openSameMode(Player player, ClaimHolder holder, int page) {

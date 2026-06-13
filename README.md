@@ -99,7 +99,7 @@ LuckPerms 已切到 `yaml` 存储，分组文件在 `plugins/LuckPerms/yaml-stor
 
 已内置三组：
 
-- `default`：普通玩家，称号 `[玩家]`，有 `/menu`、`/menutool`、`/menunav`、`/menuteleport`、`/menuhome`、`/menuland`、`/menugomoku`、`/menufriends`、`/menuprojects`、`/menuprofile`、`/menusocial`、`/menuhelp`、`/gomoku gui`、`/gomoku join`、`/gomoku spectate`、`/gomoku stats`、`/gomoku leaderboard`、`/friend`、`/friends`、`/f`、`/projects`、`/daily`、`/guildhelp`、`/proposal`、`/projectrewards`、`/projectsubmit`、`/spawn`、`/back`、`/rt`、`/rtp`、`/flyc`、`/flightcharge`、`/flyspeed 1-3`、`/home`、`/sethome`、`/delhome`、`/tpa`、`/tpahere`、`/tpaccept`、`/tpdeny`、`/tpacancel`、`/msg`、`/reply`、`/mail`、`/pay`、`/balance`、`/baltop`、`/afk`、自动 AFK、`/warps`、`/warp`、`/rules`、`/ping`、`/list`、`/seen`、`/ignore`、`/ignorelist`、`/helpop`、`/suicide` 等基础 CMI 命令；默认 3 个家，保留死亡 `/back`，同时有 SkinsRestorer 皮肤命令、Residence 领地命令、Quests 基础任务命令和当前公会暂停说明入口。
+- `default`：普通玩家，称号 `[玩家]`，主要入口是 `/menu`、`/menuprofile`、`/menuteleport`、`/menugame`/`/menuprojects`、`/menugomoku`、`/menufriends`、`/menutool`；同时保留 `/spawn`、`/back`、`/rt`、`/homes`、`/sethome`、`/tpa`、`/flyc`、`/flightcharge`、`/recycle`、`/fp`、`/projects`、`/daily`、`/rules`、`/helpop` 等玩家侧基础命令。默认 3 个家、每人最多 1 个假人，保留死亡 `/back` 和消耗型 flight charge 飞行；没有 WorldEdit、CoreProtect 回滚、创造、免费 `/fly`、给别人飞行、管理或强制传送权限。
 - `builder`：建筑/创造组，继承 `default`，称号 `[建筑]`，有 `worldedit.*`、飞行、创造模式、上帝、修复、治疗等命令。
 - `admin`：管理组，继承 `builder`，称号 `[管理]`，有 `*`、CoreProtect 和 Residence 管理权限。
 
@@ -131,59 +131,54 @@ lp user 玩家名 meta setprefix 80 "&6[服主]&r "
 
 已安装 DeluxeMenus 1.14.1，用于普通玩家快捷菜单；同时将 PlaceholderAPI 升级并补齐到 2.12.2，作为 DeluxeMenus 的官方依赖/软依赖。CommandGUI 已从活跃插件和配置中删除。
 
-GUI 插件选型记录见 `docs/research/2026-06-08-gui-plugin-selection.md`。当前结论按 2026-06-10 的迁移结果更新为：
-玩家主菜单使用 DeluxeMenus；`/menu` 和常规 `/menu*` 子菜单命令由 DeluxeMenus 自己注册，CMI 不再接管这些菜单命令。五子棋的 `/menugomoku` 由 LeafGomoku 注册为动态房间大厅，DeluxeMenus 主菜单只负责跳转。
+GUI 插件选型记录见 `docs/research/2026-06-08-gui-plugin-selection.md`。玩家主菜单使用 DeluxeMenus；`/menu` 只保留玩家便捷、传送点、游戏功能三类入口。五子棋的 `/menugomoku` 由 LeafGomoku 注册为动态房间大厅，DeluxeMenus 主菜单只负责跳转。
 
 玩家可用：
 
 ```text
 /menu
 /menutool
-/menunav
+/menuprofile
 /menuteleport
-/menuhome
-/menuland
+/menugame
+/menuprojects
 /menugomoku
 /menufriends
-/menuprojects
-/menuprofile
-/menusocial
-/menuhelp
 ```
 
 - `/menu`：打开模块化主菜单。
-- `/menutool`：菜单钟丢失时重新领取一个提示物。当前菜单钟不绑定右键打开，打开菜单请直接输入 `/menu`。
-- `/menu*`：直接打开对应模块子菜单。
+- `/menutool`：菜单钟丢失时重新领取一个菜单钟；右键菜单钟或输入 `/menu` 都可以打开主菜单。
+- `/menuprofile`：打开玩家便捷页。
+- `/menuteleport`：打开传送点页。
+- `/menugame` / `/menuprojects`：打开游戏功能页。
 - `/menugomoku`：打开 LeafGomoku 动态房间大厅。
 - `/menufriends`：打开 LeafFriends 好友菜单。
 
-菜单主界面使用 27 格布局，子菜单使用 36 或 45 格布局。第一行是模块入口，第二行保留最常用直达，底部放上一页 / 回主菜单 / 下一页导航。
+菜单主界面使用 27 格布局，第一行是三类入口，第二行保留最常用直达。子菜单只保留三页，底部提供三类之间的横向跳转和回主菜单，不再让玩家在七八个子菜单里层层找功能。
 
 模块入口：
 
-- `生存传送`：出生点、死亡返回、随机传送、公共地标、传送请求。
-- `家园与地标`：家列表、设置家、删除家、公共地标。
-- `领地保护`：圈地流程、领取木锄、快速 48x16x48、领地列表、限制、授权、删除和规范。
-- `五子棋`：动态大厅、主房间加入/观战、统计和排行榜。
-- `项目日活`：本周项目、每日任务、公会说明、提案、奖励边界和验收提交。
-- `奖励与外观`：在线奖励、飞行充能、皮肤菜单、延迟和皮肤设置说明。
-- `玩家社交`：好友列表、好友申请、好友传送、私聊、回复、传送请求、公会小队说明。
-- `规则与帮助`：服务器规则、菜单指南、菜单钟、联系管理。
+- `玩家便捷`：家、在线奖励、飞行能量、皮肤、好友、私聊、联系管理、菜单钟、规则和屏蔽/邮件提示。
+- `传送点`：出生点、死亡返回、公共地标、随机传送、家、设置/删除家、玩家传送请求。
+- `游戏功能`：资源回收站、投放回收站、连锁采集说明、五子棋、领地、假人、本周项目、每日任务和任务入口。
 
 配色约定：
 
-- 蓝色：传送 / 移动。
-- 金色：家园 / 地标。
-- 绿色：领地 / 生存保护。
-- 黑白：五子棋 / 观战。
-- 黄色：项目 / 公共建设。
-- 紫色：奖励 / 外观。
-- 白色：规则 / 帮助。
-- 红色：风险动作 / 联系管理。
+- 绿色：玩家便捷、好友、回收站等对玩家直接有利的入口。
+- 蓝色：传送、移动、飞行。
+- 金色：家、设置家、删除家。
+- 黄色：游戏功能、项目、假人、任务。
+- 深绿色：领地、连锁采集。
+- 紫色：奖励、外观。
+- 白色：规则、五子棋等中性入口。
+- 红色：风险动作、删除、联系管理。
+- 灰色：功能说明；深灰：插件来源；白色命令：实际执行或提示的命令格式。
 
 需要参数的功能不会在菜单里直接执行失败命令，而是点击后发送示例命令提示，例如 `/sethome 家名`、`/tpa 玩家名`、`/helpop 内容`。可以直接执行的功能才做点击执行，例如 `/spawn`、`/back`、`/homes`、`/prewards`。
 
-随机传送使用 CMI 原生 `/rt`，同时打开 `/rtp` 别名。当前只开放主世界随机传送，范围是以 0,0 为中心的 500-1000 格，避开水、岩浆、树叶和常见海洋/河流生物群系。
+菜单内的说明类和状态类按钮默认不关闭菜单。所有 active 菜单项都显式配置左键和右键命令；会打开其它插件 GUI 的入口不再先关闭当前菜单，传送类按钮执行命令后才关闭菜单。
+
+随机传送使用 CMI 原生 `/rt`，同时打开 `/rtp` 别名。当前只开放主世界随机传送，范围是以 0,0 为中心的环形 1500-5000 格，避开水、岩浆、树叶和常见海洋/河流生物群系。
 
 普通玩家不需要 DeluxeMenus 管理权限，也不开放 `/dm open`、`/dm reload`、`deluxemenus.admin`、`deluxemenus.open` 或 bypass 权限。
 
@@ -282,13 +277,14 @@ lp group admin permission set leafsoulbind.bypass true
 
 ## 连锁采集 / 农作物工具
 
-已加入 LeafChainHarvest 0.1.0，用于降低重复采集操作：右键成熟农作物收割并自动补种，手持种子在范围内播种，手持骨粉在范围内施肥，斧头连锁砍木头，镐子连锁挖矿物。
+已加入 LeafChainHarvest 0.1.0，用于降低重复采集操作：右键成熟农作物收割并自动补种，手持种子在范围内播种，手持锄头批量耕地，手持骨粉在范围内施肥，斧头连锁砍木头，镐子连锁挖矿物。
 
 默认是全关状态：`收集`、`播种`、`施肥` 和所有材料都需要管理员在 `/leafchain menu` 里点亮后才生效。默认目录是保守的：农作物、原木/木头/菌柄/菌核及其去皮变种、矿石和远古残骸会出现在菜单里；石头、深板岩、凝灰岩、地狱岩、泥土、沙子、砂砾、末地石、树叶、木板等基础或建筑方块不在默认目录中。
 
 玩家侧行为：
 
 - 成熟小麦、胡萝卜、马铃薯、甜菜、地狱疣、可可豆右键收割后会延迟 1 tick 原地补种。
+- 手持锄头右键草方块、泥土、砂土、土径，可批量变成耕地。
 - 甘蔗、竹子、仙人掌只收集上方可收获部分，底部保留。
 - 西瓜、南瓜走玩家破坏路径收集。
 - 连锁砍树和连锁挖矿都通过 `Player#breakBlock` 执行，保留 Bukkit/Paper 事件、掉落、经验、工具、耐久和其它插件取消能力。
@@ -298,13 +294,30 @@ lp group admin permission set leafsoulbind.bypass true
 
 ```text
 /leafchain menu
+/leafchain preset farm
+/leafchain preset chain
+/leafchain preset all
+/leafchain preset off
 /leafchain reload
 /lch menu
 ```
 
-管理菜单里绿色高亮表示允许，红色表示关闭；可以切换 `收集`、`播种`、`施肥`，也可以分别管理农作物、木头、矿物材料。菜单点击状态写入 `plugins/LeafChainHarvest/settings.yml`。如果要让旧服也回到全关状态，需要停服后覆盖这个文件；如果要保留线上已经点亮的菜单状态，就不要覆盖它。
+开关是两层：管理员先决定“全服允许哪些功能/材料”，玩家再决定“自己要不要启用”。默认两层都是关闭状态。A 玩家执行个人开启不会影响 B 玩家。
 
-Residence 边界：收割、砍树、挖矿走玩家破坏事件；自动补种、播种和施肥是额外改方块动作，默认要求 Residence 可用并逐点检查 build 权限。如果没有 Residence，这些额外放置/生长动作默认拒绝；只有明确把 `protection.unsafe-fallback-without-residence: true` 打开才会允许无保护降级。
+玩家不用 GUI，自己执行：
+
+```text
+/leafchain self farm
+/leafchain self chain
+/leafchain self all
+/leafchain self off
+```
+
+管理员可以直接用预设命令设置全服允许范围：`/leafchain preset farm` 一键允许农作物收集、播种、耕地、施肥和全部农作物材料；`/leafchain preset chain` 一键允许木头和矿物材料；`/leafchain preset all` 全部允许；`/leafchain preset off` 全部关闭。
+
+管理菜单只改全服允许范围：绿色高亮表示允许，红色表示关闭；可以切换 `收集`、`播种`、`耕地`、`施肥`，也可以分别管理农作物、木头、矿物材料。全服开关和玩家个人开关都写入 `plugins/LeafChainHarvest/settings.yml`。如果要让旧服也回到全关状态，需要停服后覆盖这个文件；如果要保留线上已经点亮的全服/个人状态，就不要覆盖它。
+
+Residence 边界：收割、砍树、挖矿走玩家破坏事件；自动补种、播种、耕地和施肥是额外改方块动作，默认要求 Residence 可用并逐点检查 build 权限。如果没有 Residence，这些额外放置/生长动作默认拒绝；只有明确把 `protection.unsafe-fallback-without-residence: true` 打开才会允许无保护降级。
 
 后台 LuckPerms 指令：
 
@@ -312,6 +325,7 @@ Residence 边界：收割、砍树、挖矿走玩家破坏事件；自动补种�
 lp group default permission set leafchain.use true
 lp group default permission set leafchain.crop.collect true
 lp group default permission set leafchain.crop.sow true
+lp group default permission set leafchain.crop.till true
 lp group default permission set leafchain.crop.fertilize true
 lp group default permission set leafchain.tree true
 lp group default permission set leafchain.ore true
@@ -413,7 +427,7 @@ GUI 入口：
 
 - BetterTeams 配置保留，但当前玩家侧公会创建、加入、邀请、聊天和公会名展示暂时下架；项目参与先通过项目负责人或 `/helpop 内容` 登记。
 - Quests 只用于每日/每周轻任务入口；任务完成不会自动算公会贡献，不自动发强奖励。
-- DeluxeMenus 提供 `/menu` 和 `/menu*` 模块菜单。
+- DeluxeMenus 提供 `/menu`、玩家便捷、传送点和游戏功能三类菜单。
 - CMI CustomText + CustomAlias 继续提供 `/projects`、`/daily`、`/guildhelp`、`/proposal`、`/projectrewards`、`/projectsubmit` 等文字说明入口。
 
 贡献确认方式仍然是项目负责人名单 + 可见成果 + 截图/坐标/物资记录 + 管理验收。奖励只给项目记录、署名、展示、称号候选和少量非战斗补给；禁止免费 `/fly`、额外 flight charge 奖励、神装、高效率工具、创造、WorldEdit、CoreProtect、强制传送和管理权限。
@@ -540,7 +554,7 @@ CMI 自带的 `/skin` 已关闭，避免两个插件抢同一个命令。
 /res unstuck
 ```
 
-默认使用木锄或 `/res select` 选择范围。`/menuland` 子菜单会提供圈地步骤、木锄、快速 48x16x48、领地列表、限制查看、权限提示、删除流程和圈地规范。
+默认使用木锄或 `/res select` 选择范围。当前玩家菜单的“游戏功能”页提供领取木锄、快速 48x16x48、领地列表、限制查看、授权提示和删除流程入口。
 
 管理常用命令：
 
@@ -639,12 +653,14 @@ chunky pause
 - CMI 9.8.7.7：基础命令、经济、AFK、生物头
 - SimpleChat 1.2.0：普通公屏聊天格式
 - DeluxeMenus 1.14.1：玩家快捷菜单和模块子菜单入口
+- LeafMenuTool 0.1.0：右键菜单钟打开 `/menu`
 - PlaceholderAPI 2.12.2：DeluxeMenus 占位符和消息处理依赖
 - SkinsRestorer 15.12.0：离线服皮肤恢复和切换
 - Residence 6.0.1.8：玩家领地保护和防熊
 - TAB 6.0.3 Vanilla：两列式玩家列表、玩家称号和延迟显示
 - LeafGomoku 0.1.0：主城五子棋房间平台插件
 - LeafFriends 0.1.0：好友申请、好友列表、好友私聊、好友传送请求和隐私开关
+- LeafRecycle 0.1.0：公共资源回收站和玩家投放入口
 - LeafChainHarvest 0.1.0：农作物右键收割补种、播种施肥、连锁砍木头和连锁挖矿物
 - BetterTeams 5.1.2（jar 已禁用）：轻公会/小队配置保留，玩家侧功能暂停
 - Quests 5.3.1：每日/每周轻任务入口
@@ -706,6 +722,7 @@ CMILib 可能会提示无法下载部分 `Translations/Items/items_*.yml`，这�
 - `plugins/PlaceholderAPI-2.12.2.jar`：DeluxeMenus 占位符和消息处理依赖
 - `plugins/DeluxeMenus/config.yml`：DeluxeMenus 菜单加载配置
 - `plugins/DeluxeMenus/gui_menus/`：模块化玩家主菜单和子菜单配置
+- `plugins/LeafMenuTool-0.1.0.jar`：右键菜单钟打开 `/menu`
 - `plugins/LeafGomoku-0.1.0.jar`：五子棋房间平台插件
 - `plugins/LeafGomoku/config.yml`：五子棋 legacy main 房间迁移源和默认模板
 - `plugins/LeafGomoku/rooms.yml`：五子棋房间坐标、座位、观众点和生命周期配置
@@ -713,6 +730,8 @@ CMILib 可能会提示无法下载部分 `Translations/Items/items_*.yml`，这�
 - `plugins/LeafFriends-0.1.0.jar`：好友系统插件
 - `plugins/LeafFriends/config.yml`：好友申请、好友传送、冷却和 GUI 配置
 - `plugins/LeafFriends/friends.yml`：运行时生成的好友关系、隐私设置、黑名单和可信好友免确认传送数据
+- `plugins/LeafRecycle-0.1.0.jar`：资源回收站插件
+- `plugins/LeafRecycle/config.yml`：回收站清理、投放和提示配置
 - `plugins/LeafSoulbind-0.1.0.jar`：物品锁和灵魂绑定插件
 - `plugins/LeafSoulbind/config.yml`：物品锁、死亡返还、容器保护和中文提示配置
 - `plugins/LeafSoulbind/pending-returns.yml`：运行时生成的死亡后待返还物品暂存数据

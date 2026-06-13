@@ -5,12 +5,23 @@ messages:
   reloaded: "{prefix}已重载连锁采集配置。"
   menu-opened: "{prefix}已打开连锁采集管理菜单。"
   toggled: "{prefix}{target} 已切换为 {state}。"
+  preset-applied: "{prefix}已应用预设：§a{name}§f。"
+  preset-usage: "{prefix}用法：§7/leafchain preset <farm|chain|all|off>"
+  self-preset-applied: "{prefix}你的个人连锁开关已切换为：§a{name}§f。"
+  self-preset-usage: "{prefix}用法：§7/leafchain self <farm|chain|all|off>"
   protected: "{prefix}§c这个位置受保护，已跳过。"
   sowed: "{prefix}已播种 §a{count} §f处。"
+  tilled: "{prefix}已耕地 §a{count} §f处。"
   fertilized: "{prefix}已施肥 §a{count} §f处。"
   help:
     - "{prefix}命令："
+    - "§7/leafchain self farm §f自己开启农作物收集/播种/耕地/施肥"
+    - "§7/leafchain self chain §f自己开启木头和矿物连锁"
+    - "§7/leafchain self all|off §f自己全部开启或关闭"
     - "§7/leafchain menu §f打开管理菜单"
+    - "§7/leafchain preset farm §f一键开启农作物收集/播种/耕地/施肥"
+    - "§7/leafchain preset chain §f一键开启木头和矿物连锁"
+    - "§7/leafchain preset all|off §f全部开启或关闭"
     - "§7/leafchain reload §f重载配置"
 
 gui:
@@ -26,6 +37,11 @@ actions:
     permission: "leafchain.crop.sow"
     radius: 3
     max-targets: 24
+  till:
+    enabled: false
+    permission: "leafchain.crop.till"
+    radius: 3
+    max-targets: 48
   fertilize:
     enabled: false
     permission: "leafchain.crop.fertilize"

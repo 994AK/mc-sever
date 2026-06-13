@@ -34,6 +34,10 @@ class FarmActionListener(private val plugin: LeafChainHarvestPlugin) : Listener 
             event.isCancelled = true
             return
         }
+        if (tryTill(player, clicked)) {
+            event.isCancelled = true
+            return
+        }
         if (tryFertilize(player, clicked)) {
             event.isCancelled = true
         }
@@ -43,7 +47,12 @@ class FarmActionListener(private val plugin: LeafChainHarvestPlugin) : Listener 
         val settings = plugin.settings()
         val action = settings.action(FarmAction.COLLECT)
         val crops = settings.crops
-        if (!crops.enabled || !action.enabled || !player.hasPermission(action.permission)) {
+        if (!crops.enabled ||
+            !action.enabled ||
+            !plugin.playerActionEnabled(player, FarmAction.COLLECT) ||
+            !plugin.playerGroupEnabled(player, MaterialGroup.CROPS) ||
+            !player.hasPermission(action.permission)
+        ) {
             return false
         }
         if (crops.disableWhenSneaking && player.isSneaking) {
@@ -119,7 +128,12 @@ class FarmActionListener(private val plugin: LeafChainHarvestPlugin) : Listener 
     private fun trySow(player: Player, clicked: Block): Boolean {
         val settings = plugin.settings()
         val action = settings.action(FarmAction.SOW)
-        if (!settings.crops.enabled || !action.enabled || !player.hasPermission(action.permission)) {
+        if (!settings.crops.enabled ||
+            !action.enabled ||
+            !plugin.playerActionEnabled(player, FarmAction.SOW) ||
+            !plugin.playerGroupEnabled(player, MaterialGroup.CROPS) ||
+            !player.hasPermission(action.permission)
+        ) {
             return false
         }
         val hand = player.inventory.itemInMainHand
@@ -165,7 +179,12 @@ class FarmActionListener(private val plugin: LeafChainHarvestPlugin) : Listener 
     private fun tryFertilize(player: Player, clicked: Block): Boolean {
         val settings = plugin.settings()
         val action = settings.action(FarmAction.FERTILIZE)
-        if (!settings.crops.enabled || !action.enabled || !player.hasPermission(action.permission)) {
+        if (!settings.crops.enabled ||
+            !action.enabled ||
+            !plugin.playerActionEnabled(player, FarmAction.FERTILIZE) ||
+            !plugin.playerGroupEnabled(player, MaterialGroup.CROPS) ||
+            !player.hasPermission(action.permission)
+        ) {
             return false
         }
         val hand = player.inventory.itemInMainHand
@@ -199,6 +218,50 @@ class FarmActionListener(private val plugin: LeafChainHarvestPlugin) : Listener 
         }
         consume(player, hand, fertilized)
         player.sendMessage(plugin.message("fertilized", mapOf("count" to fertilized.toString())))
+        return true
+    }
+
+    private fun tryTill(player: Player, clicked: Block): Boolean {
+        val settings = plugin.settings()
+        val action = settings.action(FarmAction.TILL)
+        val crops = settings.crops
+        if (!crops.enabled ||
+            !action.enabled ||
+            !plugin.playerActionEnabled(player, FarmAction.TILL) ||
+            !plugin.playerGroupEnabled(player, MaterialGroup.CROPS) ||
+            !player.hasPermission(action.permission)
+        ) {
+            return false
+        }
+        if (crops.disableWhenSneaking && player.isSneaking) {
+            return false
+        }
+        val hand = player.inventory.itemInMainHand
+        if (!crops.tools.contains(hand.type)) {
+            return false
+        }
+        val world = clicked.world
+        val targets = planner.tillTargets(
+            clicked.point(),
+            action.radius,
+            action.maxTargets,
+            BlockTypeLookup { point -> world.getBlockAt(point.x, point.y, point.z).type },
+        )
+        var tilled = 0
+        for (point in targets) {
+            val block = world.getBlockAt(point.x, point.y, point.z)
+            if (!canMutate(player, block, ProtectionAction.TILL)) {
+                continue
+            }
+            if (MaterialCatalog.tillableBlocks.contains(block.type)) {
+                block.type = Material.FARMLAND
+                tilled++
+            }
+        }
+        if (tilled <= 0) {
+            return false
+        }
+        player.sendMessage(plugin.message("tilled", mapOf("count" to tilled.toString())))
         return true
     }
 

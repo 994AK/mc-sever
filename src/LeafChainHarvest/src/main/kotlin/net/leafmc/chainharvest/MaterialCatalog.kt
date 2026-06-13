@@ -13,6 +13,13 @@ object MaterialCatalog {
         Material.NETHERITE_HOE,
     )
 
+    val tillableBlocks: Set<Material> = setOf(
+        Material.GRASS_BLOCK,
+        Material.DIRT,
+        Material.COARSE_DIRT,
+        Material.DIRT_PATH,
+    )
+
     val axes: Set<Material> = setOf(
         Material.WOODEN_AXE,
         Material.STONE_AXE,

@@ -29,7 +29,8 @@ class ChainAdminGui(private val plugin: LeafChainHarvestPlugin) : Listener {
         )))
         addActionToggle(holder, inventory, 10, FarmAction.COLLECT)
         addActionToggle(holder, inventory, 11, FarmAction.SOW)
-        addActionToggle(holder, inventory, 12, FarmAction.FERTILIZE)
+        addActionToggle(holder, inventory, 12, FarmAction.TILL)
+        addActionToggle(holder, inventory, 13, FarmAction.FERTILIZE)
 
         addGroupButton(holder, inventory, 20, MaterialGroup.CROPS)
         addGroupButton(holder, inventory, 22, MaterialGroup.TREES)

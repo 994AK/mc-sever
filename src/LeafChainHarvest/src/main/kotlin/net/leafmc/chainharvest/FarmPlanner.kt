@@ -5,6 +5,8 @@ import org.bukkit.Material
 data class SowTarget(val substrate: BlockPoint, val target: BlockPoint)
 
 class FarmPlanner {
+    private val airBlocks = setOf(Material.AIR, Material.CAVE_AIR, Material.VOID_AIR)
+
     fun verticalHarvestTargets(clicked: BlockPoint, type: Material, lookup: BlockTypeLookup, maxTargets: Int): List<BlockPoint> {
         var base = clicked
         for (distance in 1..32) {
@@ -64,6 +66,24 @@ class FarmPlanner {
             }
             val type = lookup.typeAt(point)
             if (type != null && fertilizable.contains(type)) {
+                result += point
+            }
+            true
+        }
+        return result
+    }
+
+    fun tillTargets(center: BlockPoint, radius: Int, maxTargets: Int, lookup: BlockTypeLookup): List<BlockPoint> {
+        if (maxTargets <= 0) {
+            return emptyList()
+        }
+        val result = mutableListOf<BlockPoint>()
+        scanCube(center, radius) { point ->
+            if (result.size >= maxTargets) {
+                return@scanCube false
+            }
+            val above = point.relative(0, 1, 0)
+            if (lookup.typeAt(point) in MaterialCatalog.tillableBlocks && lookup.typeAt(above) in airBlocks) {
                 result += point
             }
             true

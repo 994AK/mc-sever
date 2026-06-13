@@ -1,0 +1,9 @@
+name: LeafMenuTool
+version: 0.1.0
+main: net.leafmc.menutool.LeafMenuToolPlugin
+api-version: '1.21'
+description: Opens the player menu when using the named menu clock.
+authors:
+  - LeafMC
+softdepend:
+  - DeluxeMenus

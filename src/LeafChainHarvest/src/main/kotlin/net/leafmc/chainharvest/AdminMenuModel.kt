@@ -19,6 +19,7 @@ object AdminMenuModel {
     fun actionIcon(action: FarmAction): Material = when (action) {
         FarmAction.COLLECT -> Material.GOLDEN_HOE
         FarmAction.SOW -> Material.WHEAT_SEEDS
+        FarmAction.TILL -> Material.IRON_HOE
         FarmAction.FERTILIZE -> Material.BONE_MEAL
     }
 

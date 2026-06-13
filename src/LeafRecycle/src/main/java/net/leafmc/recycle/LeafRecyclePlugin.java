@@ -20,10 +20,14 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class LeafRecyclePlugin extends JavaPlugin {
+    private final Object saveFileLock = new Object();
+    private final Object saveQueueLock = new Object();
     private RecycleStore store;
     private RecycleService service;
     private RecycleGui gui;
     private boolean collectCountdownRunning;
+    private boolean asyncSaveRunning;
+    private boolean asyncSaveQueued;
 
     @Override
     public void onEnable() {
@@ -44,7 +48,7 @@ public final class LeafRecyclePlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         if (service != null) {
-            saveRecycleData();
+            saveRecycleDataNow();
         }
     }
 
@@ -61,14 +65,62 @@ public final class LeafRecyclePlugin extends JavaPlugin {
     }
 
     public void reloadAll() {
-        saveRecycleData();
+        saveRecycleDataNow();
         reloadConfig();
         loadServices();
+        refreshRecycleViews();
     }
 
-    public void saveRecycleData() {
+    public void recyclePoolChanged() {
+        saveRecycleDataAsync();
+        refreshRecycleViews();
+    }
+
+    public void saveRecycleDataAsync() {
+        synchronized (saveQueueLock) {
+            asyncSaveQueued = true;
+            if (asyncSaveRunning) {
+                return;
+            }
+            asyncSaveRunning = true;
+        }
+        Bukkit.getScheduler().runTaskAsynchronously(this, this::runQueuedSaves);
+    }
+
+    private void saveRecycleDataNow() {
+        RecycleStore targetStore = store;
+        RecycleService targetService = service;
+        if (targetStore == null || targetService == null) {
+            return;
+        }
+        synchronized (saveQueueLock) {
+            asyncSaveQueued = false;
+        }
+        saveRecycleDataSnapshot(targetStore, targetService.entries());
+    }
+
+    private void runQueuedSaves() {
+        while (true) {
+            synchronized (saveQueueLock) {
+                if (!asyncSaveQueued) {
+                    asyncSaveRunning = false;
+                    return;
+                }
+                asyncSaveQueued = false;
+            }
+            RecycleStore targetStore = store;
+            RecycleService targetService = service;
+            if (targetStore != null && targetService != null) {
+                saveRecycleDataSnapshot(targetStore, targetService.entries());
+            }
+        }
+    }
+
+    private void saveRecycleDataSnapshot(RecycleStore targetStore, List<RecycleEntry> snapshot) {
         try {
-            store.save(service.entries());
+            synchronized (saveFileLock) {
+                targetStore.save(snapshot);
+            }
         } catch (IOException exception) {
             getLogger().warning("Could not save LeafRecycle data: " + exception.getMessage());
         }
@@ -145,7 +197,7 @@ public final class LeafRecyclePlugin extends JavaPlugin {
             }
         }
         if (acceptedItems > 0) {
-            saveRecycleData();
+            recyclePoolChanged();
         }
 
         Map<String, String> placeholders = new HashMap<>();
@@ -176,6 +228,13 @@ public final class LeafRecyclePlugin extends JavaPlugin {
             }
         }
         return remaining <= 0;
+    }
+
+    private void refreshRecycleViews() {
+        if (gui == null || !isEnabled()) {
+            return;
+        }
+        Bukkit.getScheduler().runTask(this, gui::refreshOpenClaimViews);
     }
 
     private void loadServices() {

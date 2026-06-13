@@ -5,6 +5,7 @@ import org.bukkit.Material
 enum class FarmAction(val key: String, val displayName: String) {
     COLLECT("collect", "收集"),
     SOW("sow", "播种"),
+    TILL("till", "耕地"),
     FERTILIZE("fertilize", "施肥"),
 }
 
@@ -17,6 +18,7 @@ enum class MaterialGroup(val key: String, val displayName: String) {
 enum class ProtectionAction {
     REPLANT,
     SOW,
+    TILL,
     FERTILIZE,
 }
 
@@ -48,6 +50,15 @@ data class ActionSettings(
     val radius: Int,
     val maxTargets: Int,
 )
+
+data class PlayerChainSettings(
+    val actions: Set<FarmAction>,
+    val groups: Set<MaterialGroup>,
+) {
+    fun actionEnabled(action: FarmAction): Boolean = actions.contains(action)
+
+    fun groupEnabled(group: MaterialGroup): Boolean = groups.contains(group)
+}
 
 data class CropSettings(
     val enabled: Boolean,

@@ -1,0 +1,12 @@
+7f06f82a74ebca61416259316847ab9c48bf6e33c04413efd01e25d9c3903bc2  ./LUCKPERMS-COMMANDS.txt
+bb525221e23d9a5419d73bcd8cb55f828a4756c9a4e5fd443a86acfcaaff86bb  ./README.md
+4d0f72d3e6e42ee26ac1c639b3925f1332e767127171190a547b8a2e3b91ec58  ./plugins/CMI/CustomAlias/CustomAlias.yml
+f5cb86dcf776550ca67a89e14b4f1893b60c18710e0e7e0d31ba2bb10a616329  ./plugins/CMI/CustomText/rules.txt
+731fb6b49d5afd16a67c3506acae86d92593d4cc8632d6f461ba4615d4e39cc2  ./plugins/CMI/Settings/EventCommands.yml
+77c6a54719c7c5dfe2b5b81b326e875b66584f6602bee17a58c1b0726a4f26bb  ./plugins/CMI/Settings/RandomTeleportations.yml
+cf185f262dd7cfcc2ad87f5aaac298db8290e04e4c7eab6fb981b2c8570bdc45  ./plugins/DeluxeMenus/config.yml
+2c4b52b13630f4b25d2be1fe236aee16f08bd2e55e210487fa4b97abbe2d30d7  ./plugins/DeluxeMenus/gui_menus/main.yml
+5afc5e6b63621f6f432dd443909f92c709c50836d90362017c1db9741c21b68e  ./plugins/DeluxeMenus/gui_menus/profile.yml
+a695d8486fe47749581cbdd96aa008e7627826a02681169ae1128f67b3a90165  ./plugins/DeluxeMenus/gui_menus/projects.yml
+b7bea85b84317e1a8b10f22c4b39a7ff9d4a6e87d6249bf6941da726b9dbecbd  ./plugins/DeluxeMenus/gui_menus/teleport.yml
+97a52f1bc0242b76d3441ce676fa8b01f4d1963b5a944d4b2d5cf8eb2f82d896  ./plugins/LeafMenuTool-0.1.0.jar

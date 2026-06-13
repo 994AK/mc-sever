@@ -51,10 +51,18 @@ class ChainBreakListener(private val plugin: LeafChainHarvestPlugin) : Listener 
 
     private fun chainSettings(player: Player, type: Material): ChainGroupSettings? {
         val settings = plugin.settings()
-        if (settings.trees.enabled && settings.trees.blocks.contains(type) && player.hasPermission(settings.trees.permission)) {
+        if (settings.trees.enabled &&
+            settings.trees.blocks.contains(type) &&
+            plugin.playerGroupEnabled(player, MaterialGroup.TREES) &&
+            player.hasPermission(settings.trees.permission)
+        ) {
             return settings.trees
         }
-        if (settings.ores.enabled && settings.ores.blocks.contains(type) && player.hasPermission(settings.ores.permission)) {
+        if (settings.ores.enabled &&
+            settings.ores.blocks.contains(type) &&
+            plugin.playerGroupEnabled(player, MaterialGroup.ORES) &&
+            player.hasPermission(settings.ores.permission)
+        ) {
             return settings.ores
         }
         return null

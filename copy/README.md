@@ -24,6 +24,7 @@
 - `fakeplayer-leaf-1.21.11-server-copy-20260612/`：FakePlayer Leaf 1.21.11 补丁复制包。
 - `fakeplayer-leaf-1.21.11-server-copy-20260612.zip`：同上压缩包。
 - `leaf-recycle-server-copy-20260613-113058/`：LeafRecycle 面向服务器覆盖的复制包。
+- `menu-refresh-server-copy-20260613-125833/`：玩家菜单三分类整理、菜单钟右键修复、规则/好友菜单点击修复、CMI 随机传送范围和 `/menugame` alias 复制包。
 
 ### announcements
 

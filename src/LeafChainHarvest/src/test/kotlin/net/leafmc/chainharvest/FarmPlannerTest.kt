@@ -7,6 +7,7 @@ object FarmPlannerTest {
     fun main(args: Array<String>) {
         verticalHarvestLeavesBaseBlock()
         sowTargetsRequireSubstrateAndAir()
+        tillTargetsRequireTillableBlockAndAirAbove()
         fertilizeTargetsStayWithinEnabledCrops()
     }
 
@@ -49,5 +50,21 @@ object FarmPlannerTest {
         check(result.contains(center)) { "wheat can be fertilized" }
         check(result.contains(center.relative(0, 0, 1))) { "carrots can be fertilized" }
         check(!result.contains(center.relative(1, 0, 0))) { "wood is not a crop target" }
+    }
+
+    private fun tillTargetsRequireTillableBlockAndAirAbove() {
+        val center = BlockPoint(0, 64, 0)
+        val blocked = center.relative(1, 0, 0)
+        val stone = center.relative(0, 0, 1)
+        val blocks = mapOf(
+            center to Material.GRASS_BLOCK,
+            center.relative(0, 1, 0) to Material.AIR,
+            blocked to Material.DIRT,
+            blocked.relative(0, 1, 0) to Material.OAK_LOG,
+            stone to Material.STONE,
+            stone.relative(0, 1, 0) to Material.AIR,
+        )
+        val result = FarmPlanner().tillTargets(center, 1, 10, blocks::get)
+        check(result == listOf(center)) { "till planner should require tillable block with air above" }
     }
 }
