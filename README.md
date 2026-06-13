@@ -49,6 +49,19 @@ MEMORY=6G MIN_MEMORY=4G ./start.sh
 stop
 ```
 
+## 插件开发环境
+
+插件开发已统一到 Gradle Kotlin DSL / Kotlin JVM。首次开发不需要全局安装 Gradle，直接使用仓库里的 Wrapper：
+
+```bash
+./gradlew check
+./gradlew buildPlugins
+```
+
+源码放在 `src/<PluginName>`，构建产物在对应模块的 `build/libs/`；只有执行 `./gradlew :<PluginName>:installPlugin` 或 `./gradlew installPlugins` 时才会复制到根目录 `plugins/`。服务器运行中不要执行安装任务，先停服再覆盖 jar。
+
+完整方案、版本基线和新 Kotlin 插件模板见 `docs/development/minecraft-kotlin-dev.md`。工作区结构和近期交付物索引见 `WORKSPACE.md`，复制包索引见 `copy/README.md`。
+
 ## 登录
 
 服务端已关闭正版认证：
@@ -176,13 +189,20 @@ GUI 插件选型记录见 `docs/research/2026-06-08-gui-plugin-selection.md`。�
 
 ## 好友系统
 
-已加入 LeafFriends 0.1.0，用于纯净服轻社交：好友申请、好友列表、好友私聊、好友上线提醒、黑名单、隐私开关和同意制好友传送。插件不接入经济、物资奖励、飞行、战力、亲密度属性或公会等级。
+已加入 LeafFriends 0.1.0，用于纯净服轻社交：好友申请、好友列表、好友资料页、好友私聊、好友上线提醒、黑名单、隐私开关、点击同意传送和可信好友免确认传送。插件不接入经济、物资奖励、飞行、战力、亲密度属性或公会等级。
 
-玩家入口：
+推荐玩家入口：
 
 ```text
 /menufriends
 /friend gui
+```
+
+`/menufriends` 是主入口：好友申请和好友传送请求可以在菜单里左键同意、右键拒绝；点击好友会打开好友资料页；资料页里可以申请传送、填写私聊、允许/取消对方免确认传送、删除好友或拉黑。好友传送请求也会给接收方发送聊天点击按钮，不需要手动输入同意命令。
+
+备用命令：
+
+```text
 /friend add <玩家>
 /friend accept <玩家>
 /friend deny <玩家>
@@ -201,8 +221,9 @@ GUI 插件选型记录见 `docs/research/2026-06-08-gui-plugin-selection.md`。�
 行为边界：
 
 - 好友关系按 UUID 存储，同时保存最近一次玩家名用于显示。
-- 好友传送必须由对方输入 `/friend tpaccept 玩家名` 同意，不会直接把人拉走。
-- `/friend msg` 只发给好友；离线留言继续使用 CMI 的 `/mail`。
+- 普通好友传送必须由对方在聊天按钮、好友菜单或备用命令里同意，不会直接把人拉走。
+- 玩家可以在好友资料页允许某个好友免确认传送到自己身边；这个授权只对该好友生效，删除好友或拉黑会自动清除。
+- `/friend msg` 只发给好友；菜单会帮玩家填入私聊前缀，具体内容仍由玩家自己输入；离线留言继续使用 CMI 的 `/mail`。
 - 玩家可以关闭好友申请、好友传送、好友私聊、上线提醒或隐藏在线状态。
 - 黑名单会阻止好友申请、好友私聊和好友传送请求。
 - v1 不自动给 Residence 领地授权，不共享家、箱子、飞行、物资或任何战力能力。
@@ -214,6 +235,94 @@ GUI 插件选型记录见 `docs/research/2026-06-08-gui-plugin-selection.md`。�
 ```
 
 默认普通玩家只有 `leaffriends.use`；`leaffriends.reload` 和 `leaffriends.admin` 只给管理组/OP。
+
+## 灵魂绑定 / 物品锁
+
+已加入 LeafSoulbind 0.1.0，用于保护重要物品：锁定或绑定后的物品不能被玩家丢到地上，死亡时不会进入地面掉落，会在复活或下次上线后返还。锁定物品仍然可以放进箱子、木桶、潜影盒等容器；但如果容器里有锁定/绑定物品，默认不能直接打掉容器，避免物品间接掉到地上。
+
+默认即使管理员有 `*` 权限，也不会绕过丢弃和容器保护；管理员要处理异常物品时，用 `/soul admin unlock` 解除手持物品锁定/绑定。
+
+玩家命令：
+
+```text
+/soul lock
+/soul bind
+/soul unlock
+/soul info
+/soul recover
+```
+
+- `/soul lock`：锁定手持物品，防止误丢。
+- `/soul bind`：把手持物品灵魂绑定给自己；只有本人或管理员可以解除。
+- `/soul unlock`：解除手持物品锁定/绑定。
+- `/soul info`：查看手持物品状态。
+- `/soul recover`：如果死亡返还时背包满了，用这个命令再次取回暂存物品。
+
+可用别名：
+
+```text
+/soulbind
+/sb
+/slock
+/sunlock
+```
+
+后台 LuckPerms 指令：
+
+```text
+lp group default permission set leafsoulbind.use true
+lp group default permission set leafsoulbind.lock true
+lp group default permission set leafsoulbind.unlock true
+lp group default permission set leafsoulbind.bind true
+lp group default permission set leafsoulbind.recover true
+lp group admin permission set leafsoulbind.admin true
+lp group admin permission set leafsoulbind.reload true
+lp group admin permission set leafsoulbind.bypass true
+```
+
+## 连锁采集 / 农作物工具
+
+已加入 LeafChainHarvest 0.1.0，用于降低重复采集操作：右键成熟农作物收割并自动补种，手持种子在范围内播种，手持骨粉在范围内施肥，斧头连锁砍木头，镐子连锁挖矿物。
+
+默认是全关状态：`收集`、`播种`、`施肥` 和所有材料都需要管理员在 `/leafchain menu` 里点亮后才生效。默认目录是保守的：农作物、原木/木头/菌柄/菌核及其去皮变种、矿石和远古残骸会出现在菜单里；石头、深板岩、凝灰岩、地狱岩、泥土、沙子、砂砾、末地石、树叶、木板等基础或建筑方块不在默认目录中。
+
+玩家侧行为：
+
+- 成熟小麦、胡萝卜、马铃薯、甜菜、地狱疣、可可豆右键收割后会延迟 1 tick 原地补种。
+- 甘蔗、竹子、仙人掌只收集上方可收获部分，底部保留。
+- 西瓜、南瓜走玩家破坏路径收集。
+- 连锁砍树和连锁挖矿都通过 `Player#breakBlock` 执行，保留 Bukkit/Paper 事件、掉落、经验、工具、耐久和其它插件取消能力。
+- 默认蹲下时不触发连锁，方便玩家只处理单个方块。
+
+管理入口：
+
+```text
+/leafchain menu
+/leafchain reload
+/lch menu
+```
+
+管理菜单里绿色高亮表示允许，红色表示关闭；可以切换 `收集`、`播种`、`施肥`，也可以分别管理农作物、木头、矿物材料。菜单点击状态写入 `plugins/LeafChainHarvest/settings.yml`。如果要让旧服也回到全关状态，需要停服后覆盖这个文件；如果要保留线上已经点亮的菜单状态，就不要覆盖它。
+
+Residence 边界：收割、砍树、挖矿走玩家破坏事件；自动补种、播种和施肥是额外改方块动作，默认要求 Residence 可用并逐点检查 build 权限。如果没有 Residence，这些额外放置/生长动作默认拒绝；只有明确把 `protection.unsafe-fallback-without-residence: true` 打开才会允许无保护降级。
+
+后台 LuckPerms 指令：
+
+```text
+lp group default permission set leafchain.use true
+lp group default permission set leafchain.crop.collect true
+lp group default permission set leafchain.crop.sow true
+lp group default permission set leafchain.crop.fertilize true
+lp group default permission set leafchain.tree true
+lp group default permission set leafchain.ore true
+lp group admin permission set leafchain.admin true
+lp group admin permission set leafchain.reload true
+lp group admin permission set leafchain.menu true
+lp group admin permission set leafchain.bypass-limit true
+lp group admin permission set leafchain.bypass-consume true
+```
+
+上线后按 `docs/operations/leaf-chain-harvest-smoke-test.md` 做冒烟测试。
 
 ## 五子棋房间平台
 
@@ -536,6 +645,7 @@ chunky pause
 - TAB 6.0.3 Vanilla：两列式玩家列表、玩家称号和延迟显示
 - LeafGomoku 0.1.0：主城五子棋房间平台插件
 - LeafFriends 0.1.0：好友申请、好友列表、好友私聊、好友传送请求和隐私开关
+- LeafChainHarvest 0.1.0：农作物右键收割补种、播种施肥、连锁砍木头和连锁挖矿物
 - BetterTeams 5.1.2（jar 已禁用）：轻公会/小队配置保留，玩家侧功能暂停
 - Quests 5.3.1：每日/每周轻任务入口
 - OpenShulk 1.21.x：快捷潜影盒
@@ -575,7 +685,8 @@ CMILib 可能会提示无法下载部分 `Translations/Items/items_*.yml`，这�
 - 2026-06-09 Residence 替换 GriefPrevention 后仅做静态配置检查，本次没有启动服务端验证；上线前需确认 Residence 和 CMILib 正常加载。
 - 2026-06-10 已完成 DeluxeMenus 迁移和五子棋 GUI 接入验证：CommandGUI jar/config 已删除；DeluxeMenus jar、PlaceholderAPI jar、`config.yml` 和 8 个已注册菜单已加载；`/menu` 里的五子棋入口会执行 LeafGomoku 的 `/menugomoku` 动态大厅。
 - 2026-06-10 已完成 LeafGomoku 房间平台构建、纯 Java 规则/统计/布局测试和本地重启验证：`scripts/test-leaf-gomoku.sh` 通过，`plugins/LeafGomoku-0.1.0.jar` 已生成；本地服已确认 LeafGomoku、`leafgomoku` PlaceholderAPI expansion、`/menugomoku` 命令、`/gomoku status main` 正常，并已 refresh `main`/`test1` 生成玻璃外圈。
-- 2026-06-11 已完成 LeafFriends 构建和纯 Java 状态测试：`scripts/test-leaf-friends.sh` 通过，`plugins/LeafFriends-0.1.0.jar` 已生成；本次未启动服务端，首次上线后需用两个测试账号确认 `/menufriends`、申请/同意/拒绝、好友私聊、好友传送、黑名单和隐私开关。
+- 2026-06-11 已完成 LeafFriends 点击式好友体验迭代：`scripts/test-leaf-friends.sh` 和 `scripts/build-leaf-friends.sh` 通过，`plugins/LeafFriends-0.1.0.jar` 已生成；本地 Leaf 服已启动到 `Done`，日志确认 `LeafFriends v0.1.0` 启用成功。游戏内仍建议用两个测试账号确认 `/menufriends`、好友资料页、申请/同意/拒绝、聊天点击同意传送、免确认传送、好友私聊、黑名单和隐私开关。
+- 2026-06-12 已完成 LeafSoulbind 物品锁/灵魂绑定插件构建：`./gradlew :LeafSoulbind:check :LeafSoulbind:shadowJar` 通过，copy 包在 `copy/plugin-packages/leaf-soulbind-20260612-173142/`；本次没有启动服务端，首次上线后需按 copy 包 README 做游戏内丢弃、容器、死亡返还测试。
 - 2026-06-09 LeafResidenceWeb 和 BlueMap 已改为 `.disabled`，当前玩家圈地回到 Residence 原生流程；本次没有启动服务端验证。
 - 2026-06-09 TAB 玩家列表已完成 jar 哈希校验和 YAML 静态检查；本次没有启动服务端验证，首次上线后建议用 `/tab reload` 或重启后按 Tab 检查占位符是否全部解析。
 - 2026-06-09 公会项目日活体系已完成静态配置：BetterTeams 5.1.2 和 Quests 5.3.1 jar 元数据已检查；默认组权限已收紧；flight charge 后续已恢复为消耗型飞行。本次没有重新启动服务端验证，首次上线后需按 `docs/operations/guild-projects/2026-06-09-runtime-smoke-test.md` 重启确认 BetterTeams、Quests、DeluxeMenus、CMI alias/custom text 和默认玩家权限正常。
@@ -601,7 +712,10 @@ CMILib 可能会提示无法下载部分 `Translations/Items/items_*.yml`，这�
 - `plugins/LeafGomoku/stats.yml`：五子棋玩家统计、排行榜和已记录比赛 ID
 - `plugins/LeafFriends-0.1.0.jar`：好友系统插件
 - `plugins/LeafFriends/config.yml`：好友申请、好友传送、冷却和 GUI 配置
-- `plugins/LeafFriends/friends.yml`：运行时生成的好友关系、隐私设置和黑名单数据
+- `plugins/LeafFriends/friends.yml`：运行时生成的好友关系、隐私设置、黑名单和可信好友免确认传送数据
+- `plugins/LeafSoulbind-0.1.0.jar`：物品锁和灵魂绑定插件
+- `plugins/LeafSoulbind/config.yml`：物品锁、死亡返还、容器保护和中文提示配置
+- `plugins/LeafSoulbind/pending-returns.yml`：运行时生成的死亡后待返还物品暂存数据
 - `plugins/SkinsRestorer-15.12.0.jar`：皮肤插件
 - `plugins/Residence6.0.1.8.jar`：领地保护插件
 - `plugins/Residence/`：Residence 中文、免费圈地和默认组限制配置

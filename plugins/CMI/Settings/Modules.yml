@@ -175,7 +175,7 @@ kits: false
 #  
 # Handles schedule system
 # Applies for servers from 1.7.x and up
-schedule: true
+schedule: false
 #  
 # Handles player name plates
 # Applies for servers from 1.7.x and up

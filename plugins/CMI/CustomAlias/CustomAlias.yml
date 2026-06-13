@@ -29,6 +29,12 @@ CustomAlias:
     Cmds:
     - 'fromConsole! cmi give [playerName] wooden_hoe 1'
     - 'msg! [playerName] &a已领取 1 把圈地木锄。&7左键第一个角，右键第二个角。'
+  gooseleg:
+    Perm: true
+    Tab: true
+    Cmds:
+    - 'fromConsole! cmi saveditems get yatui -t:[playerName] -a:1 -s'
+    - 'msg! [playerName] &6鹅腿已领取。&8咬之前想清楚。'
   projects:
     Perm: true
     Tab: true

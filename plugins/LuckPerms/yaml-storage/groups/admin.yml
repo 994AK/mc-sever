@@ -3,6 +3,9 @@ permissions:
 - coreprotect.*
 - '*'
 - cmi.chatgroup.3
+- leafsoulbind.admin
+- leafsoulbind.bypass
+- leafsoulbind.reload
 parents:
 - builder
 prefixes:
