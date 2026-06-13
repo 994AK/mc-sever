@@ -1,5 +1,0 @@
-lp group default permission set residence.group.default true
-lp group vip permission set residence.group.default true
-lp group builder permission set residence.group.default true
-lp group admin permission set residence.group.default true
-lp reloadconfig

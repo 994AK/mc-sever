@@ -1,3 +1,0 @@
-30ba7308a71647a1a6965e1a0da83da379d3c7aec469f0351bb4d85c249822e3  ./README.md
-d1653a661da0a736f85fc07f1b71d2f8fe54a3749bc463b73effe6061ada3d6b  ./plugins/CMI/Settings/Modules.yml
-f02d40f24b66dc963c2ff286573035d17f316fd8cddc18494e85385a6f22b282  ./plugins/CMI/Settings/Schedules.yml

@@ -1,5 +1,0 @@
-6e48157439637c1cf56c1d0d4e2626de19056a8f676cd697d1985c81638ea606  ./README.md
-b4a6ea3d85c8bb3c3d8597861e9f13d3db65ee04e1882f04a235fa16e9e9b9fd  ./docs/operations/gomoku/2026-06-10-runtime-smoke-test.md
-00d3d66c255846ff9581f1d674469b6c2adf7767e7aa30d071222b09b448309b  ./plugins/LeafGomoku-0.1.0.jar
-ae1bf398a0eb4e9236d56d5bc12b0eec832ea09754425677f78ee00cae4b140d  ./plugins/LeafGomoku/config.yml
-dac671d48e761f351de0792e8282a28b63d9126929d49ef6a7f819e89f17fde8  ./plugins/LeafGomoku/rooms.yml

@@ -5,6 +5,11 @@ desktop.ini
 *.tmp
 *.bak
 *.swp
+*.pid
+.console_history
+.codex-test-server.pid
+.tmp/
+.kotlin/
 
 # Runtime output
 logs/
@@ -14,6 +19,10 @@ libraries/
 versions/
 bundler/
 *.log
+.gradle/
+build/
+src/*/build/
+src/*/build-test/
 
 # World data is backed up, not committed.
 world/
@@ -46,6 +55,8 @@ plugins/CMI/security.key
 plugins/**/security.key
 
 # Plugin runtime caches and generated files
+src/LeafGomoku/build/
+src/LeafGomoku/build-test/
 plugins/bStats/
 plugins/spark/tmp/
 plugins/CMI/Logs/
@@ -56,12 +67,31 @@ plugins/AuthMe/playerdata/
 plugins/AuthMe/authme.db
 plugins/CoreProtect/database.db
 plugins/NobleWhitelist/data.db
+plugins/**/_remote.repositories
+plugins/.paper-remapped/
 plugins/Chunky/tasks/
 plugins/WorldEdit/sessions/
 plugins/LuckPerms/libs/
 plugins/LuckPerms/translations/
+plugins/Quests/data/
+plugins/Residence/Save/PlayerData/
+plugins/SkinsRestorer/skins/
+plugins/CMILib/Translations/Items/items_*.yml
+plugins/LeafChainHarvest/settings.yml
+plugins/LeafFriends/friends.yml
+plugins/LeafGomoku/data.db
+plugins/LeafRecycle/recycle.yml
+plugins/LeafSoulbind/pending-returns.yml
 
 # LuckPerms groups are operator-managed, but runtime cache/action files are not.
 plugins/LuckPerms/yaml-storage/*
 !plugins/LuckPerms/yaml-storage/groups/
 !plugins/LuckPerms/yaml-storage/groups/*.yml
+
+# Vendored or patched third-party source metadata
+src/FakePlayer/.git/
+
+# Plugin runtime generated data that is not source/config
+plugins/fakeplayer/serverid
+plugins/fakeplayer/used-uuids.txt
+plugins/TAB/anti-override.log

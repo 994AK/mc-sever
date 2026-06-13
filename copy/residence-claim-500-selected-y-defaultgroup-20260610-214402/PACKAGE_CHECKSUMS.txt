@@ -1,7 +1,0 @@
-4b0718cbb88266036a21f447366c761db637782cf575598b3bf2678ca0e0e932  ./LUCKPERMS-COMMANDS.txt
-36e27e648f47c73411f4772b59aba375608c2af9f4f3974ac26f0461ff92e066  ./README.md
-08fc8f107e5ee12eb7bc507752292e46933de94710331e2bc42f9a0b47bc3e9e  ./plugins/CMI/CustomText/menuland.txt
-31bce8887c4aaf2478e6b69d115856a14da4fce300c0831b4086b4af90218b58  ./plugins/DeluxeMenus/gui_menus/land.yml
-bb5944100655725d17acd21bd4141dcd51192c032239288dcbe678748489bdf8  ./plugins/LuckPerms/yaml-storage/groups/default.yml
-2c2d736bc26802c3f960ed2fee1ed15518502f6186a4891f1f9436f60f16c403  ./plugins/Residence/config.yml
-21b3100d739930683a5101a7e9caba3548ede45f1056934f7c22fc5958f3811c  ./plugins/Residence/groups.yml
