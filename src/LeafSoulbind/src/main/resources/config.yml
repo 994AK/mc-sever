@@ -1,0 +1,48 @@
+messages:
+  prefix: "§d[灵魂绑定] §f"
+  no-permission: "{prefix}§c你没有权限使用这个功能。"
+  player-only: "{prefix}这个命令只能由玩家执行。"
+  empty-hand: "{prefix}请先把要操作的物品拿在主手。"
+  locked: "{prefix}已锁定手中物品。它不能被丢到地上，但可以放进箱子。"
+  already-locked: "{prefix}这个物品已经处于锁定状态。"
+  bound: "{prefix}已将手中物品灵魂绑定给 §e{player}§f。"
+  already-bound: "{prefix}这个物品已经灵魂绑定给 §e{owner}§f。"
+  unlocked: "{prefix}已解除手中物品的锁定/绑定。"
+  not-protected: "{prefix}这个物品没有锁定或绑定。"
+  unlock-denied: "{prefix}这个物品绑定给 §e{owner}§f，只有本人或管理员可以解除。"
+  drop-blocked: "{prefix}§c这个物品已锁定，不能丢到地上。需要丢弃请先 §e/soul unlock§c。"
+  container-break-blocked: "{prefix}§c这个容器里有锁定/绑定物品，不能直接打掉。请先取出或解锁。"
+  dispense-blocked: "{prefix}发射器/投掷器里有锁定/绑定物品，已阻止吐出。"
+  pickup-denied: "{prefix}这个物品绑定给 §e{owner}§f，你不能拾取。"
+  death-kept: "{prefix}死亡时已保护 §e{count}§f 件锁定/绑定物品，复活后返还。"
+  recovered: "{prefix}已返还 §e{count}§f 件锁定/绑定物品。"
+  recover-empty: "{prefix}没有待返还的锁定/绑定物品。"
+  recover-partial: "{prefix}背包空间不够，已返还 §e{returned}§f 件，剩余 §e{remaining}§f 件仍保存在插件里。清空背包后输入 §e/soul recover§f。"
+  info-unprotected: "{prefix}手中物品没有锁定或绑定。"
+  info-locked: "{prefix}手中物品状态：§d已锁定§f，可放入容器，不能丢到地上。"
+  info-bound: "{prefix}手中物品状态：§d灵魂绑定§f，绑定者：§e{owner}§f。"
+  reloaded: "{prefix}已重载配置和待返还物品数据。"
+  help:
+    - "{prefix}命令："
+    - "§7/soul lock §f锁定手持物品，防止丢到地上"
+    - "§7/soul bind §f灵魂绑定手持物品到自己"
+    - "§7/soul unlock §f解除手持物品锁定/绑定"
+    - "§7/soul info §f查看手持物品状态"
+    - "§7/soul recover §f取回死亡后暂存的绑定物品"
+
+rules:
+  block-player-drop: true
+  block-inventory-drop: true
+  block-death-drop: true
+  return-on-respawn: true
+  return-on-join: true
+  block-dispenser-dropper: true
+  block-container-break-when-protected-inside: true
+  block-nested-container-drop: true
+  prevent-non-owner-pickup: true
+  allow-permission-bypass: false
+
+display:
+  add-lore: true
+  locked-lore: "§d灵魂锁定 §7- 不会掉到地上"
+  bound-lore: "§d灵魂绑定 §7- 绑定至 {owner}"

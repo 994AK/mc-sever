@@ -1,0 +1,160 @@
+messages:
+  prefix: "§a[连锁] §f"
+  no-permission: "{prefix}§c你没有权限使用这个功能。"
+  player-only: "{prefix}这个命令只能由玩家执行。"
+  reloaded: "{prefix}已重载连锁采集配置。"
+  menu-opened: "{prefix}已打开连锁采集管理菜单。"
+  toggled: "{prefix}{target} 已切换为 {state}。"
+  protected: "{prefix}§c这个位置受保护，已跳过。"
+  sowed: "{prefix}已播种 §a{count} §f处。"
+  fertilized: "{prefix}已施肥 §a{count} §f处。"
+  help:
+    - "{prefix}命令："
+    - "§7/leafchain menu §f打开管理菜单"
+    - "§7/leafchain reload §f重载配置"
+
+gui:
+  title: "§0连锁采集"
+  materials-title: "§0连锁材料: {group}"
+
+actions:
+  collect:
+    enabled: false
+    permission: "leafchain.crop.collect"
+  sow:
+    enabled: false
+    permission: "leafchain.crop.sow"
+    radius: 3
+    max-targets: 24
+  fertilize:
+    enabled: false
+    permission: "leafchain.crop.fertilize"
+    radius: 3
+    max-targets: 24
+
+crops:
+  enabled: true
+  disable-when-sneaking: true
+  replant-delay-ticks: 1
+  require-tool: false
+  max-collect-blocks: 64
+  tools:
+    - WOODEN_HOE
+    - STONE_HOE
+    - IRON_HOE
+    - GOLDEN_HOE
+    - DIAMOND_HOE
+    - NETHERITE_HOE
+  standard:
+    - WHEAT
+    - CARROTS
+    - POTATOES
+    - BEETROOTS
+    - NETHER_WART
+    - COCOA
+  vertical:
+    - SUGAR_CANE
+    - BAMBOO
+    - CACTUS
+  full-block:
+    - MELON
+    - PUMPKIN
+
+trees:
+  enabled: true
+  permission: "leafchain.tree"
+  disable-when-sneaking: true
+  max-blocks: 96
+  diagonals: false
+  minimum-tool-durability: 1
+  tools:
+    - WOODEN_AXE
+    - STONE_AXE
+    - IRON_AXE
+    - GOLDEN_AXE
+    - DIAMOND_AXE
+    - NETHERITE_AXE
+  blocks:
+    - OAK_LOG
+    - SPRUCE_LOG
+    - BIRCH_LOG
+    - JUNGLE_LOG
+    - ACACIA_LOG
+    - DARK_OAK_LOG
+    - MANGROVE_LOG
+    - CHERRY_LOG
+    - PALE_OAK_LOG
+    - OAK_WOOD
+    - SPRUCE_WOOD
+    - BIRCH_WOOD
+    - JUNGLE_WOOD
+    - ACACIA_WOOD
+    - DARK_OAK_WOOD
+    - MANGROVE_WOOD
+    - CHERRY_WOOD
+    - PALE_OAK_WOOD
+    - STRIPPED_OAK_LOG
+    - STRIPPED_SPRUCE_LOG
+    - STRIPPED_BIRCH_LOG
+    - STRIPPED_JUNGLE_LOG
+    - STRIPPED_ACACIA_LOG
+    - STRIPPED_DARK_OAK_LOG
+    - STRIPPED_MANGROVE_LOG
+    - STRIPPED_CHERRY_LOG
+    - STRIPPED_PALE_OAK_LOG
+    - STRIPPED_OAK_WOOD
+    - STRIPPED_SPRUCE_WOOD
+    - STRIPPED_BIRCH_WOOD
+    - STRIPPED_JUNGLE_WOOD
+    - STRIPPED_ACACIA_WOOD
+    - STRIPPED_DARK_OAK_WOOD
+    - STRIPPED_MANGROVE_WOOD
+    - STRIPPED_CHERRY_WOOD
+    - STRIPPED_PALE_OAK_WOOD
+    - CRIMSON_STEM
+    - WARPED_STEM
+    - CRIMSON_HYPHAE
+    - WARPED_HYPHAE
+    - STRIPPED_CRIMSON_STEM
+    - STRIPPED_WARPED_STEM
+    - STRIPPED_CRIMSON_HYPHAE
+    - STRIPPED_WARPED_HYPHAE
+
+ores:
+  enabled: true
+  permission: "leafchain.ore"
+  disable-when-sneaking: true
+  max-blocks: 64
+  diagonals: false
+  minimum-tool-durability: 1
+  tools:
+    - WOODEN_PICKAXE
+    - STONE_PICKAXE
+    - IRON_PICKAXE
+    - GOLDEN_PICKAXE
+    - DIAMOND_PICKAXE
+    - NETHERITE_PICKAXE
+  blocks:
+    - COAL_ORE
+    - DEEPSLATE_COAL_ORE
+    - IRON_ORE
+    - DEEPSLATE_IRON_ORE
+    - COPPER_ORE
+    - DEEPSLATE_COPPER_ORE
+    - GOLD_ORE
+    - DEEPSLATE_GOLD_ORE
+    - REDSTONE_ORE
+    - DEEPSLATE_REDSTONE_ORE
+    - LAPIS_ORE
+    - DEEPSLATE_LAPIS_ORE
+    - DIAMOND_ORE
+    - DEEPSLATE_DIAMOND_ORE
+    - EMERALD_ORE
+    - DEEPSLATE_EMERALD_ORE
+    - NETHER_QUARTZ_ORE
+    - NETHER_GOLD_ORE
+    - ANCIENT_DEBRIS
+
+protection:
+  require-residence-for-farm-actions: true
+  unsafe-fallback-without-residence: false

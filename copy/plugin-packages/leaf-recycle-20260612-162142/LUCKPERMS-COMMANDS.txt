@@ -1,0 +1,4 @@
+lp group default permission set leafrecycle.use true
+lp group default permission set leafrecycle.submit true
+lp group admin permission set leafrecycle.admin true
+lp group admin permission set leafrecycle.reload true

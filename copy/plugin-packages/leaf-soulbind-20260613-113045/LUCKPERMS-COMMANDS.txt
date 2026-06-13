@@ -1,0 +1,8 @@
+lp group default permission set leafsoulbind.use true
+lp group default permission set leafsoulbind.lock true
+lp group default permission set leafsoulbind.unlock true
+lp group default permission set leafsoulbind.bind true
+lp group default permission set leafsoulbind.recover true
+lp group admin permission set leafsoulbind.admin true
+lp group admin permission set leafsoulbind.reload true
+lp group admin permission set leafsoulbind.bypass true

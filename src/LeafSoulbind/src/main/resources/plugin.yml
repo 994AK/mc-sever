@@ -1,0 +1,45 @@
+name: LeafSoulbind
+version: 0.1.0
+main: net.leafmc.soulbind.LeafSoulbindPlugin
+api-version: '1.21'
+commands:
+  soul:
+    description: Lock and soulbind important items.
+    usage: /soul <lock|unlock|bind|info|recover|reload>
+    aliases:
+      - soulbind
+      - sb
+      - slock
+      - sunlock
+permissions:
+  leafsoulbind.use:
+    description: Allows players to use basic LeafSoulbind commands.
+    default: true
+  leafsoulbind.lock:
+    description: Allows players to lock held items.
+    default: true
+  leafsoulbind.unlock:
+    description: Allows players to unlock held items they own.
+    default: true
+  leafsoulbind.bind:
+    description: Allows players to soulbind held items to themselves.
+    default: true
+  leafsoulbind.recover:
+    description: Allows players to recover pending soulbound death returns.
+    default: true
+  leafsoulbind.reload:
+    description: Allows admins to reload LeafSoulbind.
+    default: op
+  leafsoulbind.admin:
+    description: Allows admins to force unlock and manage soulbound items.
+    default: op
+    children:
+      leafsoulbind.use: true
+      leafsoulbind.lock: true
+      leafsoulbind.unlock: true
+      leafsoulbind.bind: true
+      leafsoulbind.recover: true
+      leafsoulbind.reload: true
+  leafsoulbind.bypass:
+    description: Allows bypassing item protection checks.
+    default: op

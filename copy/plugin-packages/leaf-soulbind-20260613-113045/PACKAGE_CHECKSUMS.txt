@@ -1,0 +1,4 @@
+ed154adb19abb42fae249ec44ad6502b1127da4d3ac06ee374500d7fb140de6e  ./LUCKPERMS-COMMANDS.txt
+dc03f4b893c180a5255558bd880f3e2973b4abdfeef70bf5b2eeed8e99262ee2  ./README.md
+31e098737887602d28e29aec78d7eb5f2b44c6e265f24f1cc76e86e14273db6e  ./plugins/LeafSoulbind-0.1.0.jar
+c881051836b9b4743ec58537ce59cd5c0d03c8a2d5ca9fe014b336a0066bf513  ./plugins/LeafSoulbind/config.yml

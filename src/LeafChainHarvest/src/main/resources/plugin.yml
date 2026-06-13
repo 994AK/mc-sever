@@ -1,0 +1,61 @@
+name: LeafChainHarvest
+version: 0.1.0
+main: net.leafmc.chainharvest.LeafChainHarvestPlugin
+api-version: '1.21'
+softdepend:
+  - Residence
+commands:
+  leafchain:
+    description: Manage crop harvesting, farming actions, and chain breaking.
+    usage: /leafchain [menu|reload]
+    aliases:
+      - chainharvest
+      - lch
+permissions:
+  leafchain.use:
+    description: Allows players to use LeafChainHarvest player features.
+    default: true
+    children:
+      leafchain.crop.collect: true
+      leafchain.crop.sow: true
+      leafchain.crop.fertilize: true
+      leafchain.tree: true
+      leafchain.ore: true
+  leafchain.crop.collect:
+    description: Allows right-click crop collection and replant.
+    default: true
+  leafchain.crop.sow:
+    description: Allows area sowing actions.
+    default: true
+  leafchain.crop.fertilize:
+    description: Allows area fertilizing actions.
+    default: true
+  leafchain.tree:
+    description: Allows chain breaking logs and wood blocks.
+    default: true
+  leafchain.ore:
+    description: Allows chain mining ores.
+    default: true
+  leafchain.reload:
+    description: Allows admins to reload LeafChainHarvest.
+    default: op
+  leafchain.menu:
+    description: Allows admins to open the LeafChainHarvest settings menu.
+    default: op
+  leafchain.bypass-limit:
+    description: Allows bypassing chain break and farm action limits.
+    default: op
+  leafchain.bypass-consume:
+    description: Allows bypassing seed and bone meal consumption.
+    default: op
+  leafchain.admin:
+    description: Allows admins to manage LeafChainHarvest.
+    default: op
+    children:
+      leafchain.use: true
+      leafchain.tree: true
+      leafchain.ore: true
+      leafchain.reload: true
+      leafchain.menu: true
+      leafchain.bypass-limit: true
+      leafchain.bypass-consume: true

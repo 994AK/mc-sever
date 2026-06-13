@@ -1,0 +1,29 @@
+name: LeafRecycle
+version: 0.1.0
+main: net.leafmc.recycle.LeafRecyclePlugin
+api-version: '1.21'
+commands:
+  recycle:
+    description: Open the resource recycle pool.
+    usage: /recycle [submit|collect|admin|reload]
+    aliases:
+      - huishou
+      - hs
+      - recyclestation
+permissions:
+  leafrecycle.use:
+    description: Allows players to open and claim items from the recycle pool.
+    default: true
+  leafrecycle.submit:
+    description: Allows players to submit items into the recycle pool.
+    default: true
+  leafrecycle.admin:
+    description: Allows admins to collect all world drops and manage the recycle pool.
+    default: op
+    children:
+      leafrecycle.use: true
+      leafrecycle.submit: true
+      leafrecycle.reload: true
+  leafrecycle.reload:
+    description: Allows admins to reload LeafRecycle.
+    default: op

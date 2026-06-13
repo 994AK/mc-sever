@@ -1,0 +1,11 @@
+lp group default permission set leafchain.use true
+lp group default permission set leafchain.crop.collect true
+lp group default permission set leafchain.crop.sow true
+lp group default permission set leafchain.crop.fertilize true
+lp group default permission set leafchain.tree true
+lp group default permission set leafchain.ore true
+lp group admin permission set leafchain.admin true
+lp group admin permission set leafchain.reload true
+lp group admin permission set leafchain.menu true
+lp group admin permission set leafchain.bypass-limit true
+lp group admin permission set leafchain.bypass-consume true

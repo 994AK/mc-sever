@@ -1,0 +1,27 @@
+messages:
+  prefix: "§a[回收] §f"
+
+storage:
+  max-stored-stacks: 270
+
+collect:
+  contributor-name: "小扫帚"
+  countdown-seconds: 10
+  countdown-alerts:
+    - 10
+    - 5
+    - 3
+    - 2
+    - 1
+  messages:
+    start: "{prefix}§d小扫帚出动啦~ §f{seconds} 秒后会把所有世界地上的小垃圾收进回收站。"
+    tick: "{prefix}§d小扫帚倒计时 §e{seconds}§f 秒，地上的小物品要搬家啦~"
+    done: "{prefix}§d小扫帚收工啦~ §f已把 §a{accepted}§f 个掉落物搬进回收站，路过了 §e{worlds}§f 个世界。输入 §e/recycle §f领取。"
+    rejected: " §c回收站装不下，§e{rejected}§c 个物品还乖乖留在原地。"
+    empty: "{prefix}§d小扫帚转了一圈~ §f主世界、地狱、末地都很干净，没有地上垃圾。"
+    busy: "{prefix}§d小扫帚已经在路上啦~ §f等这轮清理结束再来一次。"
+
+gui:
+  claim-title: "§0资源回收站"
+  submit-title: "§0投放到回收站"
+  admin-title: "§0回收站管理"
