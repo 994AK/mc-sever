@@ -2,4 +2,4 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-exec "$ROOT_DIR/gradlew" --project-dir "$ROOT_DIR" :LeafGomoku:installPlugin
+exec "$ROOT_DIR/gradlew" --project-dir "$ROOT_DIR" :LeafRecycle:installPlugin
