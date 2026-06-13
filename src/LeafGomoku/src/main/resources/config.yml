@@ -4,6 +4,9 @@ arena:
   world: "world"
 
   board:
+    # Default board size for migrated legacy room. New rooms can use:
+    # /gomoku admin place <room> size 15
+    size: 15
     # Row 0, column 0. Each cell is one block.
     origin:
       x: 0
@@ -61,8 +64,8 @@ arena:
 
   materials:
     empty-board: "STRIPPED_BIRCH_LOG"
-    black: "BLACK_CONCRETE"
-    white: "WHITE_CONCRETE"
+    floor: "AIR"
+    frame: "AIR"
 
   animation:
     ticks: 22
@@ -74,11 +77,73 @@ arena:
   gameplay:
     # 6 seconds at 20 TPS. Set to 0 to keep the ended board until admin reset.
     auto-reset-ticks: 120
+    # 15 seconds at 20 TPS. Undo only affects the last move and requires opponent approval.
+    undo-request-timeout-ticks: 300
+
+invites:
+  # 30 seconds at 20 TPS. The target must accept before the invite expires.
+  timeout-ticks: 600
 
 points:
   win: 3
   draw: 1
   loss: 0
+
+environment-feedback:
+  profiles:
+    soft:
+      actionbar: true
+      particles: true
+      sounds: true
+      win-line: true
+      countdown: true
+    quiet:
+      actionbar: true
+      particles: false
+      sounds: true
+      win-line: false
+      countdown: true
+
+environment-templates:
+  garden:
+    display-name: "竹林棋亭"
+    floor:
+      default: "MOSS_BLOCK"
+      accents:
+        - row-min: -7
+          row-max: 18
+          column-min: 7
+          column-max: 7
+          material: "POLISHED_ANDESITE"
+    frame:
+      material: "OAK_FENCE"
+      height: 2
+      entrance-width: 5
+    decor:
+      - type: "column"
+        row: -6
+        column: -3
+        y-offset: 1
+        height: 3
+        material: "BAMBOO_BLOCK"
+      - type: "column"
+        row: -6
+        column: 17
+        y-offset: 1
+        height: 3
+        material: "BAMBOO_BLOCK"
+      - type: "block"
+        row: -6
+        column: 5
+        y-offset: 1
+        material: "LANTERN"
+      - type: "block"
+        row: -6
+        column: 9
+        y-offset: 1
+        material: "LANTERN"
+    feedback-profile: "soft"
+    block-budget: 1500
 
 appearances:
   board-themes:
@@ -159,6 +224,30 @@ appearances:
       animation: "arc"
       default: false
       cost: 25
+    allay_entity:
+      display-name: "静态悦灵"
+      display: "entity"
+      material: "AMETHYST_BLOCK"
+      entity-type: "ALLAY"
+      animation: "walk"
+      default: false
+      cost: 28
+    armadillo_entity:
+      display-name: "静态犰狳"
+      display: "entity"
+      material: "BROWN_TERRACOTTA"
+      entity-type: "ARMADILLO"
+      animation: "walk"
+      default: false
+      cost: 32
+    axolotl_entity:
+      display-name: "静态美西螈"
+      display: "entity"
+      material: "PINK_WOOL"
+      entity-type: "AXOLOTL"
+      animation: "walk"
+      default: false
+      cost: 32
     slime_entity:
       display-name: "静态史莱姆"
       display: "entity"
@@ -167,6 +256,182 @@ appearances:
       animation: "walk"
       default: false
       cost: 30
+    cat_entity:
+      display-name: "静态猫"
+      display: "entity"
+      material: "WHITE_WOOL"
+      entity-type: "CAT"
+      animation: "walk"
+      default: false
+      cost: 30
+    chicken_entity:
+      display-name: "静态鸡"
+      display: "entity"
+      material: "CALCITE"
+      entity-type: "CHICKEN"
+      animation: "walk"
+      default: false
+      cost: 24
+    fox_entity:
+      display-name: "静态狐狸"
+      display: "entity"
+      material: "ORANGE_WOOL"
+      entity-type: "FOX"
+      animation: "walk"
+      default: false
+      cost: 34
+    frog_entity:
+      display-name: "静态青蛙"
+      display: "entity"
+      material: "OCHRE_FROGLIGHT"
+      entity-type: "FROG"
+      animation: "walk"
+      default: false
+      cost: 34
+    parrot_entity:
+      display-name: "静态鹦鹉"
+      display: "entity"
+      material: "JUNGLE_LEAVES"
+      entity-type: "PARROT"
+      animation: "walk"
+      default: false
+      cost: 34
+    rabbit_entity:
+      display-name: "静态兔子"
+      display: "entity"
+      material: "SNOW_BLOCK"
+      entity-type: "RABBIT"
+      animation: "walk"
+      default: false
+      cost: 26
+    wolf_entity:
+      display-name: "静态狼"
+      display: "entity"
+      material: "BONE_BLOCK"
+      entity-type: "WOLF"
+      animation: "walk"
+      default: false
+      cost: 36
+    zombie_entity:
+      display-name: "静态僵尸"
+      display: "entity"
+      material: "ZOMBIE_HEAD"
+      entity-type: "ZOMBIE"
+      animation: "walk"
+      default: false
+      cost: 28
+    husk_entity:
+      display-name: "静态尸壳"
+      display: "entity"
+      material: "SANDSTONE"
+      entity-type: "HUSK"
+      animation: "walk"
+      default: false
+      cost: 30
+    drowned_entity:
+      display-name: "静态溺尸"
+      display: "entity"
+      material: "DARK_PRISMARINE"
+      entity-type: "DROWNED"
+      animation: "walk"
+      default: false
+      cost: 32
+    skeleton_entity:
+      display-name: "静态骷髅"
+      display: "entity"
+      material: "SKELETON_SKULL"
+      entity-type: "SKELETON"
+      animation: "walk"
+      default: false
+      cost: 28
+    stray_entity:
+      display-name: "静态流浪者"
+      display: "entity"
+      material: "BLUE_ICE"
+      entity-type: "STRAY"
+      animation: "walk"
+      default: false
+      cost: 32
+    bogged_entity:
+      display-name: "静态沼骸"
+      display: "entity"
+      material: "MOSS_BLOCK"
+      entity-type: "BOGGED"
+      animation: "walk"
+      default: false
+      cost: 34
+    creeper_entity:
+      display-name: "静态苦力怕"
+      display: "entity"
+      material: "CREEPER_HEAD"
+      entity-type: "CREEPER"
+      animation: "walk"
+      default: false
+      cost: 36
+    witch_entity:
+      display-name: "静态女巫"
+      display: "entity"
+      material: "SCULK"
+      entity-type: "WITCH"
+      animation: "walk"
+      default: false
+      cost: 36
+    pillager_entity:
+      display-name: "静态掠夺者"
+      display: "entity"
+      material: "COBBLED_DEEPSLATE"
+      entity-type: "PILLAGER"
+      animation: "walk"
+      default: false
+      cost: 36
+    vindicator_entity:
+      display-name: "静态卫道士"
+      display: "entity"
+      material: "POLISHED_BLACKSTONE"
+      entity-type: "VINDICATOR"
+      animation: "walk"
+      default: false
+      cost: 38
+    silverfish_entity:
+      display-name: "静态蠹虫"
+      display: "entity"
+      material: "INFESTED_DEEPSLATE"
+      entity-type: "SILVERFISH"
+      animation: "walk"
+      default: false
+      cost: 24
+    endermite_entity:
+      display-name: "静态末影螨"
+      display: "entity"
+      material: "END_STONE"
+      entity-type: "ENDERMITE"
+      animation: "walk"
+      default: false
+      cost: 26
+    cave_spider_entity:
+      display-name: "静态洞穴蜘蛛"
+      display: "entity"
+      material: "COBWEB"
+      entity-type: "CAVE_SPIDER"
+      animation: "walk"
+      default: false
+      cost: 34
+    blaze_entity:
+      display-name: "静态烈焰人"
+      display: "entity"
+      material: "MAGMA_BLOCK"
+      entity-type: "BLAZE"
+      animation: "walk"
+      default: false
+      cost: 38
+    magma_cube_entity:
+      display-name: "静态岩浆怪"
+      display: "entity"
+      material: "MAGMA_BLOCK"
+      entity-type: "MAGMA_CUBE"
+      animation: "walk"
+      default: false
+      cost: 34
     bee_entity:
       display-name: "静态蜜蜂"
       display: "entity"

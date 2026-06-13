@@ -4,6 +4,19 @@ import org.bukkit.Location;
 
 public final class RoomLayoutFactory {
     public ArenaConfig create(String roomId, Location anchor, ArenaConfig defaults) {
+        return create(roomId, anchor, defaults, defaultBoardSize(defaults), null);
+    }
+
+    public ArenaConfig create(String roomId, Location anchor, ArenaConfig defaults, int boardSize) {
+        return create(roomId, anchor, defaults, boardSize, null);
+    }
+
+    public ArenaConfig create(String roomId, Location anchor, ArenaConfig defaults, String environmentTemplateId) {
+        return create(roomId, anchor, defaults, defaultBoardSize(defaults), environmentTemplateId);
+    }
+
+    public ArenaConfig create(String roomId, Location anchor, ArenaConfig defaults, int boardSize, String environmentTemplateId) {
+        int size = GomokuBoard.requireValidSize(boardSize);
         BlockPoint origin = new BlockPoint(anchor.getBlockX(), anchor.getBlockY(), anchor.getBlockZ());
         BlockPoint forward = forwardStep(anchor.getYaw());
         BlockPoint right = rightStep(forward);
@@ -14,16 +27,19 @@ public final class RoomLayoutFactory {
             right,
             origin,
             BoardGeometry.stepFromAxis("-y"),
-            right
+            right,
+            size
         );
 
-        BlockPoint blackEmitter = origin.add(right.multiply(-3)).add(forward.multiply(7)).add(new BlockPoint(0, 1, 0));
-        BlockPoint whiteEmitter = origin.add(right.multiply(17)).add(forward.multiply(7)).add(new BlockPoint(0, 1, 0));
+        int center = (size - 1) / 2;
+        int outside = size + 2;
+        BlockPoint blackEmitter = origin.add(right.multiply(-3)).add(forward.multiply(center)).add(new BlockPoint(0, 1, 0));
+        BlockPoint whiteEmitter = origin.add(right.multiply(outside)).add(forward.multiply(center)).add(new BlockPoint(0, 1, 0));
 
-        ArenaSeat blackSeat = seat(origin.add(right.multiply(7)).add(forward.multiply(-3)).add(new BlockPoint(0, 1, 0)), yawToFace(forward));
-        ArenaSeat whiteSeat = seat(origin.add(right.multiply(7)).add(forward.multiply(17)).add(new BlockPoint(0, 1, 0)), yawToFace(forward.multiply(-1)));
-        ArenaSeat spectatorSpawn = seat(origin.add(right.multiply(7)).add(forward.multiply(-7)).add(new BlockPoint(0, 1, 0)), yawToFace(forward));
-        ArenaSeat spectatorExit = seat(origin.add(right.multiply(7)).add(forward.multiply(-9)).add(new BlockPoint(0, 1, 0)), yawToFace(forward));
+        ArenaSeat blackSeat = seat(origin.add(right.multiply(center)).add(forward.multiply(-3)).add(new BlockPoint(0, 1, 0)), yawToFace(forward));
+        ArenaSeat whiteSeat = seat(origin.add(right.multiply(center)).add(forward.multiply(outside)).add(new BlockPoint(0, 1, 0)), yawToFace(forward.multiply(-1)));
+        ArenaSeat spectatorSpawn = seat(origin.add(right.multiply(center)).add(forward.multiply(-7)).add(new BlockPoint(0, 1, 0)), yawToFace(forward));
+        ArenaSeat spectatorExit = seat(origin.add(right.multiply(center)).add(forward.multiply(-9)).add(new BlockPoint(0, 1, 0)), yawToFace(forward));
 
         return ArenaConfig.create(
             roomId,
@@ -35,8 +51,14 @@ public final class RoomLayoutFactory {
             whiteSeat,
             spectatorSpawn,
             spectatorExit,
-            defaults
+            defaults,
+            environmentTemplateId,
+            size
         );
+    }
+
+    private int defaultBoardSize(ArenaConfig defaults) {
+        return defaults == null ? GomokuBoard.DEFAULT_SIZE : defaults.boardSize();
     }
 
     private ArenaSeat seat(BlockPoint point, float yaw) {

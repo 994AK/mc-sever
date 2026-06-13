@@ -11,6 +11,8 @@ public final class TeleportRequestServiceTest {
         enforcesCooldownAndAllowedWorlds();
         rejectsOfflineParticipantsAndDuplicatePending();
         revalidatesRelationshipBeforeAccept();
+        trustedTeleporterCanDirectTeleport();
+        exposesIncomingTeleportRequests();
     }
 
     private static void requiresFriendshipAndSettings() {
@@ -89,6 +91,35 @@ public final class TeleportRequestServiceTest {
         TestSupport.check(friends.block(bob, alice).ok(), "target blocks sender");
         TestSupport.check(teleports.accept(bob, alice, "world", "world").status() == TeleportRequestService.Status.BLOCKED, "accept revalidates blacklist");
         TestSupport.check(teleports.accept(bob, alice, "world", "world").status() == TeleportRequestService.Status.NO_REQUEST, "invalidated request is cleared");
+    }
+
+    private static void trustedTeleporterCanDirectTeleport() {
+        MutableClock clock = new MutableClock(1_000L);
+        FriendService friends = new FriendService(List.of(), clock, 10_000L, 0L);
+        TeleportRequestService teleports = new TeleportRequestService(friends, clock, 10_000L, 5_000L, Set.of("world"));
+        UUID alice = UUID.randomUUID();
+        UUID bob = UUID.randomUUID();
+        makeFriends(friends, alice, bob);
+
+        TestSupport.check(teleports.direct(alice, bob, true, true, "world", "world").status() == TeleportRequestService.Status.NO_REQUEST, "direct teleport requires target trust");
+        TestSupport.check(friends.setTrustedTeleporter(bob, alice, true).ok(), "target trusts sender");
+        TestSupport.check(teleports.direct(alice, bob, true, true, "world", "world").ok(), "trusted sender can direct teleport");
+        TestSupport.check(teleports.direct(alice, bob, true, true, "world", "world").status() == TeleportRequestService.Status.COOLDOWN, "direct teleport still uses cooldown");
+    }
+
+    private static void exposesIncomingTeleportRequests() {
+        MutableClock clock = new MutableClock(1_000L);
+        FriendService friends = new FriendService(List.of(), clock, 10_000L, 0L);
+        TeleportRequestService teleports = new TeleportRequestService(friends, clock, 1_000L, 0L, Set.of());
+        UUID alice = UUID.randomUUID();
+        UUID bob = UUID.randomUUID();
+        makeFriends(friends, alice, bob);
+
+        TestSupport.check(teleports.incomingRequests(bob).isEmpty(), "no incoming request before send");
+        TestSupport.check(teleports.request(alice, bob, true, true, "world", "world").ok(), "request sent");
+        TestSupport.check(teleports.incomingRequests(bob).equals(List.of(alice)), "incoming request exposes sender");
+        clock.advance(1_001L);
+        TestSupport.check(teleports.incomingRequests(bob).isEmpty(), "expired incoming request is hidden");
     }
 
     private static void makeFriends(FriendService friends, UUID alice, UUID bob) {

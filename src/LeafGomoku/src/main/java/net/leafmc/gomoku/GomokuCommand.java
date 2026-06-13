@@ -55,6 +55,38 @@ public final class GomokuCommand implements TabExecutor {
                 }
                 return true;
             }
+            case "invite", "邀战", "邀请" -> {
+                Player player = requirePlayer(sender);
+                if (player == null || !require(sender, GomokuPermission.PLAY, "§c你没有五子棋权限。")) {
+                    return true;
+                }
+                String action = arg(args, 1).toLowerCase(Locale.ROOT);
+                if (List.of("accept", "yes", "agree", "同意").contains(action)) {
+                    send(player, plugin.acceptInvite(player, arg(args, 2)));
+                } else if (List.of("deny", "reject", "no", "拒绝").contains(action)) {
+                    send(player, plugin.denyInvite(player, arg(args, 2)));
+                } else if (args.length < 2) {
+                    sender.sendMessage("§e用法: /gomoku invite <玩家> [room] §7或 §f/gomoku invite accept");
+                } else {
+                    send(player, plugin.invite(player, args[1], arg(args, 2)));
+                }
+                return true;
+            }
+            case "undo", "huiqi", "悔棋" -> {
+                Player player = requirePlayer(sender);
+                if (player == null || !require(sender, GomokuPermission.PLAY, "§c你没有五子棋权限。")) {
+                    return true;
+                }
+                String action = arg(args, 1).toLowerCase(Locale.ROOT);
+                if (List.of("accept", "yes", "agree", "同意").contains(action)) {
+                    send(player, plugin.acceptUndo(player, arg(args, 2)));
+                } else if (List.of("deny", "reject", "no", "拒绝").contains(action)) {
+                    send(player, plugin.denyUndo(player, arg(args, 2)));
+                } else {
+                    send(player, plugin.requestUndo(player, arg(args, 1)));
+                }
+                return true;
+            }
             case "gui", "menu", "lobby" -> {
                 Player player = requirePlayer(sender);
                 if (player == null || !require(sender, GomokuPermission.GUI, "§c你没有五子棋菜单权限。")) {
@@ -180,10 +212,14 @@ public final class GomokuCommand implements TabExecutor {
                     return;
                 }
                 if (args.length < 3) {
-                    sender.sendMessage("§e用法: /gomoku admin create <room>");
+                    sender.sendMessage("§e用法: /gomoku admin create <room> [size <" + GomokuBoard.MIN_SIZE + "-" + GomokuBoard.MAX_SIZE + ">]");
                     return;
                 }
-                sender.sendMessage(plugin.createRoom(player, args[2]));
+                RoomCreateOptions options = roomCreateOptions(sender, args, 3);
+                if (options == null) {
+                    return;
+                }
+                sender.sendMessage(plugin.createRoomAt(player, args[2], player.getLocation(), options.boardSize(), options.templateId()));
             }
             case "place", "tool" -> {
                 if (!require(sender, GomokuPermission.ADMIN_SETUP, "§c你没有权限放置五子棋房间。")) {
@@ -194,10 +230,45 @@ public final class GomokuCommand implements TabExecutor {
                     return;
                 }
                 if (args.length < 3) {
-                    sender.sendMessage("§e用法: /gomoku admin place <room>");
+                    sender.sendMessage("§e用法: /gomoku admin place <room> [size <" + GomokuBoard.MIN_SIZE + "-" + GomokuBoard.MAX_SIZE + ">]");
                     return;
                 }
-                sender.sendMessage(plugin.prepareRoomPlacement(player, args[2]));
+                RoomCreateOptions options = roomCreateOptions(sender, args, 3);
+                if (options == null) {
+                    return;
+                }
+                sender.sendMessage(plugin.prepareRoomPlacement(player, args[2], options.boardSize(), options.templateId()));
+            }
+            case "confirm" -> {
+                if (!require(sender, GomokuPermission.ADMIN_SETUP, "§c你没有权限确认创建五子棋房间。")) {
+                    return;
+                }
+                Player player = requirePlayer(sender);
+                if (player != null) {
+                    sender.sendMessage(plugin.confirmRoomPlacement(player));
+                }
+            }
+            case "cancel" -> {
+                if (!require(sender, GomokuPermission.ADMIN_SETUP, "§c你没有权限取消创建五子棋房间。")) {
+                    return;
+                }
+                Player player = requirePlayer(sender);
+                if (player != null) {
+                    sender.sendMessage(plugin.cancelRoomPlacement(player));
+                }
+            }
+            case "environment", "env" -> {
+                if (require(sender, GomokuPermission.ADMIN_ROOM, "§c你没有权限切换房间环境模板。")) {
+                    if (args.length < 4) {
+                        sender.sendMessage("§e用法: /gomoku admin environment <room> <template> [force]");
+                        return;
+                    }
+                    Boolean force = forceFlag(sender, args);
+                    if (force == null) {
+                        return;
+                    }
+                    sender.sendMessage(plugin.setRoomEnvironment(args[2], args[3], force));
+                }
             }
             case "init" -> {
                 if (require(sender, GomokuPermission.ADMIN_SETUP, "§c你没有权限初始化房间。")) {
@@ -306,7 +377,7 @@ public final class GomokuCommand implements TabExecutor {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
-            List<String> values = new ArrayList<>(List.of("join", "spectate", "leave", "gui", "status", "leaderboard", "stats", "theme", "skin", "buy"));
+            List<String> values = new ArrayList<>(List.of("join", "spectate", "leave", "invite", "undo", "gui", "status", "leaderboard", "stats", "theme", "skin", "buy"));
             if (sender.hasPermission(GomokuPermission.ADMIN_ROOM.node()) || sender.hasPermission(GomokuPermission.ADMIN_STATS.node())) {
                 values.add("var");
                 values.add("admin");
@@ -317,18 +388,45 @@ public final class GomokuCommand implements TabExecutor {
             return filter(values, args[0]);
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("admin")) {
-            return filter(List.of("create", "place", "init", "open", "close", "refresh", "reset", "delete", "inspect", "stop", "release", "forfeit", "reload", "resetstats", "points"), args[1]);
+            return filter(List.of("create", "place", "confirm", "cancel", "environment", "init", "open", "close", "refresh", "reset", "delete", "inspect", "stop", "release", "forfeit", "reload", "resetstats", "points"), args[1]);
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("skin")) {
             return filter(plugin.appearances().pieceSkins().stream().map(PieceSkin::id).toList(), args[1]);
+        }
+        if (args.length == 2 && isInviteCommand(args[0])) {
+            List<String> values = new ArrayList<>(List.of("accept", "deny"));
+            values.addAll(plugin.getServer().getOnlinePlayers().stream().map(Player::getName).toList());
+            return filter(values, args[1]);
+        }
+        if (args.length == 3 && isInviteCommand(args[0])) {
+            return filter(plugin.rooms().rooms().stream().map(room -> room.config().id()).toList(), args[2]);
+        }
+        if (args.length == 2 && isUndoCommand(args[0])) {
+            List<String> values = new ArrayList<>(List.of("accept", "deny"));
+            values.addAll(plugin.rooms().rooms().stream().map(room -> room.config().id()).toList());
+            return filter(values, args[1]);
+        }
+        if (args.length == 3 && isUndoCommand(args[0]) && List.of("accept", "deny").contains(args[1].toLowerCase(Locale.ROOT))) {
+            return filter(plugin.rooms().rooms().stream().map(room -> room.config().id()).toList(), args[2]);
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("buy")) {
             return filter(List.of("theme", "skin"), args[1]);
         }
         if ((args.length == 2 && List.of("join", "spectate", "status", "init", "reset").contains(args[0].toLowerCase(Locale.ROOT)))
             || (args.length == 2 && args[0].equalsIgnoreCase("theme"))
-            || (args.length == 3 && args[0].equalsIgnoreCase("admin") && !List.of("create", "resetstats", "points", "addpoints", "givepoints").contains(args[1].toLowerCase(Locale.ROOT)))) {
+                || (args.length == 3 && args[0].equalsIgnoreCase("admin") && !List.of("create", "place", "confirm", "cancel", "resetstats", "points", "addpoints", "givepoints").contains(args[1].toLowerCase(Locale.ROOT)))) {
             return filter(plugin.rooms().rooms().stream().map(room -> room.config().id()).toList(), args[args.length - 1]);
+        }
+        if (args.length == 4 && args[0].equalsIgnoreCase("admin") && (args[1].equalsIgnoreCase("create") || args[1].equalsIgnoreCase("place"))) {
+            List<String> values = new ArrayList<>(List.of("size"));
+            values.addAll(sizeSuggestions());
+            return filter(values, args[3]);
+        }
+        if (args.length == 5 && args[0].equalsIgnoreCase("admin") && (args[1].equalsIgnoreCase("create") || args[1].equalsIgnoreCase("place")) && args[3].equalsIgnoreCase("size")) {
+            return filter(sizeSuggestions(), args[4]);
+        }
+        if (args.length == 4 && args[0].equalsIgnoreCase("admin") && (args[1].equalsIgnoreCase("environment") || args[1].equalsIgnoreCase("env"))) {
+            return filter(plugin.environments().templateIds(), args[3]);
         }
         if (args.length == 3 && args[0].equalsIgnoreCase("theme")) {
             return filter(plugin.appearances().boardThemes().stream().map(BoardTheme::id).toList(), args[2]);
@@ -384,6 +482,14 @@ public final class GomokuCommand implements TabExecutor {
         return false;
     }
 
+    private boolean isUndoCommand(String value) {
+        return List.of("undo", "huiqi", "悔棋").contains(value.toLowerCase(Locale.ROOT));
+    }
+
+    private boolean isInviteCommand(String value) {
+        return List.of("invite", "邀战", "邀请").contains(value.toLowerCase(Locale.ROOT));
+    }
+
     private Stone sideArg(String value) {
         return switch (value == null ? "" : value.toLowerCase(Locale.ROOT)) {
             case "black", "b", "黑", "黑方" -> Stone.BLACK;
@@ -405,6 +511,74 @@ public final class GomokuCommand implements TabExecutor {
         }
     }
 
+    private RoomCreateOptions roomCreateOptions(CommandSender sender, String[] args, int start) {
+        int boardSize = GomokuBoard.DEFAULT_SIZE;
+        String templateId = "";
+        int index = start;
+        while (index < args.length) {
+            String value = args[index];
+            String normalized = value.toLowerCase(Locale.ROOT);
+            if (List.of("size", "s").contains(normalized)) {
+                if (index + 1 >= args.length) {
+                    sender.sendMessage("§e缺少棋盘大小，例如 size 15 或 size 19。");
+                    return null;
+                }
+                Integer parsed = boardSizeArg(args[index + 1]);
+                if (parsed == null) {
+                    sender.sendMessage(plugin.boardSizeError());
+                    return null;
+                }
+                boardSize = parsed;
+                index += 2;
+                continue;
+            }
+            if (List.of("env", "environment", "template").contains(normalized)) {
+                if (index + 1 >= args.length) {
+                    sender.sendMessage("§e缺少环境模板 id。");
+                    return null;
+                }
+                templateId = args[index + 1];
+                index += 2;
+                continue;
+            }
+            Integer parsed = boardSizeArg(value);
+            if (parsed != null) {
+                boardSize = parsed;
+                index++;
+                continue;
+            }
+            if (integerLike(value)) {
+                sender.sendMessage(plugin.boardSizeError());
+                return null;
+            }
+            templateId = value;
+            index++;
+        }
+        return new RoomCreateOptions(boardSize, templateId);
+    }
+
+    private Integer boardSizeArg(String value) {
+        try {
+            int parsed = Integer.parseInt(value);
+            return GomokuBoard.isValidSize(parsed) ? parsed : null;
+        } catch (NumberFormatException error) {
+            return null;
+        }
+    }
+
+    private boolean integerLike(String value) {
+        try {
+            Integer.parseInt(value);
+            return true;
+        } catch (NumberFormatException error) {
+            return false;
+        }
+    }
+
+    private List<String> sizeSuggestions() {
+        return List.of("9", "13", "15", "19", "25");
+    }
+
     private String joinReason(String[] args, int start) {
         if (args.length <= start) {
             return "admin-grant";
@@ -419,7 +593,7 @@ public final class GomokuCommand implements TabExecutor {
     }
 
     private void sendHelp(CommandSender sender) {
-        sender.sendMessage("§7用法: §f/gomoku gui §7| §f/gomoku join [room] §7| §f/gomoku spectate [room] §7| §f/gomoku leave §7| §f/gomoku status [room]");
+        sender.sendMessage("§7用法: §f/gomoku gui §7| §f/gomoku join [room] §7| §f/gomoku invite <玩家> [room] §7| §f/gomoku leave §7| §f/gomoku undo [accept|deny] [room] §7| §f/gomoku status [room]");
         sender.sendMessage("§7查询: §f/gomoku leaderboard [points|wins|winrate] §7| §f/gomoku stats [玩家]");
         sender.sendMessage("§7外观: §f/gomoku skin <skin> §7| §f/gomoku theme <room> <theme> §7| §f/gomoku buy <theme|skin> <id>");
         if (sender.hasPermission(GomokuPermission.ADMIN_ROOM.node())) {
@@ -428,12 +602,16 @@ public final class GomokuCommand implements TabExecutor {
     }
 
     private void sendAdminHelp(CommandSender sender) {
-        sender.sendMessage("§7管理: §f/gomoku admin create/place/init/open/close/refresh/reset/delete/inspect/stop/release/forfeit/reload");
+        sender.sendMessage("§7管理: §f/gomoku admin place <房间> size 15 §7| §f/gomoku admin confirm/cancel §7| §f/gomoku admin create <房间> size 15");
+        sender.sendMessage("§7房间: §f/gomoku admin init/open/close/refresh/reset/delete/inspect/stop/release/forfeit/reload");
         sender.sendMessage("§7统计: §f/gomoku admin points <玩家> <数量> [原因] §7| §f/gomoku admin resetstats <玩家>");
     }
 
     private List<String> filter(List<String> values, String prefix) {
         String normalized = prefix == null ? "" : prefix.toLowerCase(Locale.ROOT);
         return values.stream().filter(value -> value.startsWith(normalized)).toList();
+    }
+
+    private record RoomCreateOptions(int boardSize, String templateId) {
     }
 }

@@ -33,16 +33,11 @@ public final class PieceAnimator {
 
     public void updateArena(ArenaConfig arena) {
         this.arena = arena;
-        cleanup();
-    }
-
-    public void animate(Stone stone, int row, int column, Runnable finished) {
-        animate(stone, arena.materialFor(stone), row, column, finished);
     }
 
     public void animate(Stone stone, PieceSkin skin, int row, int column, Runnable finished) {
         if (skin == null) {
-            animate(stone, row, column, finished);
+            animateBlock(stone, fallbackMaterial(stone), null, row, column, finished);
             return;
         }
         if (skin.displayType() == PieceDisplayType.ENTITY) {
@@ -50,10 +45,6 @@ public final class PieceAnimator {
             return;
         }
         animateBlock(stone, skin.animationMaterial(), skin, row, column, finished);
-    }
-
-    public void animate(Stone stone, Material material, int row, int column, Runnable finished) {
-        animateBlock(stone, material, null, row, column, finished);
     }
 
     private void animateBlock(Stone stone, Material material, PieceSkin skin, int row, int column, Runnable finished) {
@@ -198,6 +189,10 @@ public final class PieceAnimator {
 
     private double dropHeight() {
         return Math.max(MIN_DROP_HEIGHT, arena.animationArcHeight());
+    }
+
+    private Material fallbackMaterial(Stone stone) {
+        return stone == Stone.WHITE ? Material.WHITE_CONCRETE : Material.BLACK_CONCRETE;
     }
 
     private void land(Location end, PieceSkin skin) {

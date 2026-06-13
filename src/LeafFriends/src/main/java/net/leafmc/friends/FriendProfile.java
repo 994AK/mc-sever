@@ -10,6 +10,7 @@ public final class FriendProfile {
     private String latestName;
     private final Set<UUID> friends = new LinkedHashSet<>();
     private final Set<UUID> blacklist = new LinkedHashSet<>();
+    private final Set<UUID> trustedTeleporters = new LinkedHashSet<>();
     private FriendSettings settings = new FriendSettings();
     private long lastSeenMillis;
 
@@ -36,6 +37,10 @@ public final class FriendProfile {
 
     public Set<UUID> blacklist() {
         return blacklist;
+    }
+
+    public Set<UUID> trustedTeleporters() {
+        return trustedTeleporters;
     }
 
     public FriendSettings settings() {

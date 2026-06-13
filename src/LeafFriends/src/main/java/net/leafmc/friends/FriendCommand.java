@@ -257,48 +257,7 @@ public final class FriendCommand implements TabExecutor {
         if (target == null) {
             return;
         }
-        boolean hidesStatus = plugin.friends().hidesOnlineStatus(target.id());
-        if (hidesStatus) {
-            if (target.onlinePlayer() != null) {
-                if (player.isDead() || target.onlinePlayer().isDead()) {
-                    player.sendMessage(plugin.prefix() + "如果对方在线且允许，会收到你的好友传送请求。");
-                    return;
-                }
-                TeleportRequestService.Result result = plugin.teleports().request(
-                    player.getUniqueId(),
-                    target.id(),
-                    player.isOnline(),
-                    target.onlinePlayer().isOnline(),
-                    player.getWorld().getName(),
-                    target.onlinePlayer().getWorld().getName()
-                );
-                if (result.ok()) {
-                    target.onlinePlayer().sendMessage(plugin.prefix() + "§a" + player.getName() + " §f请求传送到你身边，输入 §e/friend tpaccept " + player.getName() + " §f同意。");
-                }
-            }
-            player.sendMessage(plugin.prefix() + "如果对方在线且允许，会收到你的好友传送请求。");
-            return;
-        }
-        if (target.onlinePlayer() == null) {
-            player.sendMessage(plugin.prefix() + "好友不在线，不能发送好友传送。");
-            return;
-        }
-        if (player.isDead() || target.onlinePlayer().isDead()) {
-            player.sendMessage(plugin.prefix() + "双方都存活时才能发送好友传送。");
-            return;
-        }
-        TeleportRequestService.Result result = plugin.teleports().request(
-            player.getUniqueId(),
-            target.id(),
-            player.isOnline(),
-            target.onlinePlayer().isOnline(),
-            player.getWorld().getName(),
-            target.onlinePlayer().getWorld().getName()
-        );
-        player.sendMessage(plugin.prefix() + result.message());
-        if (result.ok()) {
-            target.onlinePlayer().sendMessage(plugin.prefix() + "§a" + player.getName() + " §f请求传送到你身边，输入 §e/friend tpaccept " + player.getName() + " §f同意。");
-        }
+        plugin.requestTeleport(player, target);
     }
 
     private void handleTeleportAccept(CommandSender sender, String[] args) {
@@ -310,39 +269,7 @@ public final class FriendCommand implements TabExecutor {
         if (target == null) {
             return;
         }
-        if (target.onlinePlayer() == null) {
-            player.sendMessage(plugin.prefix() + "对方不在线。");
-            return;
-        }
-        if (player.isDead() || target.onlinePlayer().isDead()) {
-            player.sendMessage(plugin.prefix() + "双方都存活时才能接受好友传送。");
-            return;
-        }
-        if (!plugin.teleportWorldAllowed(player.getWorld().getName())) {
-            player.sendMessage(plugin.prefix() + "当前世界不允许好友传送。");
-            return;
-        }
-        if (!plugin.teleportWorldAllowed(target.onlinePlayer().getWorld().getName())) {
-            player.sendMessage(plugin.prefix() + "对方当前世界不允许好友传送。");
-            return;
-        }
-        TeleportRequestService.Result result = plugin.teleports().accept(
-            player.getUniqueId(),
-            target.id(),
-            target.onlinePlayer().getWorld().getName(),
-            player.getWorld().getName()
-        );
-        if (!result.ok()) {
-            player.sendMessage(plugin.prefix() + result.message());
-            return;
-        }
-        boolean teleported = target.onlinePlayer().teleport(player.getLocation());
-        if (teleported) {
-            target.onlinePlayer().sendMessage(plugin.prefix() + "已传送到好友 §a" + player.getName() + " §f身边。");
-            player.sendMessage(plugin.prefix() + "已同意 §a" + target.name() + " §f的好友传送。");
-        } else {
-            player.sendMessage(plugin.prefix() + "传送失败，请稍后再试。");
-        }
+        plugin.acceptTeleport(player, target);
     }
 
     private void handleTeleportDeny(CommandSender sender, String[] args) {

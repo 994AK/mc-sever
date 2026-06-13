@@ -5,11 +5,11 @@ import java.util.List;
 import java.util.Optional;
 
 public final class BoardGeometry {
-    private static final int ROOM_MIN_ROW = -8;
-    private static final int ROOM_MAX_ROW = 18;
-    private static final int ROOM_MIN_COLUMN = -4;
-    private static final int ROOM_MAX_COLUMN = 18;
-    private static final int ROOM_FRAME_HEIGHT = 3;
+    public static final int ROOM_MIN_ROW = -8;
+    public static final int ROOM_MAX_ROW = 18;
+    public static final int ROOM_MIN_COLUMN = -4;
+    public static final int ROOM_MAX_COLUMN = 18;
+    public static final int ROOM_FRAME_HEIGHT = 3;
 
     private final BlockPoint boardOrigin;
     private final BlockPoint boardRowStep;
@@ -17,6 +17,7 @@ public final class BoardGeometry {
     private final BlockPoint previewOrigin;
     private final BlockPoint previewRowStep;
     private final BlockPoint previewColumnStep;
+    private final int boardSize;
 
     public BoardGeometry(
         BlockPoint boardOrigin,
@@ -26,17 +27,38 @@ public final class BoardGeometry {
         BlockPoint previewRowStep,
         BlockPoint previewColumnStep
     ) {
+        this(
+            boardOrigin,
+            boardRowStep,
+            boardColumnStep,
+            previewOrigin,
+            previewRowStep,
+            previewColumnStep,
+            GomokuBoard.DEFAULT_SIZE
+        );
+    }
+
+    public BoardGeometry(
+        BlockPoint boardOrigin,
+        BlockPoint boardRowStep,
+        BlockPoint boardColumnStep,
+        BlockPoint previewOrigin,
+        BlockPoint previewRowStep,
+        BlockPoint previewColumnStep,
+        int boardSize
+    ) {
         this.boardOrigin = boardOrigin;
         this.boardRowStep = boardRowStep;
         this.boardColumnStep = boardColumnStep;
         this.previewOrigin = previewOrigin;
         this.previewRowStep = previewRowStep;
         this.previewColumnStep = previewColumnStep;
+        this.boardSize = GomokuBoard.requireValidSize(boardSize);
     }
 
     public Optional<GridCell> mapBoardCell(BlockPoint point) {
-        for (int row = 0; row < GomokuBoard.SIZE; row++) {
-            for (int column = 0; column < GomokuBoard.SIZE; column++) {
+        for (int row = 0; row < boardSize; row++) {
+            for (int column = 0; column < boardSize; column++) {
                 if (boardPoint(row, column).equals(point)) {
                     return Optional.of(new GridCell(row, column));
                 }
@@ -46,8 +68,8 @@ public final class BoardGeometry {
     }
 
     public Optional<GridCell> mapPieceCell(BlockPoint point) {
-        for (int row = 0; row < GomokuBoard.SIZE; row++) {
-            for (int column = 0; column < GomokuBoard.SIZE; column++) {
+        for (int row = 0; row < boardSize; row++) {
+            for (int column = 0; column < boardSize; column++) {
                 if (piecePoint(row, column).equals(point)) {
                     return Optional.of(new GridCell(row, column));
                 }
@@ -61,12 +83,6 @@ public final class BoardGeometry {
             return true;
         }
         if (mapPieceCell(point).isPresent()) {
-            return true;
-        }
-        if (roomFramePoints().contains(point)) {
-            return true;
-        }
-        if (roomFloorPoints().contains(point)) {
             return true;
         }
         return false;
@@ -111,6 +127,30 @@ public final class BoardGeometry {
         return previewOrigin.add(previewRowStep.multiply(row)).add(previewColumnStep.multiply(column));
     }
 
+    public BoardRegion boardRegion() {
+        BlockPoint[] corners = {
+            boardPoint(0, 0),
+            boardPoint(boardSize - 1, 0),
+            boardPoint(0, boardSize - 1),
+            boardPoint(boardSize - 1, boardSize - 1)
+        };
+        int minX = corners[0].x();
+        int minY = corners[0].y();
+        int minZ = corners[0].z();
+        int maxX = corners[0].x();
+        int maxY = corners[0].y();
+        int maxZ = corners[0].z();
+        for (BlockPoint corner : corners) {
+            minX = Math.min(minX, corner.x());
+            minY = Math.min(minY, corner.y());
+            minZ = Math.min(minZ, corner.z());
+            maxX = Math.max(maxX, corner.x());
+            maxY = Math.max(maxY, corner.y());
+            maxZ = Math.max(maxZ, corner.z());
+        }
+        return new BoardRegion(new BlockPoint(minX, minY, minZ), new BlockPoint(maxX, maxY, maxZ));
+    }
+
     public BlockPoint boardOrigin() {
         return boardOrigin;
     }
@@ -133,6 +173,13 @@ public final class BoardGeometry {
 
     public BlockPoint previewColumnStep() {
         return previewColumnStep;
+    }
+
+    public int boardSize() {
+        return boardSize;
+    }
+
+    public record BoardRegion(BlockPoint minimum, BlockPoint maximum) {
     }
 
     public static BlockPoint stepFromAxis(String value) {

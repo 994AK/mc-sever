@@ -15,6 +15,7 @@ public final class RoomRegistry {
     private final StatsService statsService;
     private final AppearanceCatalog appearanceCatalog;
     private final AppearanceUnlockService appearanceUnlocks;
+    private final EnvironmentCatalog environmentCatalog;
     private final RoomChatService roomChat;
     private final Map<String, GomokuRoom> rooms = new LinkedHashMap<>();
 
@@ -23,12 +24,14 @@ public final class RoomRegistry {
         StatsService statsService,
         AppearanceCatalog appearanceCatalog,
         AppearanceUnlockService appearanceUnlocks,
+        EnvironmentCatalog environmentCatalog,
         RoomChatService roomChat
     ) {
         this.plugin = plugin;
         this.statsService = statsService;
         this.appearanceCatalog = appearanceCatalog;
         this.appearanceUnlocks = appearanceUnlocks;
+        this.environmentCatalog = environmentCatalog;
         this.roomChat = roomChat;
     }
 
@@ -36,7 +39,7 @@ public final class RoomRegistry {
         shutdown();
         rooms.clear();
         for (ArenaConfig config : configs) {
-            rooms.put(config.id(), new GomokuRoom(plugin, config, statsService, appearanceCatalog, appearanceUnlocks, roomChat));
+            rooms.put(config.id(), new GomokuRoom(plugin, config, statsService, appearanceCatalog, appearanceUnlocks, environmentCatalog, roomChat));
         }
     }
 
@@ -45,7 +48,7 @@ public final class RoomRegistry {
         if (old != null) {
             old.shutdown();
         }
-        rooms.put(config.id(), new GomokuRoom(plugin, config, statsService, appearanceCatalog, appearanceUnlocks, roomChat));
+        rooms.put(config.id(), new GomokuRoom(plugin, config, statsService, appearanceCatalog, appearanceUnlocks, environmentCatalog, roomChat));
     }
 
     public Optional<GomokuRoom> room(String roomId) {
@@ -97,7 +100,7 @@ public final class RoomRegistry {
             if (!sameWorld(config, world)) {
                 continue;
             }
-            if (config.geometry().protects(point)
+            if (room.protects(point)
                 || point.equals(config.blackEmitter())
                 || point.equals(config.whiteEmitter())) {
                 return true;

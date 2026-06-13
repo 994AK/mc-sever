@@ -31,22 +31,21 @@ public final class BoardRenderer {
     private final Map<GridCell, Entity> staticPieceByCell = new HashMap<>();
     private final Set<BukkitTask> animationTasks = new HashSet<>();
     private ArenaConfig arena;
+    private RoomEnvironmentTemplate environmentTemplate;
 
-    public BoardRenderer(Plugin plugin, ArenaConfig arena) {
+    public BoardRenderer(Plugin plugin, ArenaConfig arena, RoomEnvironmentTemplate environmentTemplate) {
         this.plugin = plugin;
         this.arena = arena;
+        this.environmentTemplate = environmentTemplate;
     }
 
-    public void updateArena(ArenaConfig arena) {
+    public void updateArena(ArenaConfig arena, RoomEnvironmentTemplate environmentTemplate) {
         this.arena = arena;
+        this.environmentTemplate = environmentTemplate;
     }
 
     public boolean canRender() {
         return arena.enabled() && arena.world() != null;
-    }
-
-    public void renderEmpty() {
-        renderEmpty(null);
     }
 
     public void renderEmpty(BoardTheme theme) {
@@ -55,17 +54,11 @@ public final class BoardRenderer {
         }
         clearLegacyPreview();
         clearPieceLayer();
-        renderRoomFloor();
-        renderRoomFrame();
-        for (int row = 0; row < GomokuBoard.SIZE; row++) {
-            for (int column = 0; column < GomokuBoard.SIZE; column++) {
+        for (int row = 0; row < arena.boardSize(); row++) {
+            for (int column = 0; column < arena.boardSize(); column++) {
                 set(arena.geometry().boardPoint(row, column), boardMaterial(theme, row, column));
             }
         }
-    }
-
-    public void renderBoard(GomokuBoard board) {
-        renderBoard(board, null);
     }
 
     public void renderBoard(GomokuBoard board, MatchAppearance appearance) {
@@ -74,32 +67,19 @@ public final class BoardRenderer {
         }
         clearLegacyPreview();
         clearPieceLayer();
-        renderRoomFloor();
-        renderRoomFrame();
-        for (int row = 0; row < GomokuBoard.SIZE; row++) {
-            for (int column = 0; column < GomokuBoard.SIZE; column++) {
+        for (int row = 0; row < board.size(); row++) {
+            for (int column = 0; column < board.size(); column++) {
                 Stone stone = board.get(row, column);
                 set(arena.geometry().boardPoint(row, column), boardMaterial(appearance == null ? null : appearance.boardTheme(), row, column));
                 if (stone != Stone.EMPTY) {
                     if (appearance == null) {
-                        renderBlockPiece(row, column, arena.materialFor(stone));
+                        renderBlockPiece(row, column, fallbackMaterial(stone));
                     } else {
                         renderPiece(row, column, appearance.skinFor(stone));
                     }
                 }
             }
         }
-    }
-
-    public void renderMove(int row, int column, Stone stone) {
-        renderMove(row, column, arena.materialFor(stone));
-    }
-
-    public void renderMove(int row, int column, org.bukkit.Material material) {
-        if (!canRender()) {
-            return;
-        }
-        renderBlockPiece(row, column, material);
     }
 
     public void renderMove(int row, int column, PieceSkin skin) {
@@ -109,26 +89,25 @@ public final class BoardRenderer {
         renderPiece(row, column, skin);
     }
 
+    public void clearMove(int row, int column, BoardTheme theme) {
+        if (!canRender()) {
+            return;
+        }
+        GridCell cell = new GridCell(row, column);
+        removeStaticPieceAt(cell);
+        set(arena.geometry().piecePoint(row, column), org.bukkit.Material.AIR);
+        set(arena.geometry().boardPoint(row, column), boardMaterial(theme, row, column));
+    }
+
     public void clearRoom() {
         if (!canRender()) {
             return;
         }
         clearLegacyPreview();
         clearPieceLayer();
-        for (BlockPoint point : arena.geometry().roomFramePoints()) {
-            set(point, org.bukkit.Material.AIR);
-        }
-        for (BlockPoint point : arena.geometry().roomFloorPoints()) {
-            set(point, org.bukkit.Material.AIR);
-        }
+        clearEnvironment();
         set(arena.blackEmitter(), org.bukkit.Material.AIR);
         set(arena.whiteEmitter(), org.bukkit.Material.AIR);
-    }
-
-    private void renderRoomFrame() {
-        for (BlockPoint point : arena.geometry().roomFramePoints()) {
-            set(point, arena.frameMaterial());
-        }
     }
 
     public void cleanup() {
@@ -136,18 +115,41 @@ public final class BoardRenderer {
         clearStaticPieceEntities();
     }
 
-    private void renderRoomFloor() {
-        for (BlockPoint point : arena.geometry().roomFloorPoints()) {
-            set(point, arena.floorMaterial());
+    private void clearEnvironment() {
+        for (RoomEnvironmentLayout.EnvironmentBlock block : environmentLayout().allBlocks()) {
+            set(block.point(), org.bukkit.Material.AIR);
         }
+    }
+
+    private RoomEnvironmentLayout environmentLayout() {
+        RoomEnvironmentLayout layout = new RoomEnvironmentLayout(arena.geometry(), environmentTemplate == null ? fallbackEnvironment() : environmentTemplate);
+        if (layout.withinBudget()) {
+            return layout;
+        }
+        return new RoomEnvironmentLayout(arena.geometry(), fallbackEnvironment());
+    }
+
+    private RoomEnvironmentTemplate fallbackEnvironment() {
+        return new RoomEnvironmentTemplate(
+            RoomEnvironmentTemplate.DEFAULT_ID,
+            "Classic",
+            arena.floorMaterial(),
+            List.of(),
+            arena.frameMaterial(),
+            BoardGeometry.ROOM_FRAME_HEIGHT,
+            3,
+            List.of(),
+            EnvironmentFeedbackProfile.soft(),
+            RoomEnvironmentTemplate.DEFAULT_BLOCK_BUDGET
+        );
     }
 
     private void clearLegacyPreview() {
         if (!arena.legacyPreviewConfigured()) {
             return;
         }
-        for (int row = 0; row < GomokuBoard.SIZE; row++) {
-            for (int column = 0; column < GomokuBoard.SIZE; column++) {
+        for (int row = 0; row < arena.boardSize(); row++) {
+            for (int column = 0; column < arena.boardSize(); column++) {
                 set(arena.geometry().previewPoint(row, column), org.bukkit.Material.AIR);
             }
         }
@@ -156,8 +158,8 @@ public final class BoardRenderer {
     private void clearPieceLayer() {
         cancelAnimations();
         clearStaticPieceEntities();
-        for (int row = 0; row < GomokuBoard.SIZE; row++) {
-            for (int column = 0; column < GomokuBoard.SIZE; column++) {
+        for (int row = 0; row < arena.boardSize(); row++) {
+            for (int column = 0; column < arena.boardSize(); column++) {
                 set(arena.geometry().piecePoint(row, column), org.bukkit.Material.AIR);
             }
         }
@@ -402,5 +404,9 @@ public final class BoardRenderer {
 
     private org.bukkit.Material boardMaterial(BoardTheme theme, int row, int column) {
         return theme == null ? arena.emptyBoardMaterial() : theme.materialAt(row, column);
+    }
+
+    private org.bukkit.Material fallbackMaterial(Stone stone) {
+        return stone == Stone.WHITE ? org.bukkit.Material.WHITE_CONCRETE : org.bukkit.Material.BLACK_CONCRETE;
     }
 }

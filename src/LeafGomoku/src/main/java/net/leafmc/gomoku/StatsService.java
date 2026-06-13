@@ -2,7 +2,6 @@ package net.leafmc.gomoku;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -67,10 +66,6 @@ public final class StatsService {
 
     public Optional<PlayerStats> find(UUID playerId) {
         return dataStore.findStats(playerId);
-    }
-
-    public Collection<PlayerStats> allStats() {
-        return List.copyOf(dataStore.allStats());
     }
 
     public List<PlayerStats> leaderboard(String metric, int limit) {

@@ -18,9 +18,11 @@ public final class YamlFriendStoreTest {
         UUID alice = UUID.randomUUID();
         UUID bob = UUID.randomUUID();
         UUID blocked = UUID.randomUUID();
+        UUID trusted = UUID.randomUUID();
         FriendProfile profile = new FriendProfile(alice, "Alice");
         profile.friends().add(bob);
         profile.blacklist().add(blocked);
+        profile.trustedTeleporters().add(trusted);
         profile.settings().setReceiveRequests(false);
         profile.settings().setReceiveTeleports(false);
         profile.settings().setReceiveMessages(false);
@@ -36,6 +38,7 @@ public final class YamlFriendStoreTest {
         TestSupport.check(reloaded.latestName().equals("Alice"), "latest name round trips");
         TestSupport.check(reloaded.friends().contains(bob), "friend uuid round trips");
         TestSupport.check(reloaded.blacklist().contains(blocked), "blacklist uuid round trips");
+        TestSupport.check(reloaded.trustedTeleporters().contains(trusted), "trusted teleporter uuid round trips");
         TestSupport.check(!reloaded.settings().receiveRequests(), "request setting round trips");
         TestSupport.check(!reloaded.settings().receiveTeleports(), "teleport setting round trips");
         TestSupport.check(!reloaded.settings().receiveMessages(), "message setting round trips");

@@ -9,6 +9,7 @@ public final class GomokuRulesTest {
         detectsDiagonalDownWin();
         detectsDiagonalUpWin();
         ignoresFourInARow();
+        supportsCustomBoardSize();
     }
 
     private static void detectsHorizontalWin() {
@@ -83,5 +84,17 @@ public final class GomokuRulesTest {
         GomokuRules rules = new GomokuRules();
         TestSupport.check(rules.winnerAfterMove(board, 10, 3) == Stone.EMPTY, "four is not a win");
         TestSupport.check(rules.winningLineAfterMove(board, 10, 3).isEmpty(), "four has no winning line");
+    }
+
+    private static void supportsCustomBoardSize() {
+        GomokuBoard board = new GomokuBoard(9);
+        for (int column = 4; column < 9; column++) {
+            board.place(8, column, Stone.BLACK);
+        }
+
+        GomokuRules rules = new GomokuRules();
+        TestSupport.check(board.size() == 9, "custom board size");
+        TestSupport.check(rules.winnerAfterMove(board, 8, 8) == Stone.BLACK, "custom board edge win");
+        TestSupport.check(!board.isInside(9, 8), "custom board outside");
     }
 }

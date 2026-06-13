@@ -41,7 +41,7 @@ public final class BoardListener implements Listener {
         }
         event.setCancelled(true);
         if (!event.getPlayer().hasPermission(GomokuPermission.PLAY.node())) {
-            event.getPlayer().sendMessage("§c你没有五子棋落子权限。");
+            mapped.get().room().rejectInteraction(event.getPlayer(), mapped.get().cell(), "§c你没有五子棋落子权限。");
             return;
         }
         plugin.handleMove(mapped.get().room(), event.getPlayer(), mapped.get().cell());

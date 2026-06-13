@@ -16,6 +16,7 @@ public final class ArenaConfig {
     private final String id;
     private final boolean enabled;
     private final String error;
+    private final String environmentTemplateId;
     private final String worldName;
     private final BoardGeometry geometry;
     private final BlockPoint blackEmitter;
@@ -29,21 +30,20 @@ public final class ArenaConfig {
     private final long disconnectRecoveryTicks;
     private final boolean forfeitOnDisconnectTimeout;
     private final Material emptyBoardMaterial;
-    private final Material emptyPreviewMaterial;
     private final boolean legacyPreviewConfigured;
-    private final Material blackMaterial;
-    private final Material whiteMaterial;
     private final Material floorMaterial;
     private final Material frameMaterial;
     private final int animationTicks;
     private final double animationArcHeight;
     private final int autoResetTicks;
+    private final long undoRequestTimeoutTicks;
     private final int fireworkCount;
 
     private ArenaConfig(
         String id,
         boolean enabled,
         String error,
+        String environmentTemplateId,
         String worldName,
         BoardGeometry geometry,
         BlockPoint blackEmitter,
@@ -57,20 +57,21 @@ public final class ArenaConfig {
         long disconnectRecoveryTicks,
         boolean forfeitOnDisconnectTimeout,
         Material emptyBoardMaterial,
-        Material emptyPreviewMaterial,
         boolean legacyPreviewConfigured,
-        Material blackMaterial,
-        Material whiteMaterial,
         Material floorMaterial,
         Material frameMaterial,
         int animationTicks,
         double animationArcHeight,
         int autoResetTicks,
+        long undoRequestTimeoutTicks,
         int fireworkCount
     ) {
         this.id = id;
         this.enabled = enabled;
         this.error = error;
+        this.environmentTemplateId = EnvironmentCatalog.normalizeId(environmentTemplateId == null || environmentTemplateId.isBlank()
+            ? RoomEnvironmentTemplate.DEFAULT_ID
+            : environmentTemplateId);
         this.worldName = worldName;
         this.geometry = geometry;
         this.blackEmitter = blackEmitter;
@@ -84,15 +85,13 @@ public final class ArenaConfig {
         this.disconnectRecoveryTicks = disconnectRecoveryTicks;
         this.forfeitOnDisconnectTimeout = forfeitOnDisconnectTimeout;
         this.emptyBoardMaterial = emptyBoardMaterial;
-        this.emptyPreviewMaterial = emptyPreviewMaterial;
         this.legacyPreviewConfigured = legacyPreviewConfigured;
-        this.blackMaterial = blackMaterial;
-        this.whiteMaterial = whiteMaterial;
         this.floorMaterial = floorMaterial;
         this.frameMaterial = frameMaterial;
         this.animationTicks = animationTicks;
         this.animationArcHeight = animationArcHeight;
         this.autoResetTicks = autoResetTicks;
+        this.undoRequestTimeoutTicks = undoRequestTimeoutTicks;
         this.fireworkCount = fireworkCount;
     }
 
@@ -110,6 +109,7 @@ public final class ArenaConfig {
                 return disabled(normalizedId, "Missing room section");
             }
             String world = room.getString("world", "world");
+            int boardSize = GomokuBoard.requireValidSize(room.getInt("board.size", GomokuBoard.DEFAULT_SIZE));
             BlockPoint boardOrigin = point(room, "board.origin");
             BlockPoint boardRowStep = BoardGeometry.stepFromAxis(room.getString("board.row-axis", "+z"));
             BlockPoint boardColumnStep = BoardGeometry.stepFromAxis(room.getString("board.column-axis", "+x"));
@@ -120,18 +120,20 @@ public final class ArenaConfig {
                 boardColumnStep,
                 optionalPoint(room, "preview.origin", boardOrigin),
                 BoardGeometry.stepFromAxis(room.getString("preview.row-axis", "-y")),
-                BoardGeometry.stepFromAxis(room.getString("preview.column-axis", "+x"))
+                BoardGeometry.stepFromAxis(room.getString("preview.column-axis", "+x")),
+                boardSize
             );
             BlockPoint blackEmitter = point(room, "emitters.black");
             BlockPoint whiteEmitter = point(room, "emitters.white");
             ArenaSeat blackSeat = seat(room, "seats.black", blackEmitter, 0.0F);
             ArenaSeat whiteSeat = seat(room, "seats.white", whiteEmitter, 180.0F);
-            ArenaSeat spectatorSpawn = seat(room, "spectators.spawn", geometry.boardPoint(7, -5), 0.0F);
+            ArenaSeat spectatorSpawn = seat(room, "spectators.spawn", geometry.boardPoint((boardSize - 1) / 2, -5), 0.0F);
             ArenaSeat spectatorExit = optionalSeat(room, "spectators.exit", spectatorSpawn);
             return new ArenaConfig(
                 normalizedId,
                 true,
                 "",
+                EnvironmentCatalog.normalizeId(room.getString("environment-template", RoomEnvironmentTemplate.DEFAULT_ID)),
                 world,
                 geometry,
                 blackEmitter,
@@ -145,15 +147,13 @@ public final class ArenaConfig {
                 Math.max(0L, room.getLong("lifecycle.disconnect-recovery-ticks", 600L)),
                 room.getBoolean("lifecycle.forfeit-on-disconnect-timeout", true),
                 material(room.getString("materials.empty-board", "STRIPPED_BIRCH_LOG")),
-                material(room.getString("materials.empty-preview", "WHITE_CONCRETE")),
                 legacyPreviewConfigured,
-                material(room.getString("materials.black", "BLACK_CONCRETE")),
-                material(room.getString("materials.white", "WHITE_CONCRETE")),
-                material(room.getString("materials.floor", "SMOOTH_STONE")),
-                material(room.getString("materials.frame", "GLASS")),
+                material(room.getString("materials.floor", "AIR")),
+                material(room.getString("materials.frame", "AIR")),
                 Math.max(1, room.getInt("animation.ticks", 20)),
                 Math.max(0.0D, room.getDouble("animation.arc-height", 1.35D)),
                 Math.max(0, room.getInt("gameplay.auto-reset-ticks", 120)),
+                positiveTicks(room, "gameplay.undo-request-timeout-ticks", 300L),
                 Math.max(0, room.getInt("celebration.fireworks", 3))
             );
         } catch (RuntimeException error) {
@@ -173,16 +173,80 @@ public final class ArenaConfig {
         ArenaSeat spectatorExit,
         ArenaConfig defaults
     ) {
+        return create(id, worldName, geometry, blackEmitter, whiteEmitter, blackSeat, whiteSeat, spectatorSpawn, spectatorExit, defaults, null);
+    }
+
+    public static ArenaConfig create(
+        String id,
+        String worldName,
+        BoardGeometry geometry,
+        BlockPoint blackEmitter,
+        BlockPoint whiteEmitter,
+        ArenaSeat blackSeat,
+        ArenaSeat whiteSeat,
+        ArenaSeat spectatorSpawn,
+        ArenaSeat spectatorExit,
+        ArenaConfig defaults,
+        int boardSize
+    ) {
+        return create(id, worldName, geometry, blackEmitter, whiteEmitter, blackSeat, whiteSeat, spectatorSpawn, spectatorExit, defaults, null, boardSize);
+    }
+
+    public static ArenaConfig create(
+        String id,
+        String worldName,
+        BoardGeometry geometry,
+        BlockPoint blackEmitter,
+        BlockPoint whiteEmitter,
+        ArenaSeat blackSeat,
+        ArenaSeat whiteSeat,
+        ArenaSeat spectatorSpawn,
+        ArenaSeat spectatorExit,
+        ArenaConfig defaults,
+        String environmentTemplateId
+    ) {
+        int boardSize = defaults == null ? GomokuBoard.DEFAULT_SIZE : defaults.boardSize();
+        return create(id, worldName, geometry, blackEmitter, whiteEmitter, blackSeat, whiteSeat, spectatorSpawn, spectatorExit, defaults, environmentTemplateId, boardSize);
+    }
+
+    public static ArenaConfig create(
+        String id,
+        String worldName,
+        BoardGeometry geometry,
+        BlockPoint blackEmitter,
+        BlockPoint whiteEmitter,
+        ArenaSeat blackSeat,
+        ArenaSeat whiteSeat,
+        ArenaSeat spectatorSpawn,
+        ArenaSeat spectatorExit,
+        ArenaConfig defaults,
+        String environmentTemplateId,
+        int boardSize
+    ) {
         String normalizedId = normalizeRoomId(id);
         if (!isValidRoomId(normalizedId)) {
             return disabled(normalizedId, "Invalid room id: " + id);
         }
+        int validatedBoardSize = GomokuBoard.requireValidSize(boardSize);
+        BoardGeometry sizedGeometry = geometry.boardSize() == validatedBoardSize ? geometry : new BoardGeometry(
+            geometry.boardOrigin(),
+            geometry.boardRowStep(),
+            geometry.boardColumnStep(),
+            geometry.previewOrigin(),
+            geometry.previewRowStep(),
+            geometry.previewColumnStep(),
+            validatedBoardSize
+        );
+        String templateId = environmentTemplateId == null || environmentTemplateId.isBlank()
+            ? defaults == null ? RoomEnvironmentTemplate.DEFAULT_ID : defaults.environmentTemplateId
+            : environmentTemplateId;
         return new ArenaConfig(
             normalizedId,
             true,
             "",
+            templateId,
             worldName,
-            geometry,
+            sizedGeometry,
             blackEmitter,
             whiteEmitter,
             blackSeat,
@@ -194,15 +258,13 @@ public final class ArenaConfig {
             defaults == null ? 600L : defaults.disconnectRecoveryTicks,
             defaults == null || defaults.forfeitOnDisconnectTimeout,
             defaults == null ? Material.STRIPPED_BIRCH_LOG : defaults.emptyBoardMaterial,
-            defaults == null ? Material.WHITE_CONCRETE : defaults.emptyPreviewMaterial,
             false,
-            defaults == null ? Material.BLACK_CONCRETE : defaults.blackMaterial,
-            defaults == null ? Material.WHITE_CONCRETE : defaults.whiteMaterial,
-            defaults == null ? Material.SMOOTH_STONE : defaults.floorMaterial,
-            defaults == null ? Material.GLASS : defaults.frameMaterial,
+            defaults == null ? Material.AIR : defaults.floorMaterial,
+            defaults == null ? Material.AIR : defaults.frameMaterial,
             defaults == null ? 20 : defaults.animationTicks,
             defaults == null ? 1.35D : defaults.animationArcHeight,
             defaults == null ? 120 : defaults.autoResetTicks,
+            defaults == null ? 300L : defaults.undoRequestTimeoutTicks,
             defaults == null ? 3 : defaults.fireworkCount
         );
     }
@@ -216,7 +278,7 @@ public final class ArenaConfig {
     }
 
     private static ArenaConfig disabled(String id, String error) {
-        return new ArenaConfig(id, false, error, "world", null, null, null, null, null, null, null, 0, false, 0L, false, Material.AIR, Material.AIR, false, Material.AIR, Material.AIR, Material.AIR, Material.AIR, 1, 0.0D, 0, 0);
+        return new ArenaConfig(id, false, error, RoomEnvironmentTemplate.DEFAULT_ID, "world", null, null, null, null, null, null, null, 0, false, 0L, false, Material.AIR, false, Material.AIR, Material.AIR, 1, 0.0D, 0, 300L, 0);
     }
 
     private static BlockPoint point(ConfigurationSection section, String path) {
@@ -271,8 +333,15 @@ public final class ArenaConfig {
         return material;
     }
 
+    private static long positiveTicks(ConfigurationSection section, String path, long fallback) {
+        long value = section.getLong(path, fallback);
+        return value > 0L ? value : fallback;
+    }
+
     public void save(ConfigurationSection section) {
         section.set("world", worldName);
+        section.set("environment-template", environmentTemplateId);
+        section.set("board.size", boardSize());
         savePoint(section, "board.origin", geometry.boardOrigin());
         section.set("board.row-axis", BoardGeometry.axisName(geometry.boardRowStep()));
         section.set("board.column-axis", BoardGeometry.axisName(geometry.boardColumnStep()));
@@ -287,14 +356,13 @@ public final class ArenaConfig {
         section.set("lifecycle.disconnect-recovery-ticks", disconnectRecoveryTicks);
         section.set("lifecycle.forfeit-on-disconnect-timeout", forfeitOnDisconnectTimeout);
         section.set("materials.empty-board", emptyBoardMaterial.name());
-        section.set("materials.black", blackMaterial.name());
-        section.set("materials.white", whiteMaterial.name());
         section.set("materials.floor", floorMaterial.name());
         section.set("materials.frame", frameMaterial.name());
         section.set("animation.ticks", animationTicks);
         section.set("animation.arc-height", animationArcHeight);
         section.set("celebration.fireworks", fireworkCount);
         section.set("gameplay.auto-reset-ticks", autoResetTicks);
+        section.set("gameplay.undo-request-timeout-ticks", undoRequestTimeoutTicks);
     }
 
     private void savePoint(ConfigurationSection section, String path, BlockPoint point) {
@@ -323,6 +391,40 @@ public final class ArenaConfig {
         return error;
     }
 
+    public String environmentTemplateId() {
+        return environmentTemplateId;
+    }
+
+    public ArenaConfig withEnvironmentTemplateId(String templateId) {
+        return new ArenaConfig(
+            id,
+            enabled,
+            error,
+            templateId,
+            worldName,
+            geometry,
+            blackEmitter,
+            whiteEmitter,
+            blackSeat,
+            whiteSeat,
+            spectatorSpawn,
+            spectatorExit,
+            spectatorCapacity,
+            openByDefault,
+            disconnectRecoveryTicks,
+            forfeitOnDisconnectTimeout,
+            emptyBoardMaterial,
+            legacyPreviewConfigured,
+            floorMaterial,
+            frameMaterial,
+            animationTicks,
+            animationArcHeight,
+            autoResetTicks,
+            undoRequestTimeoutTicks,
+            fireworkCount
+        );
+    }
+
     public World world() {
         return Bukkit.getWorld(worldName);
     }
@@ -333,6 +435,10 @@ public final class ArenaConfig {
 
     public BoardGeometry geometry() {
         return geometry;
+    }
+
+    public int boardSize() {
+        return geometry.boardSize();
     }
 
     public Location location(BlockPoint point) {
@@ -407,20 +513,8 @@ public final class ArenaConfig {
         return emptyBoardMaterial;
     }
 
-    public Material emptyPreviewMaterial() {
-        return emptyPreviewMaterial;
-    }
-
     public boolean legacyPreviewConfigured() {
         return legacyPreviewConfigured;
-    }
-
-    public Material materialFor(Stone stone) {
-        return switch (stone) {
-            case BLACK -> blackMaterial;
-            case WHITE -> whiteMaterial;
-            case EMPTY -> emptyBoardMaterial;
-        };
     }
 
     public Material floorMaterial() {
@@ -441,6 +535,10 @@ public final class ArenaConfig {
 
     public int autoResetTicks() {
         return autoResetTicks;
+    }
+
+    public long undoRequestTimeoutTicks() {
+        return undoRequestTimeoutTicks;
     }
 
     public int fireworkCount() {

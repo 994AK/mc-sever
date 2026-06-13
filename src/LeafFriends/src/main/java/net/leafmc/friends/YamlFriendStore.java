@@ -50,6 +50,12 @@ public final class YamlFriendStore implements FriendStore {
                     profile.blacklist().add(blockedId);
                 }
             }
+            for (String trusted : section.getStringList("trustedTeleporters")) {
+                UUID trustedId = parseUuid(trusted);
+                if (trustedId != null) {
+                    profile.trustedTeleporters().add(trustedId);
+                }
+            }
             FriendSettings settings = new FriendSettings();
             settings.setReceiveRequests(section.getBoolean("settings.receiveRequests", true));
             settings.setReceiveTeleports(section.getBoolean("settings.receiveTeleports", true));
@@ -71,6 +77,7 @@ public final class YamlFriendStore implements FriendStore {
             yaml.set(path + ".lastSeen", profile.lastSeenMillis());
             yaml.set(path + ".friends", profile.friends().stream().map(UUID::toString).sorted().toList());
             yaml.set(path + ".blacklist", profile.blacklist().stream().map(UUID::toString).sorted().toList());
+            yaml.set(path + ".trustedTeleporters", profile.trustedTeleporters().stream().map(UUID::toString).sorted().toList());
             yaml.set(path + ".settings.receiveRequests", profile.settings().receiveRequests());
             yaml.set(path + ".settings.receiveTeleports", profile.settings().receiveTeleports());
             yaml.set(path + ".settings.receiveMessages", profile.settings().receiveMessages());

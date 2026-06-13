@@ -93,8 +93,10 @@ public final class GomokuGui implements Listener {
         ));
         if (player.hasPermission(GomokuPermission.ADMIN_SETUP.node()) || player.hasPermission(GomokuPermission.ADMIN_ROOM.node())) {
             setAction(holder, inventory, 50, ActionType.ADMIN_GUIDE, Material.OAK_SIGN, "§c管理命令", List.of(
-                "§f/gomoku admin place 房间名",
-                "§7右键地面锚点生成房间",
+                "§f/gomoku admin place 房间名 size 15",
+                "§7右键地面显示 WorldEdit 预览",
+                "§f/gomoku admin confirm",
+                "§f/gomoku admin cancel",
                 "§f/gomoku admin init 房间名",
                 "§f/gomoku admin inspect 房间名"
             ));
@@ -143,10 +145,14 @@ public final class GomokuGui implements Listener {
             case PREV_PAGE, NEXT_PAGE -> openLobby(player, action.page());
             case JOIN_ROOM -> run(player, "gomoku join " + action.roomId());
             case SPECTATE_ROOM -> run(player, "gomoku spectate " + action.roomId());
+            case REQUEST_UNDO -> run(player, "gomoku undo " + action.roomId());
+            case ACCEPT_UNDO -> run(player, "gomoku undo accept " + action.roomId());
+            case DENY_UNDO -> run(player, "gomoku undo deny " + action.roomId());
             case STATUS_ROOM -> run(player, "gomoku status " + action.roomId());
             case REFRESH_ROOM -> openRoom(player, action.roomId(), action.page());
             case BACK_TO_LOBBY -> openLobby(player, action.page());
             case APPEARANCE_MENU -> openSkins(player, "", action.page());
+            case PREV_SKIN_PAGE, NEXT_SKIN_PAGE -> openSkins(player, action.roomId(), action.page());
             case OPEN_THEMES -> openThemes(player, action.roomId(), action.page());
             case OPEN_SKINS -> openSkins(player, action.roomId(), action.page());
             case SELECT_THEME -> updateThemeSelection(player, action);
@@ -155,8 +161,10 @@ public final class GomokuGui implements Listener {
             case BUY_SKIN -> buySkin(player, action);
             case ADMIN_GUIDE -> {
                 player.closeInventory();
-                player.sendMessage("§6[五子棋管理] §f/gomoku admin place 房间名 §7- 进入右键锚点放置模式");
-                player.sendMessage("§6[五子棋管理] §f/gomoku admin create 房间名 §7- 兼容旧命令，从当前位置生成布局");
+                player.sendMessage("§6[五子棋管理] §f/gomoku admin place 房间名 size 15 §7- 进入右键锚点预览模式");
+                player.sendMessage("§6[五子棋管理] §f/gomoku admin confirm §7- 确认创建当前预览棋盘");
+                player.sendMessage("§6[五子棋管理] §f/gomoku admin cancel §7- 取消当前预览");
+                player.sendMessage("§6[五子棋管理] §f/gomoku admin create 房间名 size 15 §7- 兼容旧命令，从当前位置直接生成");
                 player.sendMessage("§6[五子棋管理] §f/gomoku admin init 房间名 §7- 初始化实体棋盘");
                 player.sendMessage("§6[五子棋管理] §f/gomoku admin inspect 房间名 §7- 查看席位、观众和状态");
             }
@@ -249,6 +257,7 @@ public final class GomokuGui implements Listener {
         setRoomAction(holder, inventory, 24, ActionType.STATUS_ROOM, Material.PAPER, "§7输出状态", List.of(
             "§7在聊天栏输出房间状态。"
         ), room.config().id(), page);
+        setUndoActions(player, holder, inventory, room, page);
         setRoomAction(holder, inventory, 29, ActionType.OPEN_THEMES, appearance.boardTheme().primaryMaterial(), "§a棋盘主题", List.of(
             "§7当前：§f" + appearance.boardTheme().displayName(),
             "§7可在开局前切换本房间主题。"
@@ -306,46 +315,55 @@ public final class GomokuGui implements Listener {
 
     private void openSkins(Player player, String roomId, int page) {
         MenuHolder holder = new MenuHolder();
-        holder.page = page;
         Inventory inventory = Bukkit.createInventory(holder, SIZE, roomId == null || roomId.isBlank() ? "§0棋子皮肤" : "§0棋子皮肤 " + roomId);
         holder.inventory = inventory;
         GomokuRoom room = roomId == null || roomId.isBlank() ? null : plugin.resolveRoom(roomId).orElse(null);
+        List<PieceSkin> skins = plugin.appearances().pieceSkins();
+        int totalPages = Math.max(1, (int) Math.ceil((double) skins.size() / (double) ROOM_SLOTS.length));
+        int currentPage = Math.max(0, Math.min(page, totalPages - 1));
+        holder.page = currentPage;
+        int start = currentPage * ROOM_SLOTS.length;
+        int end = Math.min(skins.size(), start + ROOM_SLOTS.length);
         inventory.setItem(4, item(Material.AMETHYST_SHARD, "§d棋子皮肤", List.of(
             "§7选择自己的默认棋子皮肤。",
-            "§7加入房间后，双方同局不能重复。"
+            "§7加入房间后，双方同局不能重复。",
+            "§7第 §f" + (currentPage + 1) + "§7/§f" + totalPages + " §7页，本页 §f" + (skins.isEmpty() ? 0 : start + 1) + "§7-§f" + end
         )));
-        List<PieceSkin> skins = plugin.appearances().pieceSkins();
-        for (int index = 0; index < Math.min(skins.size(), ROOM_SLOTS.length); index++) {
+        for (int index = start; index < end; index++) {
             PieceSkin skin = skins.get(index);
             boolean unlocked = plugin.appearanceUnlocks().canUseSkin(player.getUniqueId(), skin);
-            int slot = ROOM_SLOTS[index];
+            int slot = ROOM_SLOTS[index - start];
             inventory.setItem(slot, pieceSkinItem(skin, unlocked, room != null && (
                 room.appearance().blackSkin().id().equals(skin.id()) || room.appearance().whiteSkin().id().equals(skin.id())
             )));
-            holder.actions.put(slot, new GuiAction(unlocked ? ActionType.SELECT_SKIN : ActionType.BUY_SKIN, roomId == null ? "" : roomId, skin.id(), page));
+            holder.actions.put(slot, new GuiAction(unlocked ? ActionType.SELECT_SKIN : ActionType.BUY_SKIN, roomId == null ? "" : roomId, skin.id(), currentPage));
+        }
+        String targetRoomId = roomId == null ? "" : roomId;
+        if (currentPage > 0) {
+            setRoomAction(holder, inventory, 45, ActionType.PREV_SKIN_PAGE, Material.ARROW, "§7上一页", List.of(
+                "§7第 §f" + currentPage + " §7页"
+            ), targetRoomId, currentPage - 1);
+        }
+        if (currentPage + 1 < totalPages) {
+            setRoomAction(holder, inventory, 53, ActionType.NEXT_SKIN_PAGE, Material.SPECTRAL_ARROW, "§7下一页", List.of(
+                "§7第 §f" + (currentPage + 2) + " §7页"
+            ), targetRoomId, currentPage + 1);
         }
         if (room != null) {
-            setRoomAction(holder, inventory, 45, ActionType.OPEN_ROOM, Material.ARROW, "§7返回房间", List.of(
+            setRoomAction(holder, inventory, 49, ActionType.OPEN_ROOM, Material.OAK_DOOR, "§7返回房间", List.of(
                 "§7回到房间详情。"
-            ), room.config().id(), page);
+            ), room.config().id(), currentPage);
         } else {
-            setPageAction(holder, inventory, 45, ActionType.BACK_TO_LOBBY, Material.ARROW, "§7返回大厅", List.of(
+            setRoomAction(holder, inventory, 49, ActionType.BACK_TO_LOBBY, Material.OAK_DOOR, "§7返回大厅", List.of(
                 "§7回到大厅。"
-            ), page);
+            ), "", currentPage);
         }
         player.openInventory(inventory);
     }
 
     private ItemStack roomItem(GomokuRoom room, int index) {
         RoomState state = room.state();
-        List<String> lore = new ArrayList<>();
-        lore.add("§7状态：§f" + stateLabel(state));
-        lore.add("§7黑方：§f" + room.lease(Stone.BLACK).map(SeatLease::playerName).orElse("空"));
-        lore.add("§7白方：§f" + room.lease(Stone.WHITE).map(SeatLease::playerName).orElse("空"));
-        lore.add("§7回合：§f" + room.match().currentTurn().displayName());
-        lore.add("§7主题：§f" + room.appearance().boardTheme().displayName());
-        lore.add("§7观众：§f" + room.spectatorCount() + "§7/§f" + room.config().spectatorCapacity());
-        lore.add("§7结果：§f" + room.lastResult());
+        List<String> lore = roomLore(room, false);
         lore.add("");
         lore.add("§f点击查看详情");
         return item(stateMaterial(state), "§e#" + index + " " + room.config().id() + " §7| §f" + stateLabel(state), lore);
@@ -353,25 +371,66 @@ public final class GomokuGui implements Listener {
 
     private ItemStack roomDetailItem(GomokuRoom room) {
         RoomState state = room.state();
-        List<String> lore = new ArrayList<>();
-        lore.add("§7状态：§f" + stateLabel(state));
-        lore.add("§7黑方：§f" + room.lease(Stone.BLACK).map(SeatLease::playerName).orElse("空"));
-        lore.add("§7白方：§f" + room.lease(Stone.WHITE).map(SeatLease::playerName).orElse("空"));
-        lore.add("§7回合：§f" + room.match().currentTurn().displayName());
-        lore.add("§7主题：§f" + room.appearance().boardTheme().displayName());
-        lore.add("§7黑方棋子：§f" + room.appearance().blackSkin().displayName());
-        lore.add("§7白方棋子：§f" + room.appearance().whiteSkin().displayName());
-        lore.add("§7观众：§f" + room.spectatorCount() + "§7/§f" + room.config().spectatorCapacity());
-        lore.add("§7结果：§f" + room.lastResult());
+        List<String> lore = roomLore(room, true);
         lore.add("");
         lore.add(canJoin(room) ? "§a可以加入对局" : "§8当前不可加入");
         lore.add(state == RoomState.DISABLED ? "§c不能观战" : "§b可以只观战");
         return item(stateMaterial(state), "§e" + room.config().id() + " §7详情", lore);
     }
 
+    private List<String> roomLore(GomokuRoom room, boolean includeSkins) {
+        List<String> lore = new ArrayList<>();
+        lore.add("§7状态：§f" + stateLabel(room.state()));
+        lore.add("§7黑方：§f" + room.lease(Stone.BLACK).map(SeatLease::playerName).orElse("空"));
+        lore.add("§7白方：§f" + room.lease(Stone.WHITE).map(SeatLease::playerName).orElse("空"));
+        lore.add("§7回合：§f" + room.match().currentTurn().displayName());
+        lore.add("§7棋盘：§f" + room.config().boardSize() + "x" + room.config().boardSize());
+        lore.add("§7主题：§f" + room.appearance().boardTheme().displayName());
+        if (includeSkins) {
+            lore.add("§7黑方棋子：§f" + room.appearance().blackSkin().displayName());
+            lore.add("§7白方棋子：§f" + room.appearance().whiteSkin().displayName());
+        }
+        lore.add("§7观众：§f" + room.spectatorCount() + "§7/§f" + room.config().spectatorCapacity());
+        lore.add("§7结果：§f" + room.lastResult());
+        return lore;
+    }
+
     private boolean canJoin(GomokuRoom room) {
         RoomState state = room.state();
         return state == RoomState.OPEN || state == RoomState.WAITING;
+    }
+
+    private void setUndoActions(Player player, MenuHolder holder, Inventory inventory, GomokuRoom room, int page) {
+        UndoRequest request = room.pendingUndoRequest().orElse(null);
+        if (request != null && room.canApprovePendingUndo(player.getUniqueId())) {
+            setRoomAction(holder, inventory, 20, ActionType.ACCEPT_UNDO, Material.LIME_DYE, "§a同意悔棋", List.of(
+                "§7" + request.requesterName() + " 请求撤销 §f" + formatCell(request.row(), request.column()),
+                "§7点击后最后一步会被撤销。"
+            ), room.config().id(), page);
+            setRoomAction(holder, inventory, 22, ActionType.DENY_UNDO, Material.RED_DYE, "§c拒绝悔棋", List.of(
+                "§7拒绝后棋局保持不变。"
+            ), room.config().id(), page);
+            return;
+        }
+        if (request != null && request.requesterId().equals(player.getUniqueId())) {
+            holder.actions.remove(20);
+            holder.actions.remove(22);
+            inventory.setItem(20, item(Material.CLOCK, "§e等待悔棋回复", List.of(
+                "§7你请求撤销 §f" + formatCell(request.row(), request.column()),
+                "§7需要对方同意后才会生效。"
+            )));
+            inventory.setItem(22, item(Material.GRAY_DYE, "§8等待对方处理", List.of(
+                "§7对方可同意、拒绝，或等待请求超时。"
+            )));
+            return;
+        }
+        if (request == null && room.state() == RoomState.PLAYING && room.containsParticipant(player.getUniqueId())) {
+            holder.actions.remove(20);
+            setRoomAction(holder, inventory, 20, ActionType.REQUEST_UNDO, Material.CLOCK, "§e申请悔棋", List.of(
+                "§7只能撤销你的最后一步。",
+                "§7必须对方同意后才会生效。"
+            ), room.config().id(), page);
+        }
     }
 
     private void setAction(
@@ -489,7 +548,6 @@ public final class GomokuGui implements Listener {
             case WAITING -> Material.YELLOW_CONCRETE;
             case PLAYING -> Material.TARGET;
             case ENDED -> Material.FIREWORK_ROCKET;
-            case RESETTING -> Material.CLOCK;
         };
     }
 
@@ -501,14 +559,20 @@ public final class GomokuGui implements Listener {
             case WAITING -> "待白方";
             case PLAYING -> "进行中";
             case ENDED -> "已结束";
-            case RESETTING -> "重置中";
         };
+    }
+
+    private String formatCell(int row, int column) {
+        return "(" + (row + 1) + ", " + (column + 1) + ")";
     }
 
     private enum ActionType {
         OPEN_ROOM,
         JOIN_ROOM,
         SPECTATE_ROOM,
+        REQUEST_UNDO,
+        ACCEPT_UNDO,
+        DENY_UNDO,
         STATUS_ROOM,
         LEAVE,
         STATS,
@@ -517,6 +581,8 @@ public final class GomokuGui implements Listener {
         REFRESH_ROOM,
         PREV_PAGE,
         NEXT_PAGE,
+        PREV_SKIN_PAGE,
+        NEXT_SKIN_PAGE,
         BACK_TO_LOBBY,
         APPEARANCE_MENU,
         OPEN_THEMES,

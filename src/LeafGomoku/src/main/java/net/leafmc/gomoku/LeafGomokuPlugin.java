@@ -21,9 +21,12 @@ public final class LeafGomokuPlugin extends JavaPlugin {
     private RoomConfigRepository roomConfigRepository;
     private RoomLayoutFactory roomLayoutFactory;
     private AppearanceCatalog appearanceCatalog;
+    private EnvironmentCatalog environmentCatalog;
     private AppearanceUnlockService appearanceUnlocks;
     private RoomChatService roomChatService;
+    private InviteService inviteService;
     private PlacementToolService placementToolService;
+    private WorldEditPreviewService worldEditPreviewService;
     private StatsService statsService;
     private RoomRegistry roomRegistry;
     private VariableService variableService;
@@ -34,14 +37,17 @@ public final class LeafGomokuPlugin extends JavaPlugin {
     public void onEnable() {
         saveDefaultConfig();
         appearanceCatalog = AppearanceCatalog.load(getConfig(), getLogger());
+        environmentCatalog = EnvironmentCatalog.load(getConfig(), getLogger());
         statsService = new StatsService(this);
         statsService.load();
         appearanceUnlocks = new AppearanceUnlockService(appearanceCatalog, statsService);
         roomChatService = new RoomChatService(this);
+        inviteService = new InviteService(this);
+        worldEditPreviewService = new WorldEditPreviewService(this);
         placementToolService = new PlacementToolService(this);
         roomConfigRepository = new RoomConfigRepository(this);
         roomLayoutFactory = new RoomLayoutFactory();
-        roomRegistry = new RoomRegistry(this, statsService, appearanceCatalog, appearanceUnlocks, roomChatService);
+        roomRegistry = new RoomRegistry(this, statsService, appearanceCatalog, appearanceUnlocks, environmentCatalog, roomChatService);
         reloadRooms();
         runStartupCleanupIfRequested();
         variableService = new VariableService(roomRegistry, statsService);
@@ -74,6 +80,9 @@ public final class LeafGomokuPlugin extends JavaPlugin {
         if (roomChatService != null) {
             roomChatService.clearAll();
         }
+        if (inviteService != null) {
+            inviteService.clearAll();
+        }
         if (statsService != null) {
             statsService.close();
         }
@@ -95,8 +104,20 @@ public final class LeafGomokuPlugin extends JavaPlugin {
         return appearanceUnlocks;
     }
 
+    public EnvironmentCatalog environments() {
+        return environmentCatalog;
+    }
+
     public PlacementToolService placementTool() {
         return placementToolService;
+    }
+
+    public InviteService invites() {
+        return inviteService;
+    }
+
+    public WorldEditPreviewService worldEditPreview() {
+        return worldEditPreviewService;
     }
 
     public VariableService variables() {
@@ -110,12 +131,13 @@ public final class LeafGomokuPlugin extends JavaPlugin {
     public void reloadAll() {
         reloadConfig();
         appearanceCatalog = AppearanceCatalog.load(getConfig(), getLogger());
+        environmentCatalog = EnvironmentCatalog.load(getConfig(), getLogger());
         statsService.load();
         appearanceUnlocks = new AppearanceUnlockService(appearanceCatalog, statsService);
         if (roomRegistry != null) {
             roomRegistry.shutdown();
         }
-        roomRegistry = new RoomRegistry(this, statsService, appearanceCatalog, appearanceUnlocks, roomChatService);
+        roomRegistry = new RoomRegistry(this, statsService, appearanceCatalog, appearanceUnlocks, environmentCatalog, roomChatService);
         reloadRooms();
         variableService = new VariableService(roomRegistry, statsService);
     }
@@ -190,6 +212,48 @@ public final class LeafGomokuPlugin extends JavaPlugin {
         return "§e你不在五子棋房间里。";
     }
 
+    public String invite(Player inviter, String targetName, String roomId) {
+        return inviteService.invite(inviter, targetName, roomId);
+    }
+
+    public String acceptInvite(Player target, String roomId) {
+        return inviteService.accept(target, roomId);
+    }
+
+    public String denyInvite(Player target, String roomId) {
+        return inviteService.deny(target, roomId);
+    }
+
+    public String requestUndo(Player player, String roomId) {
+        Optional<GomokuRoom> room = resolvePlayerRoom(player, roomId);
+        if (room.isEmpty()) {
+            return roomId == null || roomId.isBlank()
+                ? "§e你不在五子棋对局里。"
+                : "§c找不到五子棋房间: " + roomId;
+        }
+        return room.get().requestUndo(player);
+    }
+
+    public String acceptUndo(Player player, String roomId) {
+        Optional<GomokuRoom> room = resolvePlayerRoom(player, roomId);
+        if (room.isEmpty()) {
+            return roomId == null || roomId.isBlank()
+                ? "§e你不在五子棋对局里。"
+                : "§c找不到五子棋房间: " + roomId;
+        }
+        return room.get().acceptUndo(player);
+    }
+
+    public String denyUndo(Player player, String roomId) {
+        Optional<GomokuRoom> room = resolvePlayerRoom(player, roomId);
+        if (room.isEmpty()) {
+            return roomId == null || roomId.isBlank()
+                ? "§e你不在五子棋对局里。"
+                : "§c找不到五子棋房间: " + roomId;
+        }
+        return room.get().denyUndo(player);
+    }
+
     public void handleMove(GomokuRoom room, Player player, GridCell cell) {
         room.handleMove(player, cell);
     }
@@ -201,32 +265,101 @@ public final class LeafGomokuPlugin extends JavaPlugin {
         return roomRegistry.room(roomId);
     }
 
+    private Optional<GomokuRoom> resolvePlayerRoom(Player player, String roomId) {
+        if (roomId == null || roomId.isBlank()) {
+            return roomRegistry.participantRoom(player.getUniqueId());
+        }
+        return resolveRoom(roomId);
+    }
+
     public String statusLine(String roomId) {
         Optional<GomokuRoom> room = resolveRoom(roomId);
         return room.map(GomokuRoom::statusLine).orElse("§c找不到五子棋房间: " + roomId);
     }
 
     public String createRoom(Player admin, String roomId) {
-        return createRoomAt(admin, roomId, admin.getLocation());
+        return createRoomAt(admin, roomId, admin.getLocation(), GomokuBoard.DEFAULT_SIZE);
     }
 
     public String createRoomAt(Player admin, String roomId, Location anchor) {
+        return createRoomAt(admin, roomId, anchor, GomokuBoard.DEFAULT_SIZE);
+    }
+
+    public String createRoomAt(Player admin, String roomId, Location anchor, int boardSize) {
+        return createRoomAt(admin, roomId, anchor, boardSize, "");
+    }
+
+    public String createRoomAt(Player admin, String roomId, Location anchor, String templateId) {
+        return createRoomAt(admin, roomId, anchor, GomokuBoard.DEFAULT_SIZE, templateId);
+    }
+
+    public String createRoomAt(Player admin, String roomId, Location anchor, int boardSize, String templateId) {
         String normalized = ArenaConfig.normalizeRoomId(roomId);
         if (!ArenaConfig.isValidRoomId(normalized)) {
             return "§c房间 id 只能使用小写字母、数字、下划线或短横线，最长 32 位。";
         }
+        if (!GomokuBoard.isValidSize(boardSize)) {
+            return boardSizeError();
+        }
         if (roomRegistry.room(normalized).isPresent()) {
             return "§c房间已存在: " + normalized;
         }
-        ArenaConfig defaults = roomRegistry.defaultRoom().map(GomokuRoom::config).orElse(ArenaConfig.load(getConfig()));
-        ArenaConfig config = roomLayoutFactory.create(normalized, anchor, defaults);
-        roomConfigRepository.saveRoom(config);
-        roomRegistry.put(config);
-        return "§a已创建房间 " + normalized + "，使用锚点 Y=" + anchor.getBlockY() + " 和你的面朝方向生成布局。";
+        ArenaConfig config;
+        try {
+            config = createRoomConfig(normalized, anchor, boardSize, templateId);
+        } catch (IllegalArgumentException error) {
+            return "§c" + error.getMessage();
+        }
+        String saved = saveRoomConfig(config);
+        return saved.isBlank()
+            ? "§a已创建房间 " + normalized + "，棋盘大小 §f" + config.boardSize() + "x" + config.boardSize() + "§a，使用锚点 Y=" + anchor.getBlockY() + " 和你的面朝方向生成布局。"
+            : saved;
     }
 
     public String prepareRoomPlacement(Player admin, String roomId) {
-        return placementToolService.begin(admin, roomId);
+        return placementToolService.begin(admin, roomId, GomokuBoard.DEFAULT_SIZE);
+    }
+
+    public String prepareRoomPlacement(Player admin, String roomId, int boardSize) {
+        return placementToolService.begin(admin, roomId, boardSize);
+    }
+
+    public String prepareRoomPlacement(Player admin, String roomId, int boardSize, String templateId) {
+        return placementToolService.begin(admin, roomId, boardSize, templateId);
+    }
+
+    public String prepareRoomPlacement(Player admin, String roomId, String templateId) {
+        return placementToolService.begin(admin, roomId, GomokuBoard.DEFAULT_SIZE, templateId);
+    }
+
+    public String confirmRoomPlacement(Player admin) {
+        return placementToolService.confirm(admin);
+    }
+
+    public String cancelRoomPlacement(Player admin) {
+        return placementToolService.cancel(admin);
+    }
+
+    public String setRoomEnvironment(String roomId, String templateId, boolean force) {
+        Optional<GomokuRoom> room = resolveRoom(roomId);
+        if (room.isEmpty()) {
+            return "§c找不到五子棋房间: " + roomId;
+        }
+        Optional<RoomEnvironmentTemplate> template = resolveEnvironmentTemplate(templateId);
+        if (template.isEmpty()) {
+            return "§c找不到环境模板: " + templateId;
+        }
+        RoomState state = room.get().state();
+        if (state != RoomState.OPEN && state != RoomState.READY && !force) {
+            return "§c房间当前状态为 " + state + "，切换环境模板请先重置，或使用 force。";
+        }
+        if (force && (state == RoomState.WAITING || state == RoomState.PLAYING || state == RoomState.ENDED)) {
+            room.get().stopUnscored("admin-environment-change");
+        }
+        ArenaConfig updated = room.get().config().withEnvironmentTemplateId(template.get().id());
+        roomConfigRepository.saveRoom(updated);
+        room.get().updateConfig(updated);
+        return "§a房间 " + updated.id() + " 已切换环境模板: §f" + template.get().displayName();
     }
 
     public String selectBoardTheme(Player player, String roomId, String themeId) {
@@ -399,7 +532,42 @@ public final class LeafGomokuPlugin extends JavaPlugin {
         return "§a已给 " + stats.playerName() + " 增加 " + amount + " 五子棋积分，当前积分: " + stats.points();
     }
 
+    private Optional<RoomEnvironmentTemplate> resolveEnvironmentTemplate(String templateId) {
+        if (templateId == null || templateId.isBlank()) {
+            return Optional.of(environmentCatalog.defaultTemplate());
+        }
+        return environmentCatalog.template(templateId);
+    }
+
+    ArenaConfig createRoomConfig(String roomId, Location anchor, int boardSize, String templateId) {
+        RoomEnvironmentTemplate template = resolveEnvironmentTemplate(templateId).orElse(null);
+        if (template == null) {
+            throw new IllegalArgumentException("找不到环境模板: " + templateId);
+        }
+        ArenaConfig defaults = roomRegistry.defaultRoom().map(GomokuRoom::config).orElse(ArenaConfig.load(getConfig()));
+        return roomLayoutFactory.create(roomId, anchor, defaults, boardSize, template.id());
+    }
+
+    String saveRoomConfig(ArenaConfig config) {
+        if (!config.enabled()) {
+            return "§c房间配置不可用: " + config.error();
+        }
+        if (roomRegistry.room(config.id()).isPresent()) {
+            return "§c房间已存在: " + config.id();
+        }
+        roomConfigRepository.saveRoom(config);
+        roomRegistry.put(config);
+        return "";
+    }
+
+    String boardSizeError() {
+        return "§e棋盘大小必须是 " + GomokuBoard.MIN_SIZE + "-" + GomokuBoard.MAX_SIZE + " 之间的整数，例如 size 15 或 size 19。";
+    }
+
     public void markDisconnected(Player player) {
+        if (inviteService != null) {
+            inviteService.clearFor(player.getUniqueId());
+        }
         roomRegistry.markDisconnected(player);
         if (roomRegistry.participantRoom(player.getUniqueId()).isEmpty()) {
             roomRegistry.spectatorRoom(player.getUniqueId()).ifPresent(room -> room.leave(player));

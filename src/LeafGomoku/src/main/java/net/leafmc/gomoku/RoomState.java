@@ -6,6 +6,5 @@ public enum RoomState {
     OPEN,
     WAITING,
     PLAYING,
-    ENDED,
-    RESETTING
+    ENDED
 }

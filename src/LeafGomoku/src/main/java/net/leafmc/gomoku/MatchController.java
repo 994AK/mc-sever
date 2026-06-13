@@ -5,7 +5,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public final class MatchController {
-    private final GomokuBoard board = new GomokuBoard();
+    private final GomokuBoard board;
     private final GomokuRules rules = new GomokuRules();
 
     private GameState state = GameState.IDLE;
@@ -14,6 +14,14 @@ public final class MatchController {
     private Stone currentTurn = Stone.EMPTY;
     private Stone winner = Stone.EMPTY;
     private boolean draw;
+
+    public MatchController() {
+        this(GomokuBoard.DEFAULT_SIZE);
+    }
+
+    public MatchController(int boardSize) {
+        this.board = new GomokuBoard(boardSize);
+    }
 
     public JoinResult join(UUID playerId) {
         if (state == GameState.ENDED) {
@@ -82,6 +90,35 @@ public final class MatchController {
         return new MoveResult(MoveStatus.ACCEPTED, side, row, column, winner, draw, currentTurn, winningLine);
     }
 
+    public UndoResult undoLastMove(Stone side, int row, int column) {
+        if (!board.isInside(row, column)) {
+            return UndoResult.rejected(UndoStatus.OUT_OF_BOUNDS, currentTurn);
+        }
+        if (state == GameState.ENDED) {
+            return UndoResult.rejected(UndoStatus.ENDED, currentTurn);
+        }
+        if (state != GameState.PLAYING) {
+            return UndoResult.rejected(UndoStatus.NOT_STARTED, currentTurn);
+        }
+        if (side == Stone.EMPTY) {
+            return UndoResult.rejected(UndoStatus.INVALID_STONE, currentTurn);
+        }
+
+        Stone existing = board.get(row, column);
+        if (existing == Stone.EMPTY) {
+            return UndoResult.rejected(UndoStatus.EMPTY_CELL, currentTurn);
+        }
+        if (existing != side) {
+            return UndoResult.rejected(UndoStatus.STONE_MISMATCH, currentTurn);
+        }
+
+        board.clearCell(row, column);
+        winner = Stone.EMPTY;
+        draw = false;
+        currentTurn = side;
+        return new UndoResult(UndoStatus.ACCEPTED, side, row, column, currentTurn);
+    }
+
     public void reset() {
         board.clear();
         state = GameState.IDLE;
@@ -125,6 +162,10 @@ public final class MatchController {
 
     public GomokuBoard board() {
         return board;
+    }
+
+    public int boardSize() {
+        return board.size();
     }
 
     public GameState state() {

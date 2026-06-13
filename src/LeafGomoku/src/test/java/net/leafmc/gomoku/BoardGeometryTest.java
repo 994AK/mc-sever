@@ -6,7 +6,8 @@ public final class BoardGeometryTest {
         mapsPieceLayerAboveBoard();
         rejectsOutsideCells();
         mapsPreviewCells();
-        protectsRoomShell();
+        protectsOnlyBoardAndPieceLayer();
+        mapsCustomBoardSizeAndRegion();
         supportsReversedAxis();
         serializesAxisNames();
     }
@@ -38,12 +39,31 @@ public final class BoardGeometryTest {
         TestSupport.check(!geometry.protects(new BlockPoint(103, 88, 50)), "legacy preview no longer protected");
     }
 
-    private static void protectsRoomShell() {
+    private static void protectsOnlyBoardAndPieceLayer() {
         BoardGeometry geometry = geometry();
-        TestSupport.check(geometry.roomFramePoints().contains(new BlockPoint(6, 70, 12)), "room frame point");
-        TestSupport.check(geometry.protects(new BlockPoint(6, 71, 12)), "room frame protected");
-        TestSupport.check(geometry.roomFloorPoints().contains(new BlockPoint(7, 70, 13)), "room floor point");
-        TestSupport.check(geometry.protects(new BlockPoint(7, 70, 13)), "room floor protected");
+        TestSupport.check(geometry.protects(new BlockPoint(10, 70, 20)), "board protected");
+        TestSupport.check(geometry.protects(new BlockPoint(10, 71, 20)), "piece layer protected");
+        TestSupport.check(!geometry.protects(new BlockPoint(6, 71, 12)), "old room frame no longer protected");
+        TestSupport.check(!geometry.protects(new BlockPoint(7, 70, 13)), "old room floor no longer protected");
+    }
+
+    private static void mapsCustomBoardSizeAndRegion() {
+        BoardGeometry geometry = new BoardGeometry(
+            new BlockPoint(10, 70, 20),
+            BoardGeometry.stepFromAxis("+z"),
+            BoardGeometry.stepFromAxis("+x"),
+            new BlockPoint(100, 90, 50),
+            BoardGeometry.stepFromAxis("-y"),
+            BoardGeometry.stepFromAxis("+x"),
+            19
+        );
+
+        TestSupport.check(geometry.boardSize() == 19, "custom size stored");
+        TestSupport.check(geometry.mapBoardCell(new BlockPoint(28, 70, 38)).orElseThrow().equals(new GridCell(18, 18)), "custom far corner maps");
+        TestSupport.check(geometry.mapBoardCell(new BlockPoint(29, 70, 38)).isEmpty(), "custom outside rejected");
+        BoardGeometry.BoardRegion region = geometry.boardRegion();
+        TestSupport.check(region.minimum().equals(new BlockPoint(10, 70, 20)), "preview min corner");
+        TestSupport.check(region.maximum().equals(new BlockPoint(28, 70, 38)), "preview max corner");
     }
 
     private static void supportsReversedAxis() {

@@ -4,10 +4,11 @@ main: net.leafmc.gomoku.LeafGomokuPlugin
 api-version: '1.21'
 softdepend:
   - PlaceholderAPI
+  - WorldEdit
 commands:
   gomoku:
     description: Play and manage Gomoku rooms.
-    usage: /gomoku [gui|join|spectate|leave|status|leaderboard|stats|theme|skin|buy|var|admin]
+    usage: /gomoku [gui|join|spectate|leave|undo|status|leaderboard|stats|theme|skin|buy|var|admin]
     aliases:
       - menugomoku
       - gomokumenu
@@ -47,7 +48,7 @@ permissions:
     description: Allows admins to create and initialize Gomoku rooms.
     default: op
   leafgomoku.admin.room:
-    description: Allows admins to open, close, inspect, refresh, reset, and delete Gomoku rooms.
+    description: Allows admins to open, close, inspect, refresh, reset, delete, and change Gomoku room environments.
     default: op
   leafgomoku.admin.lifecycle:
     description: Allows admins to start, stop, release, and forfeit Gomoku seats.

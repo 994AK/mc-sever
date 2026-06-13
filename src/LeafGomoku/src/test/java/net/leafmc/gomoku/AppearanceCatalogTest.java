@@ -23,6 +23,9 @@ public final class AppearanceCatalogTest {
         TestSupport.check(catalog.pieceSkin("steve_head").orElseThrow().headOwner().equals("Steve"), "default player head owner");
         TestSupport.check(catalog.pieceSkin("tnt_block").orElseThrow().animationType() == PieceAnimationType.EXPLOSION, "default tnt animation");
         TestSupport.check(catalog.pieceSkin("slime_entity").orElseThrow().displayType() == PieceDisplayType.ENTITY, "default entity skin");
+        TestSupport.check(catalog.pieceSkin("allay_entity").orElseThrow().entityType().equals("ALLAY"), "default friendly entity skin");
+        TestSupport.check(catalog.pieceSkin("creeper_entity").orElseThrow().entityType().equals("CREEPER"), "default hostile entity skin");
+        TestSupport.check(catalog.pieceSkin("silverfish_entity").orElseThrow().material() == Material.INFESTED_DEEPSLATE, "default small hostile entity icon");
     }
 
     private static void loadsConfiguredSkinDisplayAndAnimation() {

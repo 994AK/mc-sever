@@ -12,6 +12,7 @@ public final class FriendServiceTest {
         blacklistBlocksMessageAndTeleportSurfaces();
         friendListSortsOnlineFirst();
         hiddenOnlineStatusLooksOfflineToFriends();
+        trustedTeleportersRequireFriendshipAndClearOnRelationshipChanges();
     }
 
     private static void acceptsAndRemovesMutualFriendship() {
@@ -131,5 +132,33 @@ public final class FriendServiceTest {
         TestSupport.check(friends.size() == 1, "hidden-status friend still listed");
         TestSupport.check(!friends.get(0).online(), "hidden-status friend appears offline");
         TestSupport.check(friends.get(0).lastSeenMillis() == 0L, "hidden-status friend hides last seen");
+    }
+
+    private static void trustedTeleportersRequireFriendshipAndClearOnRelationshipChanges() {
+        MutableClock clock = new MutableClock(1_000L);
+        FriendService service = new FriendService(List.of(), clock, 10_000L, 0L);
+        UUID alice = UUID.randomUUID();
+        UUID bob = UUID.randomUUID();
+
+        service.ensureProfile(alice, "Alice");
+        service.ensureProfile(bob, "Bob");
+        TestSupport.check(service.setTrustedTeleporter(bob, alice, true).status() == FriendService.Status.NOT_FRIENDS, "non-friend trust rejected");
+        service.sendRequest(alice, "Alice", bob, "Bob");
+        service.acceptRequest(bob, alice);
+
+        TestSupport.check(service.setTrustedTeleporter(bob, alice, true).ok(), "friend trust enabled");
+        TestSupport.check(service.isTrustedTeleporter(bob, alice), "trust is visible");
+        TestSupport.check(service.setTrustedTeleporter(bob, alice, false).ok(), "friend trust disabled");
+        TestSupport.check(!service.isTrustedTeleporter(bob, alice), "trust is removed");
+
+        TestSupport.check(service.setTrustedTeleporter(bob, alice, true).ok(), "trust enabled before remove");
+        TestSupport.check(service.removeFriend(alice, bob).ok(), "friendship removed");
+        TestSupport.check(!service.isTrustedTeleporter(bob, alice), "remove clears target trust");
+
+        service.sendRequest(alice, "Alice", bob, "Bob");
+        service.acceptRequest(bob, alice);
+        TestSupport.check(service.setTrustedTeleporter(bob, alice, true).ok(), "trust enabled before block");
+        TestSupport.check(service.block(alice, bob).ok(), "block removes relationship");
+        TestSupport.check(!service.isTrustedTeleporter(bob, alice), "block clears target trust");
     }
 }

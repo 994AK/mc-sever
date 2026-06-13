@@ -1,6 +1,7 @@
 package net.leafmc.friends;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -61,23 +62,9 @@ public final class TeleportRequestService {
 
     public Result request(UUID sender, UUID target, boolean senderOnline, boolean targetOnline, String senderWorldName, String targetWorldName) {
         cleanupExpiredRequests();
-        if (sender.equals(target)) {
-            return result(Status.SELF, "不能向自己发送好友传送。", sender, target);
-        }
-        if (!senderOnline || !targetOnline) {
-            return result(Status.NOT_ONLINE, "双方都在线时才能发送好友传送。", sender, target);
-        }
-        if (!worldAllowed(senderWorldName) || !worldAllowed(targetWorldName)) {
-            return result(Status.WORLD_BLOCKED, "当前世界或目标世界不允许好友传送。", sender, target);
-        }
-        if (friendService.isBlockedBetween(sender, target)) {
-            return result(Status.BLOCKED, "对方无法接收你的好友传送。", sender, target);
-        }
-        if (!friendService.areFriends(sender, target)) {
-            return result(Status.NOT_FRIENDS, "只能向好友发送好友传送。", sender, target);
-        }
-        if (!friendService.canReceiveTeleport(target)) {
-            return result(Status.TELEPORTS_DISABLED, "对方已关闭好友传送。", sender, target);
+        Result validation = validate(sender, target, senderOnline, targetOnline, senderWorldName, targetWorldName);
+        if (!validation.ok()) {
+            return validation;
         }
         long now = now();
         RequestKey key = new RequestKey(sender, target);
@@ -91,6 +78,26 @@ public final class TeleportRequestService {
         requests.put(key, new TeleportRequest(sender, target, now, now + requestExpiryMillis));
         lastAttempts.put(key, now);
         return result(Status.OK, "好友传送请求已发送。", sender, target);
+    }
+
+    public Result direct(UUID sender, UUID target, boolean senderOnline, boolean targetOnline, String senderWorldName, String targetWorldName) {
+        cleanupExpiredRequests();
+        Result validation = validate(sender, target, senderOnline, targetOnline, senderWorldName, targetWorldName);
+        if (!validation.ok()) {
+            return validation;
+        }
+        if (!friendService.isTrustedTeleporter(target, sender)) {
+            return result(Status.NO_REQUEST, "对方还没有允许你免确认传送。", sender, target);
+        }
+        long now = now();
+        RequestKey key = new RequestKey(sender, target);
+        Long lastAttempt = lastAttempts.get(key);
+        if (lastAttempt != null && now - lastAttempt < requestCooldownMillis) {
+            return result(Status.COOLDOWN, "好友传送冷却中，请稍后再试。", sender, target);
+        }
+        requests.remove(key);
+        lastAttempts.put(key, now);
+        return result(Status.OK, "已直接传送到可信好友身边。", sender, target);
     }
 
     public Result accept(UUID target, UUID sender, String senderWorldName, String targetWorldName) {
@@ -131,6 +138,36 @@ public final class TeleportRequestService {
             return result(Status.NO_REQUEST, "没有找到这条好友传送请求。", sender, target);
         }
         return result(Status.OK, "已拒绝好友传送请求。", sender, target);
+    }
+
+    public List<UUID> incomingRequests(UUID target) {
+        cleanupExpiredRequests();
+        return requests.values().stream()
+            .filter(request -> request.target().equals(target))
+            .map(TeleportRequest::sender)
+            .toList();
+    }
+
+    private Result validate(UUID sender, UUID target, boolean senderOnline, boolean targetOnline, String senderWorldName, String targetWorldName) {
+        if (sender.equals(target)) {
+            return result(Status.SELF, "不能向自己发送好友传送。", sender, target);
+        }
+        if (!senderOnline || !targetOnline) {
+            return result(Status.NOT_ONLINE, "双方都在线时才能发送好友传送。", sender, target);
+        }
+        if (!worldAllowed(senderWorldName) || !worldAllowed(targetWorldName)) {
+            return result(Status.WORLD_BLOCKED, "当前世界或目标世界不允许好友传送。", sender, target);
+        }
+        if (friendService.isBlockedBetween(sender, target)) {
+            return result(Status.BLOCKED, "对方无法接收你的好友传送。", sender, target);
+        }
+        if (!friendService.areFriends(sender, target)) {
+            return result(Status.NOT_FRIENDS, "只能向好友发送好友传送。", sender, target);
+        }
+        if (!friendService.canReceiveTeleport(target)) {
+            return result(Status.TELEPORTS_DISABLED, "对方已关闭好友传送。", sender, target);
+        }
+        return result(Status.OK, "可以发送好友传送。", sender, target);
     }
 
     private boolean worldAllowed(String worldName) {

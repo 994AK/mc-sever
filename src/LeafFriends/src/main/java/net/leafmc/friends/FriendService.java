@@ -236,7 +236,9 @@ public final class FriendService {
             return result(Status.NOT_FRIENDS, "你们还不是好友。");
         }
         actorProfile.friends().remove(target);
+        actorProfile.trustedTeleporters().remove(target);
         targetProfile.friends().remove(actor);
+        targetProfile.trustedTeleporters().remove(actor);
         return result(Status.OK, "已删除好友 " + targetProfile.latestName() + "。");
     }
 
@@ -248,7 +250,9 @@ public final class FriendService {
         FriendProfile targetProfile = ensureProfile(target, null);
         actorProfile.blacklist().add(target);
         actorProfile.friends().remove(target);
+        actorProfile.trustedTeleporters().remove(target);
         targetProfile.friends().remove(actor);
+        targetProfile.trustedTeleporters().remove(actor);
         requests.remove(new RequestKey(actor, target));
         requests.remove(new RequestKey(target, actor));
         return result(Status.OK, "已拉黑 " + targetProfile.latestName() + "。");
@@ -286,6 +290,28 @@ public final class FriendService {
             case STATUS -> profile.settings().setShowOnlineStatus(value);
         }
         return result(Status.OK, "设置已更新: " + key.key() + "=" + (value ? "on" : "off"));
+    }
+
+    public Result setTrustedTeleporter(UUID owner, UUID friend, boolean trusted) {
+        FriendProfile ownerProfile = profiles.get(owner);
+        FriendProfile friendProfile = profiles.get(friend);
+        if (ownerProfile == null || friendProfile == null || !areFriends(owner, friend)) {
+            return result(Status.NOT_FRIENDS, "只能给好友设置免确认传送。");
+        }
+        if (isBlockedBetween(owner, friend)) {
+            return result(Status.BLOCKED, "黑名单关系下不能设置免确认传送。");
+        }
+        if (trusted) {
+            ownerProfile.trustedTeleporters().add(friend);
+            return result(Status.OK, "已允许 " + friendProfile.latestName() + " 免确认传送到你身边。");
+        }
+        ownerProfile.trustedTeleporters().remove(friend);
+        return result(Status.OK, "已取消 " + friendProfile.latestName() + " 的免确认传送。");
+    }
+
+    public boolean isTrustedTeleporter(UUID owner, UUID friend) {
+        FriendProfile ownerProfile = profiles.get(owner);
+        return ownerProfile != null && ownerProfile.trustedTeleporters().contains(friend);
     }
 
     public List<FriendSummary> listFriends(UUID viewer) {
